@@ -27,7 +27,7 @@ export default function Home() {
         />
         <ShowcaseSection />
         <FeaturedSection />
-        <AsSeenInSection />
+        {/* <AsSeenInSection /> */}
         <ShowcaseSection />
         <CategorySection
           sideImage={{
