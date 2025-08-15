@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import Link from "next/link";
 
 interface FeatureProps {
   icon: string;
@@ -8,7 +7,6 @@ interface FeatureProps {
   description: string;
 }
 
-// Mock data for about section
 const aboutFeatures = [
   {
     icon: "https://via.placeholder.com/140",
@@ -56,13 +54,7 @@ interface AboutSectionProps {
   ctaLink?: string;
 }
 
-const AboutSection: React.FC<AboutSectionProps> = ({
-  title,
-  subtitle,
-  backgroundImage,
-  ctaText,
-  ctaLink,
-}) => {
+export default function AboutSection({ title, subtitle }: AboutSectionProps) {
   return (
     <section className="py-16">
       <div className="container mx-auto px-4">
@@ -78,31 +70,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({
             <FeatureCard key={index} {...feature} />
           ))}
         </div>
-
-        {backgroundImage && (
-          <div className="mt-12 relative h-96 rounded-lg overflow-hidden">
-            <Image
-              src={backgroundImage}
-              alt="About us background"
-              fill
-              className="object-cover"
-            />
-            <div className="absolute inset-0 bg-black bg-opacity-20" />
-            {ctaText && ctaLink && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Link
-                  href={ctaLink}
-                  className="bg-white text-black px-8 py-3 rounded-full font-medium hover:bg-gray-100 transition"
-                >
-                  {ctaText}
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </section>
   );
-};
-
-export default AboutSection;
+}

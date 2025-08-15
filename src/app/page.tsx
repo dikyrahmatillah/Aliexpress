@@ -3,7 +3,6 @@ import Footer from "@/components/Footer";
 import HeroSection from "@/app/sections/HeroSection";
 import AboutSection from "@/app/sections/AboutSection";
 import Newsletter from "@/components/Newsletter";
-import AsSeenInSection from "@/app/sections/AssSeenInSection";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/app/sections/FeaturedSection";
