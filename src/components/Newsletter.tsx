@@ -1,6 +1,4 @@
-import React from "react";
-
-const Newsletter: React.FC = () => {
+export default function Newsletter() {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4 max-w-3xl">
@@ -33,6 +31,4 @@ const Newsletter: React.FC = () => {
       </div>
     </section>
   );
-};
-
-export default Newsletter;
+}

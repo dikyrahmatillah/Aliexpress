@@ -85,7 +85,6 @@ const brands = [
 ];
 
 export default function FeaturedSection() {
-  const carouselRef = useRef<HTMLDivElement>(null);
   const [visibleCount, setVisibleCount] = useState(4);
   const [startIdx, setStartIdx] = useState(0);
   const maxIdx = brands.length - visibleCount;
