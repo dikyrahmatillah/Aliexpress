@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "via.placeholder.com" },
       { protocol: "https", hostname: "au.koala.com" },
+      { protocol: "https", hostname: "sixsilver.pl" },
     ],
   },
 };

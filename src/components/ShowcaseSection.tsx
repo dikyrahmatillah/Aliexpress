@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function ShowcaseSection() {
   const mattresses = [
@@ -13,6 +16,7 @@ export default function ShowcaseSection() {
         "https://au.koala.com/cdn/shop/files/Queen_Luxe_Mattress_1_3.webp?v=1728130989&width=360",
       badge: "Save 22%",
       sizes: "Queen, 4 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single"], // Added for filtering
       href: "/products/koala-luxe-mattress",
     },
     {
@@ -25,6 +29,14 @@ export default function ShowcaseSection() {
         "https://au.koala.com/cdn/shop/files/PlusMattress_4_1.jpg?v=1728227347&width=360",
       badge: "Save 20%",
       sizes: "Queen, 6 Sizes",
+      sizeList: [
+        "Queen",
+        "King",
+        "Double",
+        "King Single",
+        "Single",
+        "Super King",
+      ],
       href: "/products/koala-plus-mattress",
     },
     {
@@ -37,6 +49,7 @@ export default function ShowcaseSection() {
         "https://au.koala.com/cdn/shop/files/AU_-_The_New_Koala_Mattress_-_Queen_-_1_2.webp?v=1728135769&width=360",
       badge: "Save 20%",
       sizes: "Queen, 5 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single", "Single"],
       href: "/products/koala-mattress",
     },
     {
@@ -49,7 +62,60 @@ export default function ShowcaseSection() {
         "https://au.koala.com/cdn/shop/files/SEMattress_12_1_869df618-64d5-4f28-b432-ae4aa71c1bd5.jpg?v=1728227524&width=360",
       badge: "Save 10%",
       sizes: "Queen, 5 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single", "Single"],
       href: "/products/koala-se-mattress",
+    },
+    {
+      name: "Koala Lite Mattress",
+      price: 790,
+      salePrice: 632,
+      rating: 4.5,
+      reviewCount: 300,
+      image:
+        "https://au.koala.com/cdn/shop/files/LiteMattress_1_1.jpg?v=1728227347&width=360",
+      badge: "Save 20%",
+      sizes: "Queen, 4 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single"],
+      href: "/products/koala-lite-mattress",
+    },
+    {
+      name: "Koala Lite Mattress",
+      price: 790,
+      salePrice: 632,
+      rating: 4.5,
+      reviewCount: 300,
+      image:
+        "https://au.koala.com/cdn/shop/files/LiteMattress_1_1.jpg?v=1728227347&width=360",
+      badge: "Save 20%",
+      sizes: "Queen, 4 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single"],
+      href: "/products/koala-lite-mattress",
+    },
+    {
+      name: "Koala Lite Mattress",
+      price: 790,
+      salePrice: 632,
+      rating: 4.5,
+      reviewCount: 300,
+      image:
+        "https://au.koala.com/cdn/shop/files/LiteMattress_1_1.jpg?v=1728227347&width=360",
+      badge: "Save 20%",
+      sizes: "Queen, 4 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single"],
+      href: "/products/koala-lite-mattress",
+    },
+    {
+      name: "Koala Lite Mattress",
+      price: 790,
+      salePrice: 632,
+      rating: 4.5,
+      reviewCount: 300,
+      image:
+        "https://au.koala.com/cdn/shop/files/LiteMattress_1_1.jpg?v=1728227347&width=360",
+      badge: "Save 20%",
+      sizes: "Queen, 4 Sizes",
+      sizeList: ["Queen", "King", "Double", "King Single"],
+      href: "/products/koala-lite-mattress",
     },
   ];
 
@@ -61,6 +127,12 @@ export default function ShowcaseSection() {
     "King",
     "Super King",
   ];
+
+  const [selectedSize, setSelectedSize] = useState<string>("Queen");
+
+  const filteredMattresses = mattresses.filter((mattress) =>
+    mattress.sizeList.includes(selectedSize)
+  );
 
   const StarRating = ({
     rating,
@@ -111,10 +183,12 @@ export default function ShowcaseSection() {
               <button
                 key={index}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  index === 0
+                  selectedSize === size
                     ? "bg-gray-900 text-white"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
                 }`}
+                onClick={() => setSelectedSize(size)}
+                type="button"
               >
                 {size}
               </button>
@@ -123,70 +197,62 @@ export default function ShowcaseSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {mattresses.map((mattress, index) => (
-            <Link key={index} href={mattress.href} className="group">
-              <div className="relative">
-                {mattress.badge && (
-                  <div className="absolute top-4 left-4 z-10 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
-                    {mattress.badge}
+          {filteredMattresses.length > 0 ? (
+            filteredMattresses.map((mattress, index) => (
+              <Link key={index} href={mattress.href} className="group">
+                <div className="relative">
+                  {mattress.badge && (
+                    <div className="absolute top-4 left-4 z-10 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
+                      {mattress.badge}
+                    </div>
+                  )}
+                  <div className="aspect-square overflow-hidden rounded-lg bg-white">
+                    <Image
+                      src={mattress.image}
+                      alt={mattress.name}
+                      width={360}
+                      height={360}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
                   </div>
-                )}
-                <div className="aspect-square overflow-hidden rounded-lg bg-white">
-                  <Image
-                    src={mattress.image}
-                    alt={mattress.name}
-                    width={360}
-                    height={360}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                    {mattress.name}
+                  </h3>
+
+                  <StarRating
+                    rating={mattress.rating}
+                    reviewCount={mattress.reviewCount}
                   />
+
+                  <p className="text-sm text-gray-600">{mattress.sizes}</p>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="text-lg font-bold text-gray-900">
+                      From ${mattress.salePrice.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-gray-500 line-through">
+                      ${mattress.price.toLocaleString()}
+                    </span>
+                    <span className="text-sm text-green-600 font-medium">
+                      Save $
+                      {(mattress.price - mattress.salePrice).toLocaleString()}
+                    </span>
+                  </div>
                 </div>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {mattress.name}
-                </h3>
-
-                <StarRating
-                  rating={mattress.rating}
-                  reviewCount={mattress.reviewCount}
-                />
-
-                <p className="text-sm text-gray-600">{mattress.sizes}</p>
-
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg font-bold text-gray-900">
-                    From ${mattress.salePrice.toLocaleString()}
-                  </span>
-                  <span className="text-sm text-gray-500 line-through">
-                    ${mattress.price.toLocaleString()}
-                  </span>
-                  <span className="text-sm text-green-600 font-medium">
-                    Save $
-                    {(mattress.price - mattress.salePrice).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          ) : (
+            <div className="col-span-full text-center text-gray-500">
+              No mattresses available for this size.
+            </div>
+          )}
         </div>
 
         {/* CTA Buttons */}
         <div className="text-center space-y-4">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/pages/mattress-quiz"
-              className="inline-flex items-center px-8 py-3 border-2 border-gray-900 text-gray-900 font-bold hover:bg-gray-900 hover:text-white transition-colors rounded-md"
-            >
-              TAKE THE QUIZ
-            </Link>
-            <Link
-              href="/collections/mattresses#comparison-table"
-              className="inline-flex items-center px-8 py-3 bg-gray-900 text-white font-bold hover:bg-gray-800 transition-colors rounded-md"
-            >
-              COMPARE MATTRESSES
-            </Link>
-          </div>
           <Link
             href="/collections/queen-mattresses"
             className="inline-block text-blue-600 hover:text-blue-800 font-medium"

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: oklch(93.597% 0.0188 83.025);
+  --background: oklch(93.018% 0.01764 81.279);
   --foreground: #171717;
   --accent: oklch(0.6691 0.0587 246.23);
 }
@@ -10,6 +10,16 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: "Geist", Arial, Helvetica, sans-serif;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Additional Koala styling */

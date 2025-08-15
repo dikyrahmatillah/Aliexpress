@@ -1,3 +1,4 @@
+import NewArrivalsSection from "@/components/NewArrivalsSection";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import HeroSection from "@/components/HeroSection";
@@ -10,6 +11,7 @@ import Newsletter from "@/components/Newsletter";
 import AsSeenInSection from "@/components/AssSeenInSection";
 import ShowcaseSection from "@/components/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
+import FeaturedSection from "@/components/FeaturedSection";
 
 export default function Home() {
   return (
@@ -19,31 +21,25 @@ export default function Home() {
       <main className="">
         <HeroSection content={heroContent} />
 
-        <CategorySection title="Categories" />
+        {/* First: image left, button right */}
+        <CategorySection sideImageRight={false} buttonSide="right" />
 
-        <ProductSection
-          title="Bestsellers"
-          viewAllLink="/collections/bestsellers"
-          filters={[
-            "Featured",
-            "Sofa Beds",
-            "Mattresses",
-            "Sofas",
-            "Bed Bases",
-            "Pillows",
-            "Bookshelves",
-          ]}
-        />
-
-        <AsSeenInSection />
         <ShowcaseSection />
 
-        <ReviewSection
+        <FeaturedSection />
+        {/* <ProductSection ... /> */}
+        <AsSeenInSection />
+
+        {/* Second: image right, button left */}
+        <ShowcaseSection />
+        <CategorySection sideImageRight={true} buttonSide="left" />
+
+        {/* <ReviewSection
           title="Over 570,000 customers and more than 50,000 five-star reviews globally"
           subtitle=""
         />
 
-        <ImpactSection title="We're in the business of making things good" />
+        <ImpactSection title="We're in the business of making things good" /> */}
 
         <AboutSection
           title="A little about us"

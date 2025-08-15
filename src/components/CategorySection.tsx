@@ -1,96 +1,183 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { categories } from "@/data/categoriesData";
 
-// Mock data for the categories section
-const categories = [
-  {
-    title: "Mattresses",
-    discount: "Up to 25% off",
-    imageUrl:
-      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
-    linkUrl: "/collections/mattresses",
-  },
-  {
-    title: "Sofa Beds",
-    discount: "Up to 22% off",
-    imageUrl:
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
-    linkUrl: "/collections/sofa-beds",
-  },
-  {
-    title: "Bed Bases",
-    discount: "Up to 22% off",
-    imageUrl:
-      "https://images.unsplash.com/photo-1567016376408-0226e4d0c1ea?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
-    linkUrl: "/collections/bed-bases",
-  },
-  {
-    title: "Sofas",
-    imageUrl:
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=750&q=80",
-    linkUrl: "/collections/sofas-couches",
-  },
-];
+const sideImage = {
+  url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+  link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
+  alt: "Unsplash nature example",
+};
 
-interface CategoryProps {
-  title: string;
-  discount?: string;
-  imageUrl: string;
-  linkUrl: string;
-}
-
-const CategoryCard: React.FC<CategoryProps> = ({
+const CategoryCard = ({
   title,
   discount,
   imageUrl,
   linkUrl,
-}) => {
-  return (
-    <div className="relative group overflow-hidden">
-      <Link href={linkUrl} className="block">
-        <div className="relative aspect-square overflow-hidden">
-          <Image
-            src={imageUrl}
-            alt={title}
-            width={750}
-            height={750}
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        </div>
-        <div className="mt-2">
-          <h3 className="text-lg font-medium">{title}</h3>
-          {discount && <p className="text-sm text-red-600">{discount}</p>}
-        </div>
-      </Link>
-    </div>
-  );
-};
+}: {
+  title: string;
+  discount?: string;
+  imageUrl: string;
+  linkUrl: string;
+}) => (
+  <div className="w-full max-w-xs flex-shrink-0 mx-2">
+    <Link href={linkUrl} className="block">
+      <div className="relative aspect-square overflow-hidden">
+        <Image
+          src={imageUrl}
+          alt={title}
+          width={350}
+          height={350}
+          className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
+        />
+        {discount && (
+          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+            {discount}
+          </span>
+        )}
+      </div>
+      <div className="p-3">
+        <h3 className="text-base font-medium">{title}</h3>
+      </div>
+    </Link>
+  </div>
+);
 
 interface CategorySectionProps {
-  title: string;
+  sideImageRight?: boolean;
+  buttonSide?: "left" | "right";
 }
 
-const CategorySection: React.FC<CategorySectionProps> = ({ title }) => {
+export default function CategorySection({
+  sideImageRight = false,
+  buttonSide = "right",
+}: CategorySectionProps) {
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [carouselItems, setCarouselItems] = useState(categories);
+
+  useEffect(() => {
+    function handleResize() {
+      if (window.innerWidth < 640) {
+        setVisibleCount(1);
+      } else if (window.innerWidth < 900) {
+        setVisibleCount(2);
+      } else if (window.innerWidth < 1200) {
+        setVisibleCount(3);
+      } else if (window.innerWidth < 1600) {
+        setVisibleCount(4);
+      } else {
+        setVisibleCount(5);
+      }
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Reset carouselItems if categories change
+  useEffect(() => {
+    setCarouselItems(categories);
+  }, [categories]);
+
+  const scroll = (direction: "left" | "right") => {
+    setCarouselItems((prev) => {
+      if (direction === "right") {
+        // Move first item to end
+        return [...prev.slice(1), prev[0]];
+      } else {
+        // Move last item to start
+        return [prev[prev.length - 1], ...prev.slice(0, prev.length - 1)];
+      }
+    });
+  };
+
+  // Layout order based on sideImageRight
+  const content = (
+    <>
+      {/* Side Image */}
+      <div className="hidden md:block w-1/5 flex-shrink-0">
+        <Link href={sideImage.link}>
+          <Image
+            src={sideImage.url}
+            alt={sideImage.alt}
+            width={480}
+            height={480}
+            className="object-cover mx-auto"
+          />
+        </Link>
+      </div>
+      {/* Carousel with buttons */}
+      <div className="w-full relative">
+        <h2 className="text-2xl font-bold mb-4">Categories</h2>
+        <div className="relative w-full">
+          {buttonSide === "left" && (
+            <button
+              aria-label="Scroll left"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block"
+              onClick={() => scroll("left")}
+              type="button"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+          <div className="flex gap-4 pb-2 w-full justify-center">
+            {carouselItems.slice(0, visibleCount).map((cat, idx) => (
+              <div
+                key={cat.title + idx}
+                style={{
+                  flex: `0 0 calc(${100 / visibleCount}% - 1rem)`,
+                  maxWidth: `calc(${100 / visibleCount}% - 1rem)`,
+                  minWidth: 0,
+                }}
+              >
+                <CategoryCard {...cat} />
+              </div>
+            ))}
+          </div>
+          {buttonSide === "right" && (
+            <button
+              aria-label="Scroll right"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block"
+              onClick={() => scroll("right")}
+              type="button"
+            >
+              <svg
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+    </>
+  );
+
   return (
-    <section className="py-16">
-      <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold mb-8">{title}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {categories.map((category, index) => (
-            <CategoryCard
-              key={index}
-              title={category.title}
-              discount={category.discount}
-              imageUrl={category.imageUrl}
-              linkUrl={category.linkUrl}
-            />
-          ))}
+    <section className="py-10">
+      <div className="px-4">
+        <div
+          className={`flex gap-6 items-center ${
+            sideImageRight ? "flex-row-reverse" : ""
+          }`}
+        >
+          {content}
         </div>
       </div>
     </section>
   );
-};
-
-export default CategorySection;
+}
