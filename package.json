@@ -9,6 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.85.3",
+    "@tanstack/react-query-devtools": "^5.85.3",
+    "@types/crypto-js": "^4.2.2",
+    "crypto-js": "^4.2.0",
     "i": "^0.3.7",
     "next": "15.4.6",
     "npm": "^11.5.2",
