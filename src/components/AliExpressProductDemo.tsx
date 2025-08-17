@@ -14,8 +14,8 @@ export default function AliExpressProductDemo() {
   const [activeQuery, setActiveQuery] = useState("");
 
   // Suggestions (debounced) from the hook
-  const { data: suggestionsData, isLoading: SuggestionsLoading } =
-    useAliExpressSearch(searchQuery);
+  //   const { data: suggestionsData, isLoading: SuggestionsLoading } =
+  //     useAliExpressSearch(searchQuery);
 
   // Using the query hook (automatic fetching)
   const {
@@ -82,7 +82,7 @@ export default function AliExpressProductDemo() {
         </div>
 
         {/* Suggestions dropdown */}
-        {searchQuery.length >= 2 && (
+        {/* {searchQuery.length >= 2 && (
           <div className="mb-4">
             {SuggestionsLoading && (
               <p className="text-sm">Loading suggestions...</p>
@@ -115,7 +115,7 @@ export default function AliExpressProductDemo() {
               )
             )}
           </div>
-        )}
+        )} */}
 
         {/* Status Display */}
         <div className="text-sm text-gray-600">

@@ -210,6 +210,8 @@ export async function getAliExpressProducts(
       throw new Error("No products found in API response");
     }
 
+    console.log("API Response:", productData.products.product[0]);
+
     // Process and return results
     const result: ProductQueryResult = {
       total_record_count: productData.total_record_count,
