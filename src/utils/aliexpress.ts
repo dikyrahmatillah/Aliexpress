@@ -153,6 +153,161 @@ function processProducts(products: AliExpressProduct[]): string[] {
 }
 
 /**
+ * Fetches hot products from AliExpress API
+ */
+export async function getAliExpressHotProducts({
+  categoryId = 0,
+  pageNo = 1,
+  pageSize = 50,
+  targetCurrency = "USD",
+  targetLanguage = "EN",
+  country = "US",
+  appSignature = ALIEXPRESS_CONFIG.APP_SIGNATURE,
+  trackingId = "daiki",
+  localeSite = "global",
+  fields = "app_sale_price,shop_id",
+} = {}): Promise<ProductQueryResult> {
+  // Build API parameters
+  const params: Record<string, string | number> = {
+    app_signature: appSignature,
+    category_id: categoryId,
+    fields,
+    locale_site: localeSite,
+    page_no: pageNo,
+    page_size: pageSize,
+    target_currency: targetCurrency,
+    target_language: targetLanguage,
+    tracking_id: trackingId,
+    country,
+    app_key: ALIEXPRESS_CONFIG.APP_KEY,
+    v: "2.0",
+    format: "json",
+    sign_method: "md5",
+    method: "aliexpress.affiliate.hotproduct.download",
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    partner_id: "top-sdk-php-20180326",
+  };
+
+  // Generate signature
+  params.sign = generateSignature(
+    params as ApiParams,
+    ALIEXPRESS_CONFIG.SECRET
+  );
+
+  // Build request URL
+  const requestUrl = buildRequestUrl(params);
+
+  try {
+    const response = await fetch(requestUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("API Response:", data);
+
+    // Process the hot products response similar to regular products
+    if (
+      data?.aliexpress_affiliate_hotproduct_download_response?.resp_result
+        ?.result?.products?.product
+    ) {
+      const products =
+        data.aliexpress_affiliate_hotproduct_download_response.resp_result
+          .result.products.product;
+      const processedProducts = processProducts(products);
+
+      return {
+        total_record_count:
+          data.aliexpress_affiliate_hotproduct_download_response.resp_result
+            .result.total_record_count || products.length,
+        current_record_count: products.length,
+        products: {
+          product: processedProducts,
+        },
+      };
+    }
+
+    // Return empty structure if no products found
+    console.warn("No products found in hot products response:", data);
+    return {
+      total_record_count: 0,
+      current_record_count: 0,
+      products: {
+        product: [],
+      },
+    };
+  } catch (error) {
+    console.error("Error fetching AliExpress hot products:", error);
+    // Return empty structure on error
+    return {
+      total_record_count: 0,
+      current_record_count: 0,
+      products: {
+        product: [],
+      },
+    };
+  }
+}
+
+/**
+ * Alternative function that returns parsed hot products directly
+ */
+export async function getAliExpressHotProductsParsed({
+  categoryId = 0,
+  pageNo = 1,
+  pageSize = 50,
+  targetCurrency = "USD",
+  targetLanguage = "EN",
+  country = "US",
+} = {}): Promise<{
+  total_record_count: number;
+  current_record_count: number;
+  products: ProcessedProduct[];
+}> {
+  try {
+    const result = await getAliExpressHotProducts({
+      categoryId,
+      pageNo,
+      pageSize,
+      targetCurrency,
+      targetLanguage,
+      country,
+    });
+
+    // Handle different response structures
+    if (result.products && Array.isArray(result.products.product)) {
+      return {
+        total_record_count: result.total_record_count,
+        current_record_count: result.current_record_count,
+        products: result.products.product.map(parseProductString),
+      };
+    } else if (result.products && Array.isArray(result.products)) {
+      // If products is already an array of processed products
+      return {
+        total_record_count: result.total_record_count || result.products.length,
+        current_record_count:
+          result.current_record_count || result.products.length,
+        products: result.products,
+      };
+    } else {
+      // Return empty result if no products found
+      return {
+        total_record_count: 0,
+        current_record_count: 0,
+        products: [],
+      };
+    }
+  } catch (error) {
+    console.error("Error in getAliExpressHotProductsParsed:", error);
+    // Return empty result on error
+    return {
+      total_record_count: 0,
+      current_record_count: 0,
+      products: [],
+    };
+  }
+}
+
+/**
  * Fetches products from AliExpress API
  */
 export async function getAliExpressProducts(
@@ -223,7 +378,7 @@ export async function getAliExpressProducts(
       throw new Error("No products found in API response");
     }
 
-    console.log("API Response:", productData.products.product[0]);
+    // console.log("API Response:", productData.products.product[0]);
 
     // Process and return results
     const result: ProductQueryResult = {

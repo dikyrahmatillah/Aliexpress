@@ -2,12 +2,107 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import { ProcessedProduct } from "@/types/aliexpress";
 import { brands } from "@/data/brandsData";
 import BrandCard from "@/components/BrandCard";
 
-export default function FeaturedSection() {
+interface AliExpressResponse {
+  total_record_count: number;
+  current_record_count: number;
+  products: ProcessedProduct[];
+}
+
+interface FeaturedSectionProps {
+  hotProductsData?: AliExpressResponse;
+  isLoading?: boolean;
+  error?: Error | null;
+}
+
+interface FeaturedProductCardProps {
+  product: ProcessedProduct;
+  visibleCount: number;
+}
+
+function FeaturedProductCard({
+  product,
+  visibleCount,
+}: FeaturedProductCardProps) {
+  const salePrice = parseFloat(product.sale_price);
+  const originalPrice = parseFloat(product.original_price);
+  const discount =
+    originalPrice > salePrice
+      ? Math.round((1 - salePrice / originalPrice) * 100)
+      : 0;
+
+  return (
+    <div
+      style={{
+        flex: `0 0 calc(${100 / visibleCount}% - 0.5rem)`,
+        maxWidth: `calc(${100 / visibleCount}% - 0.5rem)`,
+        minWidth: 0,
+      }}
+    >
+      <Link
+        href={`https://www.aliexpress.com/item/${product.product_id}.html`}
+        className="group block"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="relative">
+          {discount > 0 && (
+            <div className="absolute top-2 left-2 z-10 bg-red-500 text-white px-2 py-1 text-xs font-semibold rounded">
+              -{discount}%
+            </div>
+          )}
+          <div className="aspect-square overflow-hidden rounded-lg bg-white border">
+            <Image
+              src={product.image_url}
+              alt={product.title}
+              width={300}
+              height={300}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </div>
+        <div className="mt-3 space-y-1">
+          <h3 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+            {product.title}
+          </h3>
+          <div className="flex items-center space-x-1">
+            <span className="text-lg font-bold text-gray-900">
+              ${salePrice.toFixed(2)}
+            </span>
+            {originalPrice > salePrice && (
+              <span className="text-sm text-gray-500 line-through">
+                ${originalPrice.toFixed(2)}
+              </span>
+            )}
+          </div>
+          <div className="text-xs text-gray-500">{product.volume} sold</div>
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+export default function FeaturedSection({
+  hotProductsData,
+  isLoading = false,
+  error = null,
+}: FeaturedSectionProps) {
   const [visibleCount, setVisibleCount] = useState(4);
   const [startIdx, setStartIdx] = useState(0);
+  const [useFallback, setUseFallback] = useState(false);
+
+  // Check if we should use fallback data
+  const shouldUseFallback = useFallback || (error && !isLoading);
+
+  // Use the passed data or fallback to brands
+  const allProducts = shouldUseFallback
+    ? []
+    : hotProductsData?.products?.slice(0, 9) || [];
+  const fallbackItems = brands;
 
   useEffect(() => {
     function handleResize() {
@@ -22,16 +117,18 @@ export default function FeaturedSection() {
   }, []);
 
   useEffect(() => {
-    if (startIdx > brands.length - visibleCount) {
-      setStartIdx(Math.max(0, brands.length - visibleCount));
+    const itemsToUse = shouldUseFallback ? fallbackItems : allProducts;
+    if (startIdx > itemsToUse.length - visibleCount && itemsToUse.length > 0) {
+      setStartIdx(Math.max(0, itemsToUse.length - visibleCount));
     }
-  }, [visibleCount, startIdx]);
+  }, [visibleCount, startIdx, shouldUseFallback]);
 
   const scroll = (dir: "left" | "right") => {
+    const itemsToUse = shouldUseFallback ? fallbackItems : allProducts;
     setStartIdx((prev) =>
       dir === "left"
         ? Math.max(0, prev - 1)
-        : Math.min(brands.length - visibleCount, prev + 1)
+        : Math.min(itemsToUse.length - visibleCount, prev + 1)
     );
   };
 
@@ -40,42 +137,91 @@ export default function FeaturedSection() {
       <div className="px-4">
         <h2 className="text-5xl font-extrabold text-center mb-10">
           <Link
-            href="https://sixsilver.pl/kategoria/marki/"
+            href={
+              shouldUseFallback
+                ? "https://sixsilver.pl/kategoria/marki/"
+                : "https://www.aliexpress.com"
+            }
             className="hover:text-blue-600"
-            title="Marki modowe"
+            title="Featured Products"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Featured Products
           </Link>
+          {error && (
+            <div className="text-sm text-red-500 font-normal mt-2">
+              (Using fallback data due to API issues)
+            </div>
+          )}
         </h2>
         <div className="flex justify-center mb-12">
           <div className="w-40 h-2 bg-gray-200 rounded-full" />
         </div>
-        <div className="relative">
-          <CarouselButton
-            direction="left"
-            onClick={() => scroll("left")}
-            disabled={startIdx === 0}
-          />
-          <div className="flex gap-2 pb-4 w-full justify-center">
-            {brands
-              .slice(startIdx, startIdx + visibleCount)
-              .map((brand, idx) => (
-                <BrandCard
-                  key={brand.name + idx}
-                  brand={brand}
-                  visibleCount={visibleCount}
-                />
-              ))}
+
+        {!shouldUseFallback && allProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+            <p className="mt-2 text-gray-600">Loading featured products...</p>
+            <button
+              onClick={() => setUseFallback(true)}
+              className="mt-4 text-gray-600 hover:text-gray-800 font-medium"
+            >
+              Use Fallback Data
+            </button>
           </div>
-          <CarouselButton
-            direction="right"
-            onClick={() => scroll("right")}
-            disabled={
-              startIdx === brands.length - visibleCount ||
-              brands.length <= visibleCount
-            }
-          />
-        </div>
+        ) : (
+          <div className="relative">
+            <CarouselButton
+              direction="left"
+              onClick={() => scroll("left")}
+              disabled={startIdx === 0}
+            />
+            <div className="flex gap-2 pb-4 w-full justify-center">
+              {shouldUseFallback
+                ? fallbackItems
+                    .slice(startIdx, startIdx + visibleCount)
+                    .map((brand, idx) => (
+                      <BrandCard
+                        key={brand.name + idx}
+                        brand={brand}
+                        visibleCount={visibleCount}
+                      />
+                    ))
+                : allProducts
+                    .slice(startIdx, startIdx + visibleCount)
+                    .map((product, idx) => (
+                      <FeaturedProductCard
+                        key={product.product_id + idx}
+                        product={product}
+                        visibleCount={visibleCount}
+                      />
+                    ))}
+            </div>
+            <CarouselButton
+              direction="right"
+              onClick={() => scroll("right")}
+              disabled={
+                shouldUseFallback
+                  ? startIdx === fallbackItems.length - visibleCount ||
+                    fallbackItems.length <= visibleCount
+                  : startIdx === allProducts.length - visibleCount ||
+                    allProducts.length <= visibleCount
+              }
+            />
+          </div>
+        )}
+
+        {shouldUseFallback && !useFallback && (
+          <div className="text-center mt-8">
+            <button
+              onClick={() => setUseFallback(false)}
+              className="text-blue-600 hover:text-blue-800 font-medium"
+            >
+              Try AliExpress Data Again
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
