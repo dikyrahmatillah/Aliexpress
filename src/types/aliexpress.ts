@@ -5,6 +5,15 @@ export interface AliExpressProduct {
   product_title: string;
   sale_price: string;
   original_price: string;
+  discount: string;
+  first_level_category_name: string;
+  first_level_category_id: string;
+  second_level_category_name: string;
+  second_level_category_id: string;
+  product_small_image_urls: string[];
+  product_video_url: string;
+  sku_id: string;
+  shop_name: string;
 }
 
 export interface AliExpressProductResponse {
@@ -22,11 +31,21 @@ export interface AliExpressProductResponse {
 }
 
 export interface ProcessedProduct {
-  productId: string;
+  product_id: string;
   volume: number;
-  imageUrl: string;
+  image_url: string;
   title: string;
-  price: string;
+  original_price: string;
+  sale_price: string;
+  discount: string;
+  first_level_category_name: string;
+  first_level_category_id: string;
+  second_level_category_name: string;
+  second_level_category_id: string;
+  product_small_image_urls: string[];
+  product_video_url: string;
+  sku_id: string;
+  shop_name: string;
 }
 
 export interface ProductQueryResult {

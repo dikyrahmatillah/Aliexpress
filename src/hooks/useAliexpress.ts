@@ -120,13 +120,21 @@ export function useAliExpressSearch(searchTerm: string, debounceMs = 1000) {
 // Helper function to extract useful data from AliExpress response
 export function formatAliExpressProducts(products: ProcessedProduct[]) {
   return products.map((product) => ({
-    id: product.productId,
+    id: product.product_id,
     title: product.title,
-    price: parseFloat(product.price),
-    imageUrl: product.imageUrl,
+    salePrice: parseFloat(product.sale_price),
+    originalPrice: parseFloat(product.original_price),
+    discount: parseFloat(product.discount),
+    imageUrl: product.image_url,
     salesVolume: product.volume,
-    priceFormatted: `$${parseFloat(product.price).toFixed(2)}`,
+    first_level_category_name: product.first_level_category_name,
+    first_level_category_id: product.first_level_category_id,
+    second_level_category_name: product.second_level_category_name,
+    second_level_category_id: product.second_level_category_id,
+    product_video_url: product.product_video_url,
+    sku_id: product.sku_id,
+    shop_name: product.shop_name,
     // Generate affiliate link (you may need to adjust this based on your setup)
-    affiliateUrl: `https://www.aliexpress.com/item/${product.productId}.html`,
+    affiliateUrl: `https://www.aliexpress.com/item/${product.product_id}.html`,
   }));
 }

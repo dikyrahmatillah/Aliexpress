@@ -199,58 +199,121 @@ interface ProductGridProps {
   products: Array<{
     id: string;
     title: string;
-    price: number;
-    priceFormatted: string;
+    salePrice: number;
+    originalPrice: number;
+    discount: number;
     imageUrl: string;
     salesVolume: number;
     affiliateUrl: string;
+    first_level_category_name: string;
+    first_level_category_id: string;
+    second_level_category_name: string;
+    second_level_category_id: string;
+    product_video_url: string;
+    sku_id: string;
+    shop_name: string;
   }>;
 }
 
 function ProductGrid({ products }: ProductGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <div
-          key={product.id}
-          className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
-        >
-          <div className="aspect-square mb-3 relative overflow-hidden rounded-lg bg-gray-100">
-            <Image
-              src={product.imageUrl}
-              alt={product.title}
-              fill
-              className="object-cover"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/placeholder-image.svg";
-              }}
-            />
-          </div>
-
-          <h3 className="font-medium text-sm mb-2 line-clamp-2 h-10">
-            {product.title}
-          </h3>
-
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-lg font-bold text-green-600">
-              {product.priceFormatted}
-            </span>
-            <span className="text-xs text-gray-500">
-              {product.salesVolume} sold
-            </span>
-          </div>
-
-          <a
-            href={product.affiliateUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full text-center py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
+      {products.map((product) => {
+        // Add more info fields
+        const hasDiscount =
+          typeof product.discount === "number"
+            ? product.discount > 0
+            : !!product.discount;
+        const showOriginal =
+          typeof product.originalPrice === "number" &&
+          typeof product.salePrice === "number"
+            ? product.originalPrice > product.salePrice
+            : false;
+        return (
+          <div
+            key={product.id}
+            className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
           >
-            View on AliExpress
-          </a>
-        </div>
-      ))}
+            <div className="aspect-square mb-3 relative overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+              <Image
+                src={product.imageUrl}
+                alt={product.title}
+                fill
+                className="object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = "/placeholder-image.svg";
+                }}
+              />
+              {product.product_video_url && (
+                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
+                  <svg
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M6.79 5.093A.5.5 0 0 1 7.5 5.5v5a.5.5 0 0 1-.79.407l-4-2.5a.5.5 0 0 1 0-.814l4-2.5zM8 6.5v3a.5.5 0 0 0 .79.407l4-2.5a.5.5 0 0 0 0-.814l-4-2.5A.5.5 0 0 0 8 3.5v3z" />
+                  </svg>
+                  Video
+                </span>
+              )}
+            </div>
+
+            <h3 className="font-medium text-sm mb-2 line-clamp-2 h-10">
+              {product.title}
+            </h3>
+
+            <div className="flex flex-col gap-1 mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-lg font-bold text-green-600">
+                  ${product.salePrice.toFixed(2)}
+                </span>
+                {showOriginal && (
+                  <span className="text-xs line-through text-gray-500">
+                    ${product.originalPrice.toFixed(2)}
+                  </span>
+                )}
+                {hasDiscount && (
+                  <span className="text-xs text-red-600 font-semibold">
+                    -{product.discount}%
+                  </span>
+                )}
+              </div>
+              <span className="text-xs text-gray-500">
+                {product.salesVolume} sold
+              </span>
+              {product.shop_name && (
+                <span className="text-xs text-gray-700">
+                  Shop: {product.shop_name}
+                </span>
+              )}
+              {(product.first_level_category_name ||
+                product.second_level_category_name) && (
+                <span className="text-xs text-gray-400">
+                  {product.first_level_category_name}
+                  {product.second_level_category_name &&
+                    ` / ${product.second_level_category_name}`}
+                </span>
+              )}
+              {product.sku_id && (
+                <span className="text-xs text-gray-300">
+                  SKU: {product.sku_id}
+                </span>
+              )}
+            </div>
+
+            <a
+              href={product.affiliateUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
+            >
+              View on AliExpress
+            </a>
+          </div>
+        );
+      })}
     </div>
   );
 }

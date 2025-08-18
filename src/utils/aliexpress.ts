@@ -117,19 +117,32 @@ function processProducts(products: AliExpressProduct[]): string[] {
     // Skip products with no sales volume
     if (product.lastest_volume === 0) continue;
 
-    // Determine price (sale price or original price)
-    const price =
-      product.sale_price !== "0.00"
-        ? product.sale_price
-        : product.original_price;
+    let smallImageUrls = "";
+    const psi = product.product_small_image_urls as unknown;
+    if (Array.isArray(psi)) {
+      smallImageUrls = psi.join(",");
+    } else if (typeof psi === "string") {
+      smallImageUrls = psi;
+    } else {
+      smallImageUrls = "";
+    }
 
-    // Format: productId~volume~imageUrl~title~price
     const formattedProduct = [
       product.product_id,
       product.lastest_volume,
       product.product_main_image_url,
       product.product_title,
-      price,
+      product.sale_price,
+      product.original_price,
+      product.discount,
+      product.first_level_category_name,
+      product.first_level_category_id,
+      product.second_level_category_name,
+      product.second_level_category_id,
+      smallImageUrls,
+      product.product_video_url,
+      product.sku_id,
+      product.shop_name,
     ].join("~");
 
     processedProducts.push(formattedProduct);
@@ -232,14 +245,42 @@ export async function getAliExpressProducts(
  * Parses a product string back into an object
  */
 export function parseProductString(productString: string): ProcessedProduct {
-  const [productId, volume, imageUrl, title, price] = productString.split("~");
+  const [
+    product_id,
+    volume,
+    image_url,
+    title,
+    sale_price,
+    original_price,
+    discount,
+    first_level_category_name,
+    first_level_category_id,
+    second_level_category_name,
+    second_level_category_id,
+    product_small_image_urls,
+    product_video_url,
+    sku_id,
+    shop_name,
+  ] = productString.split("~");
 
   return {
-    productId,
+    product_id,
     volume: parseInt(volume, 10),
-    imageUrl,
+    image_url,
     title,
-    price,
+    original_price,
+    sale_price,
+    discount,
+    first_level_category_name,
+    first_level_category_id,
+    second_level_category_name,
+    second_level_category_id,
+    product_small_image_urls: product_small_image_urls
+      ? product_small_image_urls.split(",")
+      : [],
+    product_video_url,
+    sku_id,
+    shop_name,
   };
 }
 
