@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ProcessedProduct } from "@/types/aliexpress";
-import { categories } from "@/data/categoriesData";
 import CategoryCard from "@/components/CategoryCard";
 import CarouselButton from "@/components/CarouselButton";
 
@@ -24,33 +23,23 @@ interface CategorySectionProps {
   sideImage: SideImage;
   sideImageRight?: boolean;
   buttonSide?: "left" | "right";
-  product?: AliExpressResponse;
+  hotProductsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
-
-// AliExpress category IDs for different product categories
-const CATEGORY_MAPPING = [
-  { id: 7, name: "Electronics", discount: "Up to 30% off" },
-  { id: 15, name: "Home & Garden", discount: "Up to 25% off" },
-  { id: 30, name: "Health & Beauty", discount: "Up to 20% off" },
-  { id: 66, name: "Sports & Entertainment", discount: "Up to 35% off" },
-  { id: 13, name: "Fashion", discount: "Up to 40% off" },
-  { id: 1420, name: "Automobiles", discount: "Up to 25% off" },
-  { id: 5, name: "Phones & Telecommunications", discount: "Up to 30% off" },
-  { id: 44, name: "Jewelry & Accessories", discount: "Up to 50% off" },
-];
 
 export default function CategorySection({
   sideImage,
   sideImageRight = false,
   buttonSide = "right",
-  product,
+  hotProductsData,
   isLoading = false,
   error = null,
 }: CategorySectionProps) {
   const [visibleCount, setVisibleCount] = useState(4);
-  const [carouselItems, setCarouselItems] = useState(categories);
+  const [carouselItems, setCarouselItems] = useState(
+    hotProductsData?.products || []
+  );
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,9 +61,16 @@ export default function CategorySection({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // Update carouselItems when product changes
+  useEffect(() => {
+    setCarouselItems(hotProductsData?.products || []);
+  }, [hotProductsData]);
+
   const scroll = (dir: "left" | "right") => {
     setCarouselItems((prev) =>
-      dir === "right"
+      prev.length === 0
+        ? prev
+        : dir === "right"
         ? [...prev.slice(1), prev[0]]
         : [prev[prev.length - 1], ...prev.slice(0, -1)]
     );
@@ -102,17 +98,6 @@ export default function CategorySection({
           </div>
           {/* Carousel */}
           <div className="w-full relative">
-            <h2 className="text-2xl font-bold mb-4">
-              Categories
-              {isLoading && (
-                <span className="text-sm text-gray-500 ml-2">(Loading...)</span>
-              )}
-              {error && (
-                <span className="text-sm text-red-500 ml-2">
-                  (Using fallback data)
-                </span>
-              )}
-            </h2>
             <div className="relative w-full">
               {buttonSide === "left" && (
                 <CarouselButton
@@ -130,7 +115,14 @@ export default function CategorySection({
                       minWidth: 0,
                     }}
                   >
-                    <CategoryCard {...cat} />
+                    <CategoryCard
+                      title={cat.title}
+                      discount={
+                        cat.discount ? `${cat.discount} off` : undefined
+                      }
+                      imageUrl={cat.image_url}
+                      linkUrl={`https://www.aliexpress.com/item/${cat.product_id}.html`}
+                    />
                   </div>
                 ))}
               </div>

@@ -166,6 +166,7 @@ export function useAliExpressHotProducts(
           throw new Error(errorData.error || "Failed to fetch hot products");
         }
         const fetchedData = await response.json();
+        console.log("Fetched hot products:", fetchedData);
 
         return fetchedData;
       } catch (error) {

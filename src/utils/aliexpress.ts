@@ -110,13 +110,8 @@ function processProducts(products: AliExpressProduct[]): string[] {
   const shuffledProducts = shuffleArray(products);
   const processedProducts: string[] = [];
 
-  let count = 0;
+  // Remove the limit of 10 products
   for (const product of shuffledProducts) {
-    if (count >= 10) break;
-
-    // Skip products with no sales volume
-    if (product.lastest_volume === 0) continue;
-
     let smallImageUrls = "";
     const psi = product.product_small_image_urls as unknown;
     if (Array.isArray(psi)) {
@@ -146,7 +141,6 @@ function processProducts(products: AliExpressProduct[]): string[] {
     ].join("~");
 
     processedProducts.push(formattedProduct);
-    count++;
   }
 
   return processedProducts;
