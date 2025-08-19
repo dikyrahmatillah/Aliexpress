@@ -8,7 +8,6 @@ import FeaturedSection from "@/sections/FeaturedSection";
 import CategorySection from "../sections/CategorySection";
 import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
 import Newsletter from "@/components/Newsletter";
-import Link from "next/link";
 
 export default function Home() {
   // Fetch hot products data once for the entire page

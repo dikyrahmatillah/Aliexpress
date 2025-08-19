@@ -434,6 +434,62 @@ export function parseProductString(productString: string): ProcessedProduct {
 }
 
 /**
+ * Fetches category information from AliExpress API
+ */
+export async function getAliExpressCategories({
+  appSignature = ALIEXPRESS_CONFIG.APP_SIGNATURE,
+} = {}): Promise<{
+  aliexpress_affiliate_category_get_response?: {
+    resp_result?: {
+      result?: {
+        categories?: {
+          category?: Array<{
+            category_id: number;
+            category_name: string;
+            parent_category_id?: number;
+          }>;
+        };
+      };
+    };
+  };
+}> {
+  // Build API parameters
+  const params: Record<string, string | number> = {
+    app_signature: appSignature,
+    app_key: ALIEXPRESS_CONFIG.APP_KEY,
+    v: "2.0",
+    format: "json",
+    sign_method: "md5",
+    method: "aliexpress.affiliate.category.get",
+    timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+    partner_id: "top-sdk-php-20180326",
+  };
+
+  // Generate signature
+  params.sign = generateSignature(
+    params as ApiParams,
+    ALIEXPRESS_CONFIG.SECRET
+  );
+
+  // Build request URL
+  const requestUrl = buildRequestUrl(params);
+
+  try {
+    const response = await fetch(requestUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    console.log("Categories API Response:", data);
+
+    return data;
+  } catch (error) {
+    console.error("Error fetching AliExpress categories:", error);
+    throw error;
+  }
+}
+
+/**
  * Alternative function that returns parsed products directly
  */
 export async function getAliExpressProductsParsed(
