@@ -1,4 +1,4 @@
-import { HeroContent } from "@/app/sections/HeroSection";
+import { HeroContent } from "@/sections/HeroSection";
 
 export const heroContent: HeroContent[] = [
   {

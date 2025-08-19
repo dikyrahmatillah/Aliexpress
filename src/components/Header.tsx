@@ -26,7 +26,7 @@ export default function Header() {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="bg-[var(--accent)] text-white py-3 text-sm flex items-center justify-center ">
+      <div className="bg-[var(--accent)] text-white py-2 text-sm flex items-center justify-center ">
         <button
           className="absolute left-2/6 text-white text-lg"
           onClick={prevAnnouncement}

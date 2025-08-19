@@ -44,7 +44,7 @@ function FeaturedProductCard({
       }}
     >
       <Link
-        href={`https://www.aliexpress.com/item/${product.product_id}.html`}
+        href={`/item/${product.product_id}`}
         className="group block"
         target="_blank"
         rel="noopener noreferrer"

@@ -20,7 +20,7 @@ interface AliExpressResponse {
 }
 
 interface CategorySectionProps {
-  sideImage: SideImage;
+  sideImage?: SideImage;
   sideImageRight?: boolean;
   buttonSide?: "left" | "right";
   hotProductsData?: AliExpressResponse;
@@ -85,19 +85,21 @@ export default function CategorySection({
           }`}
         >
           {/* Side Image */}
-          <div className="hidden md:block w-1/5 flex-shrink-0">
-            <Link href={sideImage.link}>
-              <Image
-                src={sideImage.url}
-                alt={sideImage.alt}
-                width={480}
-                height={480}
-                className="object-cover mx-auto"
-              />
-            </Link>
-          </div>
+          {sideImage && (
+            <div className="hidden md:block w-1/5 flex-shrink-0">
+              <Link href={sideImage.link}>
+                <Image
+                  src={sideImage.url}
+                  alt={sideImage.alt}
+                  width={480}
+                  height={480}
+                  className="object-cover mx-auto"
+                />
+              </Link>
+            </div>
+          )}
           {/* Carousel */}
-          <div className="w-full relative">
+          <div className={`relative ${sideImage ? "w-full" : "w-full"}`}>
             <div className="relative w-full">
               {buttonSide === "left" && (
                 <CarouselButton
@@ -121,7 +123,7 @@ export default function CategorySection({
                         cat.discount ? `${cat.discount} off` : undefined
                       }
                       imageUrl={cat.image_url}
-                      linkUrl={`https://www.aliexpress.com/item/${cat.product_id}.html`}
+                      linkUrl={`/item/${cat.product_id}`}
                     />
                   </div>
                 ))}

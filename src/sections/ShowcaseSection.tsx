@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ProcessedProduct } from "@/types/aliexpress";
-import StarRating from "./StarRating";
+import StarRating from "../components/StarRating";
 
 interface AliExpressResponse {
   total_record_count: number;
@@ -27,7 +27,7 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
 
   return (
     <Link
-      href={`https://www.aliexpress.com/item/${product.product_id}.html`}
+      href={`/item/${product.product_id}`}
       className="group"
       target="_blank"
       rel="noopener noreferrer"

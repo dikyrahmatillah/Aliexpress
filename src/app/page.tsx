@@ -1,13 +1,14 @@
 "use client";
 
-import HeroSection from "@/app/sections/HeroSection";
-import AboutSection from "@/app/sections/AboutSection";
-import ShowcaseSection from "@/components/ShowcaseSection";
+import HeroSection from "@/sections/HeroSection";
+import AboutSection from "@/sections/AboutSection";
+import ShowcaseSection from "@/sections/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
-import FeaturedSection from "@/app/sections/FeaturedSection";
-import CategorySection from "./sections/CategorySection";
+import FeaturedSection from "@/sections/FeaturedSection";
+import CategorySection from "../sections/CategorySection";
 import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
 import Newsletter from "@/components/Newsletter";
+import Link from "next/link";
 
 export default function Home() {
   // Fetch hot products data once for the entire page
@@ -56,49 +57,47 @@ export default function Home() {
     : undefined;
 
   return (
-    <>
-      <main>
-        <HeroSection content={heroContent} />
-        <CategorySection
-          hotProductsData={categoryProducts}
-          isLoading={isLoading}
-          error={error}
-          sideImage={{
-            url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-            link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
-            alt: "Nature left",
-          }}
-        />
-        <ShowcaseSection
-          hotProductsData={showcaseProducts1}
-          isLoading={isLoading}
-          error={error}
-        />
-        <FeaturedSection
-          hotProductsData={featuredProducts}
-          isLoading={isLoading}
-          error={error}
-        />
-        <ShowcaseSection
-          hotProductsData={showcaseProducts2}
-          isLoading={isLoading}
-          error={error}
-        />
-        <CategorySection
-          hotProductsData={categoryProducts2}
-          buttonSide="left"
-          sideImageRight={true}
-          isLoading={isLoading}
-          error={error}
-          sideImage={{
-            url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-            link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
-            alt: "Nature left",
-          }}
-        />
-        <AboutSection title="About Us" />
-        <Newsletter />
-      </main>
-    </>
+    <main>
+      <HeroSection content={heroContent} />
+      <CategorySection
+        hotProductsData={categoryProducts}
+        isLoading={isLoading}
+        error={error}
+        sideImage={{
+          url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+          link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
+          alt: "Nature left",
+        }}
+      />
+      <ShowcaseSection
+        hotProductsData={showcaseProducts1}
+        isLoading={isLoading}
+        error={error}
+      />
+      <FeaturedSection
+        hotProductsData={featuredProducts}
+        isLoading={isLoading}
+        error={error}
+      />
+      <ShowcaseSection
+        hotProductsData={showcaseProducts2}
+        isLoading={isLoading}
+        error={error}
+      />
+      <CategorySection
+        hotProductsData={categoryProducts2}
+        buttonSide="left"
+        sideImageRight={true}
+        isLoading={isLoading}
+        error={error}
+        sideImage={{
+          url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
+          link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
+          alt: "Nature left",
+        }}
+      />
+      <AboutSection title="About Us" />
+      <Newsletter />
+    </main>
   );
 }
