@@ -8,9 +8,7 @@ export default function CarouselButton({
   return (
     <button
       aria-label={`Scroll ${direction}`}
-      className={`absolute ${
-        direction === "left" ? "left-0" : "right-0"
-      } top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block`}
+      className="bg-white bg-opacity-75 border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block"
       onClick={onClick}
       type="button"
     >

@@ -219,14 +219,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Promotional Banner */}
-      <div className="bg-blue-600 text-white text-center py-2 text-sm">
-        <p>
-          Free shipping on orders over $50 • Shop {categoryName.toLowerCase()}{" "}
-          with confidence
-        </p>
-      </div>
-
       {/* Breadcrumb */}
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
@@ -248,7 +240,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               {categoryName}
             </h1>
             <p className="text-gray-600">{categoryDescription}</p>
-            <p className="text-sm text-gray-500 mt-1">Category ID: {id}</p>
           </div>
 
           {/* Results count and view toggle */}
@@ -421,24 +412,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             )}
           </div>
         </div>
-      </div>
-
-      {/* Recently Viewed Section - Similar to Koala */}
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">
-          Recently viewed
-        </h2>
-
-        {filteredProducts.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {filteredProducts.slice(0, 4).map((product) => (
-              <ProductCard
-                key={`recent-${product.product_id}`}
-                product={product}
-              />
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Newsletter Section */}

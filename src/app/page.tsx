@@ -5,7 +5,7 @@ import AboutSection from "@/sections/AboutSection";
 import ShowcaseSection from "@/sections/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
-import CategorySection from "../sections/CategorySection";
+import RelatedSection from "@/sections/RelatedSection";
 import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
 import Newsletter from "@/components/Newsletter";
 
@@ -58,7 +58,7 @@ export default function Home() {
   return (
     <main>
       <HeroSection content={heroContent} />
-      <CategorySection
+      <RelatedSection
         hotProductsData={categoryProducts}
         isLoading={isLoading}
         error={error}
@@ -83,7 +83,7 @@ export default function Home() {
         isLoading={isLoading}
         error={error}
       />
-      <CategorySection
+      <RelatedSection
         hotProductsData={categoryProducts2}
         buttonSide="left"
         sideImageRight={true}

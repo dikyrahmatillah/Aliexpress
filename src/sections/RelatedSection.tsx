@@ -22,13 +22,13 @@ interface AliExpressResponse {
 interface CategorySectionProps {
   sideImage?: SideImage;
   sideImageRight?: boolean;
-  buttonSide?: "left" | "right";
+  buttonSide?: "left" | "right" | "both";
   hotProductsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
 
-export default function CategorySection({
+export default function RelatedSection({
   sideImage,
   sideImageRight = false,
   buttonSide = "right",
@@ -101,12 +101,13 @@ export default function CategorySection({
           {/* Carousel */}
           <div className={`relative ${sideImage ? "w-full" : "w-full"}`}>
             <div className="relative w-full">
-              {buttonSide === "left" && (
-                <CarouselButton
-                  direction="left"
-                  onClick={() => scroll("left")}
-                />
-              )}
+              {buttonSide === "left" ||
+                (buttonSide === "both" && (
+                  <CarouselButton
+                    direction="left"
+                    onClick={() => scroll("left")}
+                  />
+                ))}
               <div className="flex gap-4 pb-2 w-full justify-center">
                 {carouselItems.slice(0, visibleCount).map((cat, idx) => (
                   <div
@@ -128,12 +129,13 @@ export default function CategorySection({
                   </div>
                 ))}
               </div>
-              {buttonSide === "right" && (
-                <CarouselButton
-                  direction="right"
-                  onClick={() => scroll("right")}
-                />
-              )}
+              {buttonSide === "right" ||
+                (buttonSide === "both" && (
+                  <CarouselButton
+                    direction="right"
+                    onClick={() => scroll("right")}
+                  />
+                ))}
             </div>
           </div>
         </div>

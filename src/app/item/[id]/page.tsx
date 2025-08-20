@@ -9,7 +9,7 @@ import {
   useAliExpressProductDetail,
   useAliExpressRelatedProducts,
 } from "@/hooks/useAliexpress";
-import CategorySection from "@/sections/CategorySection";
+import RelatedSection from "@/sections/RelatedSection";
 
 // Define interfaces for TypeScript typings
 interface SkuProperty {
@@ -295,7 +295,7 @@ export default function ItemDetailPage({
                 />
               </svg>
               <Link
-                href={`/?category=${productData.first_level_category_id}`}
+                href={`/category/${productData.first_level_category_id}`}
                 className="ml-2 text-gray-500 hover:text-gray-700"
               >
                 {productData.first_level_category_name || "Category"}
@@ -317,7 +317,7 @@ export default function ItemDetailPage({
                   />
                 </svg>
                 <Link
-                  href={`/?category=${productData.second_level_category_id}`}
+                  href={`/category/${productData.second_level_category_id}`}
                   className="ml-2 text-gray-500 hover:text-gray-700"
                 >
                   {productData.second_level_category_name}
@@ -452,9 +452,6 @@ export default function ItemDetailPage({
                   Save {discountPercent}% off retail price
                 </p>
               )}
-              <p className="text-sm text-gray-600">
-                Commission Rate: {productData.commission_rate}%
-              </p>
             </div>
 
             {/* Variants Selection */}
@@ -513,9 +510,6 @@ export default function ItemDetailPage({
 
             {/* Add to Cart & Buy Now buttons */}
             <div className="grid grid-cols-2 gap-4">
-              <button className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-700 transition-colors">
-                ADD TO CART
-              </button>
               <Link
                 href={productData.promotion_link}
                 target="_blank"
@@ -562,79 +556,16 @@ export default function ItemDetailPage({
           </div>
         </div>
 
-        {/* Product Description */}
-        <div className="mt-12 border-t border-gray-200 pt-8">
-          <h2 className="text-2xl font-bold mb-4">Product Description</h2>
-          <div className="prose prose-sm max-w-none">
-            <div
-              dangerouslySetInnerHTML={{
-                __html:
-                  productData.product_description ||
-                  "No description available.",
-              }}
-            />
-          </div>
-        </div>
-
         {/* Related Products Showcase Section */}
         {relatedProducts && relatedProducts.products.length > 0 && (
           <div className="mt-12 border-t border-gray-200 pt-8">
             <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-            <CategorySection
+            <RelatedSection
               hotProductsData={relatedProducts}
-              buttonSide="right"
+              buttonSide="both"
               sideImageRight={false}
               isLoading={isLoadingRelated}
               error={relatedError}
-              // Conditionally show sideImage based on category
-              sideImage={
-                // Hide side image for certain categories (example: electronics, gadgets)
-                productData.first_level_category_name
-                  ?.toLowerCase()
-                  .includes("electronics") ||
-                productData.first_level_category_name
-                  ?.toLowerCase()
-                  .includes("gadgets") ||
-                productData.first_level_category_name
-                  ?.toLowerCase()
-                  .includes("computer") ||
-                productData.first_level_category_name
-                  ?.toLowerCase()
-                  .includes("phone") ||
-                productData.first_level_category_name
-                  ?.toLowerCase()
-                  .includes("digital")
-                  ? undefined
-                  : {
-                      url: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=80",
-                      link: "/",
-                      alt: "Related products",
-                    }
-              }
-            />
-          </div>
-        )}
-
-        {/* More Products Showcase Section with Left Navigation */}
-        {relatedProducts && relatedProducts.products.length > 5 && (
-          <div className="mt-12 border-t border-gray-200 pt-8">
-            <h2 className="text-2xl font-bold mb-6">
-              More in {productData.first_level_category_name}
-            </h2>
-            <CategorySection
-              hotProductsData={{
-                ...relatedProducts,
-                products: relatedProducts.products.slice(5), // Show different products
-              }}
-              buttonSide="left"
-              sideImageRight={true}
-              isLoading={isLoadingRelated}
-              error={relatedError}
-              sideImage={{
-                url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-                link: `/category/${productData.first_level_category_id}`,
-                alt: `More ${productData.first_level_category_name} products`,
-              }}
             />
           </div>
         )}
