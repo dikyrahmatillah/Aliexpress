@@ -138,6 +138,7 @@ function processProducts(products: AliExpressProduct[]): string[] {
       product.product_video_url,
       product.sku_id,
       product.shop_name,
+      product.evaluate_rate,
     ].join("~");
 
     processedProducts.push(formattedProduct);
@@ -206,6 +207,7 @@ export async function getAliExpressHotProducts({
       const products =
         data.aliexpress_affiliate_hotproduct_download_response.resp_result
           .result.products.product;
+
       const processedProducts = processProducts(products);
 
       return {
@@ -407,7 +409,17 @@ export function parseProductString(productString: string): ProcessedProduct {
     product_video_url,
     sku_id,
     shop_name,
+    evaluate_rate,
   ] = productString.split("~");
+
+  // Convert "100%" to 5, "80%" to 4, etc.
+  let rating = 0;
+  if (evaluate_rate && evaluate_rate.includes("%")) {
+    const percent = parseFloat(evaluate_rate.replace("%", ""));
+    rating = Math.round((percent / 20) * 10) / 10; // one decimal
+  } else {
+    rating = parseFloat(evaluate_rate) || 0;
+  }
 
   return {
     product_id,
@@ -427,6 +439,7 @@ export function parseProductString(productString: string): ProcessedProduct {
     product_video_url,
     sku_id,
     shop_name,
+    evaluate_rate: rating,
   };
 }
 

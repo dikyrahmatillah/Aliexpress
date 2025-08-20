@@ -14,6 +14,7 @@ export interface AliExpressProduct {
   product_video_url: string;
   sku_id: string;
   shop_name: string;
+  evaluate_rate: string;
 }
 
 export interface AliExpressProductResponse {
@@ -46,6 +47,7 @@ export interface ProcessedProduct {
   product_video_url: string;
   sku_id: string;
   shop_name: string;
+  evaluate_rate: number;
 }
 
 export interface ProductQueryResult {

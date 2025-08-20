@@ -63,8 +63,8 @@ export default function Home() {
         isLoading={isLoading}
         error={error}
         sideImage={{
-          url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-          link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
+          url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
+          link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
           alt: "Nature left",
         }}
       />
@@ -90,8 +90,8 @@ export default function Home() {
         isLoading={isLoading}
         error={error}
         sideImage={{
-          url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-          link: "https://unsplash.com/photos/1506744038136-46273834b3fb",
+          url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
+          link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
           alt: "Nature left",
         }}
       />

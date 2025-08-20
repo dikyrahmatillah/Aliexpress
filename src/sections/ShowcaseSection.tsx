@@ -52,7 +52,10 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
         <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
           {product.title}
         </h3>
-        <StarRating rating={4.5} reviewCount={product.volume} />
+        <StarRating
+          rating={product.evaluate_rate}
+          reviewCount={product.volume}
+        />
         <p className="text-sm text-gray-600">
           {product.first_level_category_name}
         </p>

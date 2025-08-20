@@ -21,18 +21,6 @@ const sortOptions = [
   { value: "NEWEST", label: "Newest Arrivals" },
 ];
 
-// Color filter options (simulated)
-const colorOptions = [
-  { name: "All Colors", value: "all", color: "bg-gray-200" },
-  { name: "Black", value: "black", color: "bg-black" },
-  { name: "White", value: "white", color: "bg-white border border-gray-300" },
-  { name: "Blue", value: "blue", color: "bg-blue-500" },
-  { name: "Red", value: "red", color: "bg-red-500" },
-  { name: "Green", value: "green", color: "bg-green-500" },
-  { name: "Gray", value: "gray", color: "bg-gray-500" },
-  { name: "Brown", value: "brown", color: "bg-amber-800" },
-];
-
 // Price ranges
 const priceRanges = [
   { label: "All Prices", min: 0, max: 10000 },
@@ -88,7 +76,10 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
           </h3>
 
           <div className="flex items-center space-x-1">
-            <StarRating rating={4.5} reviewCount={product.volume} />
+            <StarRating
+              rating={product.evaluate_rate}
+              reviewCount={product.volume}
+            />
           </div>
 
           <div className="flex items-center space-x-2">
@@ -119,7 +110,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
 
   // Filter and sort states
   const [selectedSort, setSelectedSort] = useState("LAST_VOLUME_DESC");
-  const [selectedColor, setSelectedColor] = useState("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState(priceRanges[0]);
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
@@ -325,29 +315,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                         {range.label}
                       </span>
                     </label>
-                  ))}
-                </div>
-              </div>
-
-              {/* Color Filter */}
-              <div>
-                <h3 className="text-sm font-medium text-gray-900 mb-3">
-                  Color
-                </h3>
-                <div className="grid grid-cols-4 gap-2">
-                  {colorOptions.map((color) => (
-                    <button
-                      key={color.value}
-                      onClick={() => setSelectedColor(color.value)}
-                      className={`relative w-8 h-8 rounded-full ${
-                        color.color
-                      } ${
-                        selectedColor === color.value
-                          ? "ring-2 ring-blue-500 ring-offset-2"
-                          : "hover:ring-2 hover:ring-gray-300 hover:ring-offset-1"
-                      }`}
-                      title={color.name}
-                    />
                   ))}
                 </div>
               </div>
