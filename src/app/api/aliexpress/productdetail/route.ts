@@ -155,10 +155,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Log the raw product details for debugging
-    console.log(
-      "Product details fetched successfully:",
-      JSON.stringify(productDetails, null, 2)
-    );
+    // console.log(
+    //   "Product details fetched successfully:",
+    //   JSON.stringify(productDetails, null, 2)
+    // );
 
     // Process and return the product details as-is to be processed on the client side
     return NextResponse.json({

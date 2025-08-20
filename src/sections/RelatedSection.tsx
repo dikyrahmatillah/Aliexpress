@@ -33,8 +33,6 @@ export default function RelatedSection({
   sideImageRight = false,
   buttonSide = "right",
   hotProductsData,
-  isLoading = false,
-  error = null,
 }: CategorySectionProps) {
   const [visibleCount, setVisibleCount] = useState(4);
   const [carouselItems, setCarouselItems] = useState(
@@ -101,13 +99,16 @@ export default function RelatedSection({
           {/* Carousel */}
           <div className={`relative ${sideImage ? "w-full" : "w-full"}`}>
             <div className="relative w-full">
-              {buttonSide === "left" ||
-                (buttonSide === "both" && (
+              {/* Left Button - Centered vertically */}
+              {(buttonSide === "left" || buttonSide === "both") && (
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
                   <CarouselButton
                     direction="left"
                     onClick={() => scroll("left")}
                   />
-                ))}
+                </div>
+              )}
+
               <div className="flex gap-4 pb-2 w-full justify-center">
                 {carouselItems.slice(0, visibleCount).map((cat, idx) => (
                   <div
@@ -129,13 +130,16 @@ export default function RelatedSection({
                   </div>
                 ))}
               </div>
-              {buttonSide === "right" ||
-                (buttonSide === "both" && (
+
+              {/* Right Button - Centered vertically */}
+              {(buttonSide === "right" || buttonSide === "both") && (
+                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
                   <CarouselButton
                     direction="right"
                     onClick={() => scroll("right")}
                   />
-                ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

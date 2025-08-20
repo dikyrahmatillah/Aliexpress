@@ -1,6 +1,7 @@
 "use client";
 
 import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
+import Image from "next/image";
 
 export default function TestPage() {
   const { data, isLoading, error } = useAliExpressHotProducts(0, {
@@ -20,7 +21,7 @@ export default function TestPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {data.products.slice(0, 6).map((product) => (
               <div key={product.product_id} className="border p-4 rounded-lg">
-                <img
+                <Image
                   src={product.image_url}
                   alt={product.title}
                   className="w-full h-48 object-cover mb-2"

@@ -6,7 +6,6 @@ import {
   useAliExpressProducts,
   useAliExpressProductsMutation,
   formatAliExpressProducts,
-  useAliExpressSearch,
 } from "@/hooks/useAliexpress";
 
 export default function AliExpressProductDemo() {

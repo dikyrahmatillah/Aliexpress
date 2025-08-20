@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ProcessedProduct } from "@/types/aliexpress";
@@ -99,9 +99,11 @@ export default function FeaturedSection({
   const shouldUseFallback = useFallback || (error && !isLoading);
 
   // Use the passed data or fallback to brands
-  const allProducts = shouldUseFallback
-    ? []
-    : hotProductsData?.products?.slice(0, 9) || [];
+  const allProducts = useMemo(() => {
+    return shouldUseFallback
+      ? []
+      : hotProductsData?.products?.slice(0, 9) || [];
+  }, [shouldUseFallback, hotProductsData]);
   const fallbackItems = brands;
 
   useEffect(() => {
@@ -121,7 +123,7 @@ export default function FeaturedSection({
     if (startIdx > itemsToUse.length - visibleCount && itemsToUse.length > 0) {
       setStartIdx(Math.max(0, itemsToUse.length - visibleCount));
     }
-  }, [visibleCount, startIdx, shouldUseFallback]);
+  }, [shouldUseFallback, allProducts, fallbackItems, visibleCount, startIdx]);
 
   const scroll = (dir: "left" | "right") => {
     const itemsToUse = shouldUseFallback ? fallbackItems : allProducts;

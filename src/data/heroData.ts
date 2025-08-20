@@ -1,4 +1,4 @@
-import { HeroContent } from "@/sections/HeroSection";
+import type { HeroContent } from "@/types/hero";
 
 export const heroContent: HeroContent[] = [
   {

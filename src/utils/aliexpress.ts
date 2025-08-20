@@ -197,7 +197,6 @@ export async function getAliExpressHotProducts({
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("API Response:", data);
 
     // Process the hot products response similar to regular products
     if (
@@ -372,8 +371,6 @@ export async function getAliExpressProducts(
       throw new Error("No products found in API response");
     }
 
-    // console.log("API Response:", productData.products.product[0]);
-
     // Process and return results
     const result: ProductQueryResult = {
       total_record_count: productData.total_record_count,
@@ -480,7 +477,6 @@ export async function getAliExpressCategories({
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    console.log("Categories API Response:", data);
 
     return data;
   } catch (error) {
