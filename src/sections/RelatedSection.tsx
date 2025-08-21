@@ -125,7 +125,7 @@ export default function RelatedSection({
                         cat.discount ? `${cat.discount} off` : undefined
                       }
                       imageUrl={cat.image_url}
-                      linkUrl={`/item/${cat.product_id}`}
+                      linkUrl={`/product/${cat.product_id}`}
                     />
                   </div>
                 ))}

@@ -27,7 +27,7 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
 
   return (
     <Link
-      href={`/item/${product.product_id}`}
+      href={`/product/${product.product_id}`}
       className="group"
       target="_blank"
       rel="noopener noreferrer"

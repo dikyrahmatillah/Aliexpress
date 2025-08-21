@@ -51,7 +51,7 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
       : 0;
 
   return (
-    <Link href={`/item/${product.product_id}`} className="group block">
+    <Link href={`/product/${product.product_id}`} className="group block">
       <div className="relative bg-white rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
         {/* Product Image */}
         <div className="relative aspect-square bg-gray-50">

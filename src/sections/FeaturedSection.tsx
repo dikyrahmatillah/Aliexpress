@@ -44,7 +44,7 @@ function FeaturedProductCard({
       }}
     >
       <Link
-        href={`/item/${product.product_id}`}
+        href={`/product/${product.product_id}`}
         className="group block"
         target="_blank"
         rel="noopener noreferrer"

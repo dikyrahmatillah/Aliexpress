@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -14,7 +14,8 @@ const announcements = [
 
 export default function Header() {
   const [current, setCurrent] = useState(0);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
@@ -34,6 +35,22 @@ export default function Header() {
       setIsSearchActive(false);
       setSearchQuery("");
     }
+  };
+
+  const clearCloseTimer = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+  };
+
+  const startCloseTimer = () => {
+    clearCloseTimer();
+    // small delay to allow pointer movement between parent and submenu
+    closeTimerRef.current = window.setTimeout(() => {
+      setOpenDropdown(null);
+      closeTimerRef.current = null;
+    }, 200);
   };
 
   return (
@@ -69,58 +86,201 @@ export default function Header() {
 
               {/* Navigation */}
               <nav className="hidden md:flex space-x-6">
-                <Link
-                  href="/collections/mattresses"
-                  className="hover:underline bg-amber-500"
+                {/* Hardware */}
+                <div
+                  className="relative"
+                  onMouseLeave={() => startCloseTimer()}
+                  onMouseEnter={() => {
+                    clearCloseTimer();
+                    setOpenDropdown("hardware");
+                  }}
                 >
-                  Shop Sale
-                </Link>
-                <Link href="/collections/sofa-beds" className="hover:underline">
-                  Electronics
-                </Link>
-                <Link href="/collections/bed-bases" className="hover:underline">
-                  Clothing
-                </Link>
+                  <button
+                    className="hover:underline"
+                    onClick={() =>
+                      setOpenDropdown(
+                        openDropdown === "hardware" ? null : "hardware"
+                      )
+                    }
+                  >
+                    Hardware
+                  </button>
+                  {openDropdown === "hardware" && (
+                    <div
+                      className="absolute mt-2 w-56 p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2"
+                      onMouseEnter={() => clearCloseTimer()}
+                      onMouseLeave={() => startCloseTimer()}
+                    >
+                      <Link
+                        href="/collections/automobiles-motorcycles"
+                        className="block"
+                      >
+                        Automobiles & Motorcycles
+                      </Link>
+                      <Link href="/collections/tools" className="block">
+                        Tools
+                      </Link>
+                      <Link
+                        href="/collections/home-appliances"
+                        className="block"
+                      >
+                        Home Appliances
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Home & Living (includes Leisure subcategories) */}
+                <div
+                  className="relative"
+                  onMouseLeave={() => startCloseTimer()}
+                  onMouseEnter={() => {
+                    clearCloseTimer();
+                    setOpenDropdown("home");
+                  }}
+                >
+                  <button
+                    className="hover:underline"
+                    onClick={() =>
+                      setOpenDropdown(openDropdown === "home" ? null : "home")
+                    }
+                  >
+                    Home & Living
+                  </button>
+                  {openDropdown === "home" && (
+                    <div
+                      className="absolute mt-2 w-64 p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2"
+                      onMouseEnter={() => clearCloseTimer()}
+                      onMouseLeave={() => startCloseTimer()}
+                    >
+                      <Link href="/collections/home-garden" className="block">
+                        Home & Garden
+                      </Link>
+                      <Link
+                        href="/collections/lights-lighting"
+                        className="block"
+                      >
+                        Lights & Lighting
+                      </Link>
+                      <Link
+                        href="/collections/sports-entertainment"
+                        className="block"
+                      >
+                        Sports & Entertainment
+                      </Link>
+                      <Link href="/collections/toys-hobbies" className="block">
+                        Toys & Hobbies
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Electronics */}
+                <div
+                  className="relative"
+                  onMouseLeave={() => startCloseTimer()}
+                  onMouseEnter={() => {
+                    clearCloseTimer();
+                    setOpenDropdown("electronics");
+                  }}
+                >
+                  <button
+                    className="hover:underline"
+                    onClick={() =>
+                      setOpenDropdown(
+                        openDropdown === "electronics" ? null : "electronics"
+                      )
+                    }
+                  >
+                    Electronics
+                  </button>
+                  {openDropdown === "electronics" && (
+                    <div
+                      className="absolute mt-2 w-64 p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2"
+                      onMouseEnter={() => clearCloseTimer()}
+                      onMouseLeave={() => startCloseTimer()}
+                    >
+                      <Link
+                        href="/collections/computer-office"
+                        className="block"
+                      >
+                        Computer & Office
+                      </Link>
+                      <Link
+                        href="/collections/consumer-electronics"
+                        className="block"
+                      >
+                        Consumer Electronics
+                      </Link>
+                      <Link
+                        href="/collections/phones-telecommunications"
+                        className="block"
+                      >
+                        Phones & Telecommunications
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Fashion */}
+                <div
+                  className="relative"
+                  onMouseLeave={() => startCloseTimer()}
+                  onMouseEnter={() => {
+                    clearCloseTimer();
+                    setOpenDropdown("fashion");
+                  }}
+                >
+                  <button
+                    className="hover:underline"
+                    onClick={() =>
+                      setOpenDropdown(
+                        openDropdown === "fashion" ? null : "fashion"
+                      )
+                    }
+                  >
+                    Fashion
+                  </button>
+                  {openDropdown === "fashion" && (
+                    <div
+                      className="absolute mt-2 w-64 p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2"
+                      onMouseEnter={() => clearCloseTimer()}
+                      onMouseLeave={() => startCloseTimer()}
+                    >
+                      <Link href="/collections/mens-clothing" className="block">
+                        Men’s Clothing
+                      </Link>
+                      <Link
+                        href="/collections/womens-clothing"
+                        className="block"
+                      >
+                        Women’s Clothing
+                      </Link>
+                      <Link href="/collections/shoes" className="block">
+                        Shoes
+                      </Link>
+                      <Link
+                        href="/collections/jewelry-accessories"
+                        className="block"
+                      >
+                        Jewelry & Accessories
+                      </Link>
+                      <Link href="/collections/watches" className="block">
+                        Watches
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Beauty & Health (single link) */}
                 <Link
-                  href="/collections/sofas-couches"
+                  href="/collections/beauty-health"
                   className="hover:underline"
                 >
-                  Accessories
+                  Beauty & Health
                 </Link>
-                <div>
-                  {/* Dropdown for More */}
-                  <div className="relative">
-                    <button
-                      className="hover:underline"
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      onBlur={() => setDropdownOpen(false)}
-                    >
-                      More
-                    </button>
-                    {dropdownOpen && (
-                      <div className="absolute -left-4 mt-2 w-64 p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2">
-                        <Link
-                          href="/collections/bedroom/accessories"
-                          className="block"
-                        >
-                          Home & Garden
-                        </Link>
-                        <Link
-                          href="/collections/bedroom/accessories"
-                          className="block"
-                        >
-                          Home Improvement & Lighting
-                        </Link>
-                        <Link
-                          href="/collections/bedroom/accessories"
-                          className="block"
-                        >
-                          Home Appliances
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                </div>
+
+                {/* removed Leisure & Hobbies as a top-level category (merged into Home & Living) */}
               </nav>
 
               {/* User Actions */}
