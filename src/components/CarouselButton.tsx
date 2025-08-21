@@ -1,16 +1,26 @@
 export default function CarouselButton({
   direction,
   onClick,
+  disabled = false,
+  className = "",
+  showOnMobile = true,
 }: {
   direction: "left" | "right";
   onClick: () => void;
+  disabled?: boolean;
+  className?: string;
+  showOnMobile?: boolean;
 }) {
+  const visibility = showOnMobile ? "block" : "hidden md:block";
+  const base = `bg-white bg-opacity-75 border border-gray-300 rounded-full shadow p-2 transition ${visibility}`;
   return (
     <button
       aria-label={`Scroll ${direction}`}
-      className="bg-white bg-opacity-75 border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block"
+      className={`${base} ${className}`}
       onClick={onClick}
       type="button"
+      disabled={disabled}
+      style={{ opacity: disabled ? 0.5 : 1 }}
     >
       <svg
         width="24"

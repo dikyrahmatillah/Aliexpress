@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { HeroContent } from "@/types/hero";
+import CarouselButton from "@/components/CarouselButton";
 
 interface HeroSectionProps {
   content: HeroContent[];
@@ -18,20 +19,12 @@ function CarouselControls({
 }) {
   return (
     <>
-      <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/40 hover:bg-white/70 text-2xl rounded-full p-2"
-        onClick={onPrev}
-        aria-label="Previous slide"
-      >
-        &#60;
-      </button>
-      <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/40 hover:bg-white/70 text-2xl rounded-full p-2"
-        onClick={onNext}
-        aria-label="Next slide"
-      >
-        &#62;
-      </button>
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+        <CarouselButton direction="left" onClick={onPrev} />
+      </div>
+      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10">
+        <CarouselButton direction="right" onClick={onNext} />
+      </div>
     </>
   );
 }

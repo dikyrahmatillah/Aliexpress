@@ -295,7 +295,7 @@ export default function ItemDetailPage({
                 />
               </svg>
               <Link
-                href={`/category/${productData.first_level_category_id}`}
+                href={`/collections/${productData.first_level_category_id}`}
                 className="ml-2 text-gray-500 hover:text-gray-700"
               >
                 {productData.first_level_category_name || "Category"}

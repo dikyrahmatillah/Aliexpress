@@ -22,11 +22,11 @@ const NAV_ITEMS: NavItem[] = [
     width: "w-56",
     links: [
       {
-        href: "/collections/automobiles-motorcycles",
+        href: "/collections/34",
         label: "Automobiles & Motorcycles",
       },
-      { href: "/collections/tools", label: "Tools" },
-      { href: "/collections/home-appliances", label: "Home Appliances" },
+      { href: "/collections/1420", label: "Tools" },
+      { href: "/collections/6", label: "Home Appliances" },
     ],
   },
   {
@@ -34,13 +34,13 @@ const NAV_ITEMS: NavItem[] = [
     label: "Home & Living",
     width: "w-64",
     links: [
-      { href: "/collections/home-garden", label: "Home & Garden" },
-      { href: "/collections/lights-lighting", label: "Lights & Lighting" },
+      { href: "/collections/15", label: "Home & Garden" },
+      { href: "/collections/39", label: "Lights & Lighting" },
       {
-        href: "/collections/sports-entertainment",
+        href: "/collections/18",
         label: "Sports & Entertainment",
       },
-      { href: "/collections/toys-hobbies", label: "Toys & Hobbies" },
+      { href: "/collections/26", label: "Toys & Hobbies" },
     ],
   },
   {
@@ -48,13 +48,13 @@ const NAV_ITEMS: NavItem[] = [
     label: "Electronics",
     width: "w-64",
     links: [
-      { href: "/collections/computer-office", label: "Computer & Office" },
+      { href: "/collections/7", label: "Computer & Office" },
       {
-        href: "/collections/consumer-electronics",
+        href: "/collections/44",
         label: "Consumer Electronics",
       },
       {
-        href: "/collections/phones-telecommunications",
+        href: "/collections/509",
         label: "Phones & Telecommunications",
       },
     ],
@@ -64,14 +64,14 @@ const NAV_ITEMS: NavItem[] = [
     label: "Fashion",
     width: "w-64",
     links: [
-      { href: "/collections/mens-clothing", label: "Men’s Clothing" },
-      { href: "/collections/womens-clothing", label: "Women’s Clothing" },
-      { href: "/collections/shoes", label: "Shoes" },
+      { href: "/collections/200000343", label: "Men’s Clothing" },
+      { href: "/collections/200000345", label: "Women’s Clothing" },
+      { href: "/collections/322", label: "Shoes" },
       {
-        href: "/collections/jewelry-accessories",
+        href: "/collections/36",
         label: "Jewelry & Accessories",
       },
-      { href: "/collections/watches", label: "Watches" },
+      { href: "/collections/1511", label: "Watches" },
     ],
   },
 ];

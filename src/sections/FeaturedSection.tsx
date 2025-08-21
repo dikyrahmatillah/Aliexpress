@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import CarouselButton from "@/components/CarouselButton";
 import { ProcessedProduct } from "@/types/aliexpress";
 import { brands } from "@/data/brandsData";
 import BrandCard from "@/components/BrandCard";
@@ -174,11 +175,13 @@ export default function FeaturedSection({
           </div>
         ) : (
           <div className="relative">
-            <CarouselButton
-              direction="left"
-              onClick={() => scroll("left")}
-              disabled={startIdx === 0}
-            />
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+              <CarouselButton
+                direction="left"
+                onClick={() => scroll("left")}
+                disabled={startIdx === 0}
+              />
+            </div>
             <div className="flex gap-2 pb-4 w-full justify-center">
               {shouldUseFallback
                 ? fallbackItems
@@ -200,17 +203,19 @@ export default function FeaturedSection({
                       />
                     ))}
             </div>
-            <CarouselButton
-              direction="right"
-              onClick={() => scroll("right")}
-              disabled={
-                shouldUseFallback
-                  ? startIdx === fallbackItems.length - visibleCount ||
-                    fallbackItems.length <= visibleCount
-                  : startIdx === allProducts.length - visibleCount ||
-                    allProducts.length <= visibleCount
-              }
-            />
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+              <CarouselButton
+                direction="right"
+                onClick={() => scroll("right")}
+                disabled={
+                  shouldUseFallback
+                    ? startIdx === fallbackItems.length - visibleCount ||
+                      fallbackItems.length <= visibleCount
+                    : startIdx === allProducts.length - visibleCount ||
+                      allProducts.length <= visibleCount
+                }
+              />
+            </div>
           </div>
         )}
 
@@ -229,39 +234,4 @@ export default function FeaturedSection({
   );
 }
 
-function CarouselButton({
-  direction,
-  onClick,
-  disabled,
-}: {
-  direction: "left" | "right";
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      aria-label={`Scroll ${direction}`}
-      className={`absolute ${
-        direction === "left" ? "left-0" : "right-0"
-      } top-1/2 -translate-y-1/2 z-10 bg-white border border-gray-300 rounded-full shadow p-2 hover:bg-gray-100 transition hidden md:block`}
-      onClick={onClick}
-      type="button"
-      disabled={disabled}
-      style={{ opacity: disabled ? 0.5 : 1 }}
-    >
-      <svg
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        {direction === "left" ? (
-          <path d="M15 19l-7-7 7-7" />
-        ) : (
-          <path d="M9 5l7 7-7 7" />
-        )}
-      </svg>
-    </button>
-  );
-}
+// using shared CarouselButton component from src/components/CarouselButton.tsx
