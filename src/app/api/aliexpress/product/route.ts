@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getAliExpressProducts,
-  getAliExpressProductsParsed,
-} from "@/utils/aliexpress";
+import { getAliExpressProductsParsed } from "@/utils/aliexpress";
 import { AliExpressQueryParams } from "@/types/aliexpress";
 
 export async function GET(request: NextRequest) {
@@ -10,7 +7,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
 
     // Extract query parameters
-    const query = searchParams.get("query");
+    const query = searchParams.get("query") || "";
     const minSalePrice = searchParams.get("minSalePrice");
     const categoryIds = searchParams.get("categoryIds");
     const pageSize = searchParams.get("pageSize");
@@ -18,15 +15,9 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get("sort");
     const targetCurrency = searchParams.get("targetCurrency");
     const targetLanguage = searchParams.get("targetLanguage");
-    const parsed = searchParams.get("parsed"); // Return parsed products instead of raw format
+    // parsed flag no longer required; route always returns parsed products
 
-    // Validate required parameters
-    if (!query) {
-      return NextResponse.json(
-        { error: "Query parameter is required" },
-        { status: 400 }
-      );
-    }
+    // Query can be empty when fetching by category
 
     // Build query parameters
     const queryParams: AliExpressQueryParams = {
@@ -40,13 +31,8 @@ export async function GET(request: NextRequest) {
       ...(targetLanguage && { targetLanguage }),
     };
 
-    // Fetch products from AliExpress API
-    let data;
-    if (parsed === "true") {
-      data = await getAliExpressProductsParsed(queryParams);
-    } else {
-      data = await getAliExpressProducts(queryParams);
-    }
+    // Fetch products from AliExpress API (parsed preferred)
+    const data = await getAliExpressProductsParsed(queryParams);
 
     return NextResponse.json(data);
   } catch (error) {

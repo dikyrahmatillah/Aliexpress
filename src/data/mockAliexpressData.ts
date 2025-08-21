@@ -18,6 +18,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000037521142844",
     shop_name: "TechStore Official",
+    evaluate_rate: 4.5,
   },
   {
     product_id: "1005007895623411",
@@ -35,6 +36,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000038792623411",
     shop_name: "SmartTech Store",
+    evaluate_rate: 4.6,
   },
   {
     product_id: "1005008741963258",
@@ -52,6 +54,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000039583963258",
     shop_name: "HomeLight Store",
+    evaluate_rate: 4.4,
   },
   {
     product_id: "1005009512784369",
@@ -69,6 +72,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000040372784369",
     shop_name: "BeautyWorld Store",
+    evaluate_rate: 4.7,
   },
   {
     product_id: "1005010263495127",
@@ -86,6 +90,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000041161495127",
     shop_name: "FitLife Store",
+    evaluate_rate: 4.8,
   },
   {
     product_id: "1005011874652893",
@@ -103,6 +108,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000042653652893",
     shop_name: "Fashion Hub",
+    evaluate_rate: 4.2,
   },
   {
     product_id: "1005012485963741",
@@ -120,6 +126,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000043274963741",
     shop_name: "AutoTech Store",
+    evaluate_rate: 4.3,
   },
   {
     product_id: "1005013197485629",
@@ -137,6 +144,7 @@ export const mockAliExpressProducts: ProcessedProduct[] = [
     product_video_url: "",
     sku_id: "12000043986485629",
     shop_name: "MobileGear Store",
+    evaluate_rate: 4.9,
   },
 ];
 

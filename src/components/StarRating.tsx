@@ -1,3 +1,5 @@
+"use client";
+
 type Props = {
   rating: number;
   reviewCount: number;
