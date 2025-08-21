@@ -148,7 +148,7 @@ export function useAliExpressProducts(
         return response.json();
       } catch (error) {
         console.warn("AliExpress API failed, using mock data:", error);
-        // Fallback to mock data if API fails
+        // Always return mock data as fallback to satisfy return type
         return mockHotProductsResponse;
       }
     },
