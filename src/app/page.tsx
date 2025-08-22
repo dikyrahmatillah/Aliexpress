@@ -6,18 +6,19 @@ import ShowcaseSection from "@/sections/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
 import RelatedSection from "@/sections/RelatedSection";
-import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
+import { useAliExpressProducts } from "@/hooks/useAliexpress";
 import Newsletter from "@/components/Newsletter";
 
 export default function Home() {
-  // Fetch hot products data once for the entire page
+  // Use simple AliExpress search (no user query). Pass a wildcard query and `useMock: true` to return mock data.
   const {
     data: hotProducts,
     isLoading,
     error,
-  } = useAliExpressHotProducts(0, {
-    staleTime: 1000 * 60 * 60, // Cache for 1 hour
-  });
+  } = useAliExpressProducts(
+    { query: "*" },
+    { useMock: false, staleTime: 1000 * 60 * 60 }
+  );
 
   // Create different product slices for each section
   const categoryProducts = hotProducts

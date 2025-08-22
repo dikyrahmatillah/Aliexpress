@@ -1,44 +1,39 @@
 import React from "react";
-import Image from "next/image";
 
 interface FeatureProps {
-  icon: string;
   title: string;
   description: string;
 }
 
 const aboutFeatures = [
   {
-    icon: "https://via.placeholder.com/140",
     title: "Thoughtful design",
     description:
       "Clever, comfy furniture that you're proud to show off but not precious about using everyday.",
   },
   {
-    icon: "https://via.placeholder.com/140",
     title: "Everyday value",
     description:
       "Our direct-to-consumer model cuts out the middlemen, hidden costs and showroom expenses that charge you extra.",
   },
   {
-    icon: "https://via.placeholder.com/140",
     title: "Effortless experiences",
     description:
       "Fast and flexible delivery, tool-free assembly and 120 nights to love it or return it.",
   },
   {
-    icon: "https://via.placeholder.com/140",
     title: "Designed with the world in mind",
     description:
       "Ethically made and designed to last — with a portion of our sales supporting koala conservation.",
   },
 ];
 
-const FeatureCard: React.FC<FeatureProps> = ({ icon, title, description }) => {
+const FeatureCard: React.FC<FeatureProps> = ({ title, description }) => {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="w-36 h-36 mb-4 relative">
-        <Image src={icon} alt={title} fill className="object-contain" />
+      {/* Decorative circle placeholder replaces image */}
+      <div className="w-24 h-24 mb-4 bg-gray-200 rounded-full flex items-center justify-center">
+        <span className="sr-only">feature icon</span>
       </div>
       <h3 className="text-lg font-bold mb-2">{title}</h3>
       <p className="text-gray-700">{description}</p>
