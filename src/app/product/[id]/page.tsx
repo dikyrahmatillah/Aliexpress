@@ -11,7 +11,8 @@ import PurchasePanelClient from "@/components/item/PurchasePanelClient";
 // to http://localhost:3000. Adjust your environment when deploying.
 async function fetchProductDetailServer(productId: string) {
   const base =
-    process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    process.env.NEXTAUTH_URL ||
     "http://localhost:3000";
 
   const url = `${base}/api/aliexpress/productdetail?product_id=${encodeURIComponent(
@@ -36,7 +37,8 @@ async function fetchProductDetailServer(productId: string) {
     skuInfo.push({
       sku_id: String(raw.sku_id),
       sku_price: raw.sale_price || raw.app_sale_price,
-      sku_available_quantity: raw.available_quantity || raw.lastest_volume || 999,
+      sku_available_quantity:
+        raw.available_quantity || raw.lastest_volume || 999,
       sku_properties: [],
     });
   }
@@ -51,13 +53,15 @@ async function fetchProductDetailServer(productId: string) {
     product_attributes: raw.product_attributes || [],
     review_rating: raw.review_rating || "0",
     review_count: raw.review_count || 0,
-    sale_price: raw.target_sale_price || raw.sale_price || raw.app_sale_price || "0",
+    sale_price:
+      raw.target_sale_price || raw.sale_price || raw.app_sale_price || "0",
     original_price: raw.target_original_price || raw.original_price || "0",
     discount: raw.discount || "0",
     shop_name: raw.shop_name || "",
     shop_id: raw.shop_id || "",
     shop_url: raw.shop_url || "",
-    commission_rate: raw.commission_rate || raw.hot_product_commission_rate || "0",
+    commission_rate:
+      raw.commission_rate || raw.hot_product_commission_rate || "0",
     available_quantity: raw.available_quantity || raw.lastest_volume || 999,
     delivery_info: raw.delivery_info || {
       delivery_time: "Standard shipping time",
@@ -73,10 +77,14 @@ async function fetchProductDetailServer(productId: string) {
   };
 }
 
-async function fetchRelatedProductsServer(categoryId: string | number | undefined, currentProductId: string) {
+async function fetchRelatedProductsServer(
+  categoryId: string | number | undefined,
+  currentProductId: string
+) {
   if (!categoryId) return null;
   const base =
-    process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    process.env.NEXTAUTH_URL ||
     "http://localhost:3000";
 
   const url = `${base}/api/aliexpress/hotproduct?categoryId=${encodeURIComponent(
@@ -87,7 +95,9 @@ async function fetchRelatedProductsServer(categoryId: string | number | undefine
   if (!res.ok) return null;
   const raw = await res.json();
   type RawProduct = { product_id?: string; [k: string]: unknown };
-  const products = (raw.products || []).filter((p: RawProduct) => p.product_id !== currentProductId);
+  const products = (raw.products || []).filter(
+    (p: RawProduct) => p.product_id !== currentProductId
+  );
 
   // normalize to expected shape
   return {
@@ -97,7 +107,11 @@ async function fetchRelatedProductsServer(categoryId: string | number | undefine
   };
 }
 
-export default async function ItemDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ItemDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
 
   const productData = await fetchProductDetailServer(id).catch((e) => {
@@ -109,20 +123,30 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center max-w-md p-6 bg-red-50 rounded-lg">
-          <h2 className="text-xl font-bold text-red-600 mb-2">Error Loading Product</h2>
-          <p className="text-gray-700 mb-4">Sorry, we could not load this product. Please try again later.</p>
+          <h2 className="text-xl font-bold text-red-600 mb-2">
+            Error Loading Product
+          </h2>
+          <p className="text-gray-700 mb-4">
+            Sorry, we could not load this product. Please try again later.
+          </p>
         </div>
       </div>
     );
   }
 
-  const relatedProducts = await fetchRelatedProductsServer(productData.first_level_category_id, id).catch(() => null);
+  const relatedProducts = await fetchRelatedProductsServer(
+    productData.first_level_category_id,
+    id
+  ).catch(() => null);
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
 
   const productImages = productData.product_images || [];
   const mainImage = productData.product_main_image_url;
-  const allImages = [mainImage, ...productImages.filter((img) => img !== mainImage)];
+  const allImages = [
+    mainImage,
+    ...productImages.filter((img) => img !== mainImage),
+  ];
 
   return (
     <div className="min-h-screen">
@@ -131,21 +155,73 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         <nav className="flex" aria-label="Breadcrumb">
           <ol className="flex items-center space-x-2">
             <li>
-              <Link href="/" className="text-gray-500 hover:text-gray-700">Home</Link>
+              <Link href="/" className="text-gray-500 hover:text-gray-700">
+                Home
+              </Link>
             </li>
             <li className="flex items-center">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-              <Link href={`/collections/${productData.first_level_category_id}`} className="ml-2 text-gray-500 hover:text-gray-700">{productData.first_level_category_name || "Category"}</Link>
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <Link
+                href={`/collections/${productData.first_level_category_id}`}
+                className="ml-2 text-gray-500 hover:text-gray-700"
+              >
+                {productData.first_level_category_name || "Category"}
+              </Link>
             </li>
             {productData.second_level_category_name && (
               <li className="flex items-center">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-                <Link href={`/category/${productData.second_level_category_id}`} className="ml-2 text-gray-500 hover:text-gray-700">{productData.second_level_category_name}</Link>
+                <svg
+                  className="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <Link
+                  href={`/category/${productData.second_level_category_id}`}
+                  className="ml-2 text-gray-500 hover:text-gray-700"
+                >
+                  {productData.second_level_category_name}
+                </Link>
               </li>
             )}
             <li className="flex items-center">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/></svg>
-              <span className="ml-2 text-gray-900 font-medium truncate max-w-xs">{productData.product_title.length > 40 ? productData.product_title.substring(0, 40) + "..." : productData.product_title}</span>
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+              <span className="ml-2 text-gray-900 font-medium truncate max-w-xs">
+                {productData.product_title.length > 40
+                  ? productData.product_title.substring(0, 40) + "..."
+                  : productData.product_title}
+              </span>
             </li>
           </ol>
         </nav>
@@ -153,19 +229,40 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
         {/* Main content */}
         <div className="py-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <ImageGalleryClient images={allImages} title={productData.product_title} discountPercent={discountPercent} />
+            <ImageGalleryClient
+              images={allImages}
+              title={productData.product_title}
+              discountPercent={discountPercent}
+            />
 
             <div className="space-y-6">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{productData.product_title}</h1>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                  {productData.product_title}
+                </h1>
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-sm px-2 py-1 bg-gray-100 rounded-full">{productData.first_level_category_name || "Category"}</span>
-                  {productData.second_level_category_name && (<span className="text-sm px-2 py-1 bg-gray-100 rounded-full">{productData.second_level_category_name}</span>)}
+                  <span className="text-sm px-2 py-1 bg-gray-100 rounded-full">
+                    {productData.first_level_category_name || "Category"}
+                  </span>
+                  {productData.second_level_category_name && (
+                    <span className="text-sm px-2 py-1 bg-gray-100 rounded-full">
+                      {productData.second_level_category_name}
+                    </span>
+                  )}
                 </div>
-                <p className="text-sm text-gray-600 mb-4">Store: {productData.shop_name}</p>
+                <p className="text-sm text-gray-600 mb-4">
+                  Store: {productData.shop_name}
+                </p>
                 <div className="flex items-center gap-4 mb-6">
-                  <StarRating rating={parseFloat(productData.review_rating) || 0} reviewCount={productData.review_count} />
-                  <span className="text-sm text-gray-500">{productData.lastest_volume ? `${productData.lastest_volume} sales` : `${productData.review_count} reviews`}</span>
+                  <StarRating
+                    rating={parseFloat(productData.review_rating) || 0}
+                    reviewCount={productData.review_count}
+                  />
+                  <span className="text-sm text-gray-500">
+                    {productData.lastest_volume
+                      ? `${productData.lastest_volume} sales`
+                      : `${productData.review_count} reviews`}
+                  </span>
                 </div>
               </div>
 
@@ -176,8 +273,14 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
                   <Truck className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-medium">Delivery Information</p>
-                    <p className="text-sm text-gray-600">{productData.delivery_info?.delivery_time || "Standard shipping time applies"}</p>
-                    <p className="text-sm text-gray-600">{productData.delivery_info?.delivery_fee || "Standard shipping fees apply"}</p>
+                    <p className="text-sm text-gray-600">
+                      {productData.delivery_info?.delivery_time ||
+                        "Standard shipping time applies"}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      {productData.delivery_info?.delivery_fee ||
+                        "Standard shipping fees apply"}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -191,33 +294,48 @@ export default async function ItemDetailPage({ params }: { params: Promise<{ id:
                   <Shield className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-medium">Buyer Protection</p>
-                    <p className="text-sm text-gray-600">Money back guarantee</p>
+                    <p className="text-sm text-gray-600">
+                      Money back guarantee
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {relatedProducts && relatedProducts.products && relatedProducts.products.length > 0 && (
-            <div className="mt-12 border-t border-gray-200 pt-8">
-              <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-              <RelatedSection hotProductsData={relatedProducts} buttonSide="both" sideImageRight={false} />
-            </div>
-          )}
-
-          {productData.product_attributes && productData.product_attributes.length > 0 && (
-            <div className="mt-12 border-t border-gray-200 pt-8">
-              <h2 className="text-2xl font-bold mb-4">Product Specifications</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {productData.product_attributes.map((attr: { name: string; value: string }, index: number) => (
-                  <div key={index} className="flex">
-                    <div className="w-40 font-medium text-gray-700">{attr.name}</div>
-                    <div className="flex-1 text-gray-900">{attr.value}</div>
-                  </div>
-                ))}
+          {relatedProducts &&
+            relatedProducts.products &&
+            relatedProducts.products.length > 0 && (
+              <div className="mt-12 border-t border-gray-200 pt-8">
+                <h2 className="text-2xl font-bold mb-6">Related Products</h2>
+                <RelatedSection
+                  productsData={relatedProducts}
+                  buttonSide="both"
+                  sideImageRight={false}
+                />
               </div>
-            </div>
-          )}
+            )}
+
+          {productData.product_attributes &&
+            productData.product_attributes.length > 0 && (
+              <div className="mt-12 border-t border-gray-200 pt-8">
+                <h2 className="text-2xl font-bold mb-4">
+                  Product Specifications
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {productData.product_attributes.map(
+                    (attr: { name: string; value: string }, index: number) => (
+                      <div key={index} className="flex">
+                        <div className="w-40 font-medium text-gray-700">
+                          {attr.name}
+                        </div>
+                        <div className="flex-1 text-gray-900">{attr.value}</div>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+            )}
         </div>
       </div>
     </div>

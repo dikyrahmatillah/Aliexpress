@@ -54,7 +54,7 @@ export interface ProductQueryResult {
   total_record_count: number;
   current_record_count: number;
   products: {
-    product: string[]; // Format: "id~volume~imageUrl~title~price"
+    product: string[];
   };
 }
 

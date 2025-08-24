@@ -15,7 +15,7 @@ interface AliExpressResponse {
 }
 
 interface FeaturedSectionProps {
-  hotProductsData?: AliExpressResponse;
+  productsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
@@ -88,7 +88,7 @@ function FeaturedProductCard({
 }
 
 export default function FeaturedSection({
-  hotProductsData,
+  productsData,
   isLoading = false,
   error = null,
 }: FeaturedSectionProps) {
@@ -101,10 +101,8 @@ export default function FeaturedSection({
 
   // Use the passed data or fallback to brands
   const allProducts = useMemo(() => {
-    return shouldUseFallback
-      ? []
-      : hotProductsData?.products?.slice(0, 9) || [];
-  }, [shouldUseFallback, hotProductsData]);
+    return shouldUseFallback ? [] : productsData?.products?.slice(0, 9) || [];
+  }, [shouldUseFallback, productsData]);
   const fallbackItems = brands;
 
   useEffect(() => {

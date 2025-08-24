@@ -23,7 +23,7 @@ interface CategorySectionProps {
   sideImage?: SideImage;
   sideImageRight?: boolean;
   buttonSide?: "left" | "right" | "both";
-  hotProductsData?: AliExpressResponse;
+  productsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
@@ -32,11 +32,11 @@ export default function RelatedSection({
   sideImage,
   sideImageRight = false,
   buttonSide = "right",
-  hotProductsData,
+  productsData,
 }: CategorySectionProps) {
   const [visibleCount, setVisibleCount] = useState(4);
   const [carouselItems, setCarouselItems] = useState(
-    hotProductsData?.products || []
+    productsData?.products || []
   );
 
   useEffect(() => {
@@ -61,8 +61,8 @@ export default function RelatedSection({
 
   // Update carouselItems when product changes
   useEffect(() => {
-    setCarouselItems(hotProductsData?.products || []);
-  }, [hotProductsData]);
+    setCarouselItems(productsData?.products || []);
+  }, [productsData]);
 
   const scroll = (dir: "left" | "right") => {
     setCarouselItems((prev) =>

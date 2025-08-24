@@ -1,95 +1,83 @@
-"use client";
-
 import HeroSection from "@/sections/HeroSection";
 import AboutSection from "@/sections/AboutSection";
 import ShowcaseSection from "@/sections/ShowcaseSection";
 import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
 import RelatedSection from "@/sections/RelatedSection";
-import { useAliExpressProducts } from "@/hooks/useAliexpress";
 import Newsletter from "@/components/Newsletter";
+import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
+import type { ProductQueryResult, ProcessedProduct } from "@/types/aliexpress";
 
-export default function Home() {
-  // Use simple AliExpress search (no user query). Pass a wildcard query and `useMock: true` to return mock data.
-  const {
-    data: hotProducts,
-    isLoading,
-    error,
-  } = useAliExpressProducts(
-    { query: "*" },
-    { useMock: false, staleTime: 1000 * 60 * 60 }
+export default async function Home() {
+  let products: ProductQueryResult | undefined;
+
+  try {
+    products = await getAliExpressProducts({
+      query: "*",
+      pageSize: 50,
+      pageNo: 1,
+    });
+  } catch (err) {
+    console.error("getAliExpressProducts failed:", err);
+    products = undefined;
+  }
+
+  const rawProductStrings = products?.products?.product || [];
+  const processedProducts: ProcessedProduct[] = rawProductStrings.map((s) =>
+    parseProductString(s)
   );
 
-  // Create different product slices for each section
-  const categoryProducts = hotProducts
-    ? {
-        ...hotProducts,
-        products: hotProducts.products?.slice(0, 10) || [],
+  const sliceProcessed = (
+    start: number,
+    end: number
+  ):
+    | {
+        total_record_count: number;
+        current_record_count: number;
+        products: ProcessedProduct[];
       }
-    : undefined;
+    | undefined => {
+    if (!processedProducts || processedProducts.length === 0) {
+      return undefined;
+    } else {
+      const sliced = processedProducts.slice(start, end);
 
-  const showcaseProducts1 = hotProducts
-    ? {
-        ...hotProducts,
-        products: hotProducts.products?.slice(10, 20) || [],
-      }
-    : undefined;
+      return {
+        total_record_count: processedProducts.length,
+        current_record_count: sliced.length,
+        products: sliced,
+      };
+    }
+  };
 
-  const featuredProducts = hotProducts
-    ? {
-        ...hotProducts,
-        products: hotProducts.products?.slice(20, 30) || [],
-      }
-    : undefined;
+  const categoryProducts = sliceProcessed(0, 10);
+  const showcaseProducts1 = sliceProcessed(10, 20);
+  const featuredProducts = sliceProcessed(20, 30);
+  const showcaseProducts2 = sliceProcessed(30, 40);
+  const categoryProducts2 = sliceProcessed(40, 50);
 
-  const showcaseProducts2 = hotProducts
-    ? {
-        ...hotProducts,
-        products: hotProducts.products?.slice(30, 40) || [],
-      }
-    : undefined;
-
-  const categoryProducts2 = hotProducts
-    ? {
-        ...hotProducts,
-        products: hotProducts.products?.slice(40, 50) || [],
-      }
-    : undefined;
+  const isLoading = false;
 
   return (
     <main>
       <HeroSection content={heroContent} />
       <RelatedSection
-        hotProductsData={categoryProducts}
+        productsData={categoryProducts}
         isLoading={isLoading}
-        error={error}
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
           alt: "Nature left",
         }}
       />
-      <ShowcaseSection
-        hotProductsData={showcaseProducts1}
-        isLoading={isLoading}
-        error={error}
-      />
-      <FeaturedSection
-        hotProductsData={featuredProducts}
-        isLoading={isLoading}
-        error={error}
-      />
-      <ShowcaseSection
-        hotProductsData={showcaseProducts2}
-        isLoading={isLoading}
-        error={error}
-      />
+      <ShowcaseSection productsData={showcaseProducts1} isLoading={isLoading} />
+      <FeaturedSection productsData={featuredProducts} isLoading={isLoading} />
+      <ShowcaseSection productsData={showcaseProducts2} isLoading={isLoading} />
       <RelatedSection
-        hotProductsData={categoryProducts2}
+        productsData={categoryProducts2}
         buttonSide="left"
         sideImageRight={true}
         isLoading={isLoading}
-        error={error}
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",

@@ -12,7 +12,7 @@ interface AliExpressResponse {
 }
 
 interface ShowcaseSectionProps {
-  hotProductsData?: AliExpressResponse;
+  productsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
@@ -83,13 +83,13 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
 }
 
 export default function ShowcaseSection({
-  hotProductsData,
+  productsData,
   isLoading = false,
   error = null,
 }: ShowcaseSectionProps) {
   // Transform AliExpress data before displaying
   const transformedProducts =
-    hotProductsData?.products?.map((product) => ({
+    productsData?.products?.map((product) => ({
       ...product,
       displayTitle: product.title.toUpperCase(),
       sale_price: (parseFloat(product.sale_price) * 1.1).toFixed(2),
