@@ -1,82 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiSearch } from "react-icons/fi";
+
 import { useAnnouncement } from "../../hooks/useAnnouncement";
 import { useDropdown } from "../../hooks/useDropdown";
 import { useSearch } from "../../hooks/useSearch";
 import type { NavItem } from "./Header.types";
-
-const announcements = [
-  "Sale on now | Up to 25% off everything",
-  "Free shipping on orders over $50",
-  "New arrivals every week",
-  "50,000+ five star reviews globally",
-  "World-class warranty",
-];
-
-const NAV_ITEMS: NavItem[] = [
-  {
-    key: "hardware",
-    label: "Hardware",
-    width: "w-56",
-    links: [
-      {
-        href: "/collections/34",
-        label: "Automobiles & Motorcycles",
-      },
-      { href: "/collections/1420", label: "Tools" },
-      { href: "/collections/6", label: "Home Appliances" },
-    ],
-  },
-  {
-    key: "home",
-    label: "Home & Living",
-    width: "w-64",
-    links: [
-      { href: "/collections/15", label: "Home & Garden" },
-      { href: "/collections/39", label: "Lights & Lighting" },
-      {
-        href: "/collections/18",
-        label: "Sports & Entertainment",
-      },
-      { href: "/collections/26", label: "Toys & Hobbies" },
-    ],
-  },
-  {
-    key: "electronics",
-    label: "Electronics",
-    width: "w-64",
-    links: [
-      { href: "/collections/7", label: "Computer & Office" },
-      {
-        href: "/collections/44",
-        label: "Consumer Electronics",
-      },
-      {
-        href: "/collections/509",
-        label: "Phones & Telecommunications",
-      },
-    ],
-  },
-  {
-    key: "fashion",
-    label: "Fashion",
-    width: "w-64",
-    links: [
-      { href: "/collections/200000343", label: "Men’s Clothing" },
-      { href: "/collections/200000345", label: "Women’s Clothing" },
-      { href: "/collections/322", label: "Shoes" },
-      {
-        href: "/collections/36",
-        label: "Jewelry & Accessories",
-      },
-      { href: "/collections/1511", label: "Watches" },
-    ],
-  },
-];
+import AnnouncementBar, { announcements } from "./AnnouncementBar";
+import { NAV_ITEMS } from "./nav.data";
 
 export default function Header() {
+  // active when user scrolls away from top or when search is active
+  const [isActive, setIsActive] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setIsActive(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   const { text, prev, next } = useAnnouncement(announcements, 5000);
   const { open, setOpen, clearCloseTimer, startCloseTimer } = useDropdown();
   const {
@@ -86,6 +32,7 @@ export default function Header() {
     setSearchQuery,
     handleSearchSubmit,
   } = useSearch();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleDropdownKey = useCallback(
     (e: React.KeyboardEvent, key: string) => {
@@ -103,39 +50,34 @@ export default function Header() {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="bg-[var(--accent)] text-white py-2 text-sm flex items-center justify-center relative">
-        <button
-          type="button"
-          className="absolute left-1/4 text-white text-lg"
-          onClick={prev}
-          aria-label="Previous announcement"
-        >
-          &#60;
-        </button>
-        <p className="mx-12">{text}</p>
-        <button
-          type="button"
-          className="absolute right-1/4 text-white text-lg"
-          onClick={next}
-          aria-label="Next announcement"
-        >
-          &#62;
-        </button>
-      </div>
+      <AnnouncementBar text={text} prev={prev} next={next} />
 
       {/* Main Header */}
-      <header className="sticky top-0 z-40 bg-white shadow">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <header
+        className={`sticky top-0 z-40 transition-colors duration-200 border-b ${
+          isActive || isSearchActive
+            ? "bg-white/50 backdrop-blur-md shadow-sm"
+            : "bg-white/100 backdrop-blur-sm"
+        }`}
+      >
+        <div className="container mx-auto px-4 py-3 relative flex items-center justify-between gap-4">
           {!isSearchActive ? (
             <>
               {/* Logo */}
-              <Link href="/" className="text-2xl font-bold">
-                Runolf
-              </Link>
+              <div className="flex items-center gap-4">
+                <Link href="/" className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-md bg-amber-500 flex items-center justify-center text-white font-bold">
+                    R
+                  </div>
+                  <span className="hidden sm:inline text-lg font-semibold">
+                    Runolf
+                  </span>
+                </Link>
+              </div>
 
-              {/* Navigation */}
+              {/* Desktop Navigation */}
               <nav
-                className="hidden md:flex space-x-6"
+                className="hidden md:flex absolute left-1/2 transform -translate-x-1/2 items-center space-x-6"
                 aria-label="Primary navigation"
               >
                 {NAV_ITEMS.map((item) => (
@@ -150,7 +92,7 @@ export default function Header() {
                   >
                     <button
                       type="button"
-                      className="hover:underline"
+                      className="text-sm text-gray-700 hover:text-amber-600 transition-colors"
                       aria-haspopup="true"
                       aria-expanded={open === item.key}
                       onClick={() =>
@@ -161,63 +103,86 @@ export default function Header() {
                       {item.label}
                     </button>
 
-                    {open === item.key && (
-                      <div
-                        role="menu"
-                        className={`absolute mt-2 ${item.width} p-4 bg-white border border-amber-300 shadow-md rounded-md space-y-2`}
-                        onMouseEnter={() => clearCloseTimer()}
-                        onMouseLeave={() => startCloseTimer()}
-                      >
-                        {item.links.map((ln) => (
-                          <Link
-                            key={ln.href}
-                            href={ln.href}
-                            className="block"
-                            role="menuitem"
-                          >
-                            {ln.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <AnimatePresence>
+                      {open === item.key && (
+                        <motion.div
+                          role="menu"
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          transition={{ duration: 0.15 }}
+                          className={`absolute mt-3 ${item.width} p-3 bg-white border border-gray-100 shadow-lg rounded-md space-y-2`}
+                          onMouseEnter={() => clearCloseTimer()}
+                          onMouseLeave={() => startCloseTimer()}
+                        >
+                          {item.links.map((ln) => (
+                            <Link
+                              key={ln.href}
+                              href={ln.href}
+                              className="block text-sm text-gray-700 hover:text-amber-600"
+                              role="menuitem"
+                            >
+                              {ln.label}
+                            </Link>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ))}
 
                 <Link
                   href="/collections/beauty-health"
-                  className="hover:underline"
+                  className="text-sm text-gray-700 hover:text-amber-600"
                 >
                   Beauty &amp; Health
                 </Link>
               </nav>
 
-              {/* User Actions */}
-              <div className="flex items-center space-x-4">
+              {/* Right actions */}
+              <div className="flex items-center ml-auto gap-3">
                 <button
                   type="button"
                   onClick={() => setIsSearchActive(true)}
-                  className="hover:underline flex items-center"
+                  className="hidden sm:inline-flex items-center gap-2 text-sm text-gray-700 hover:text-amber-600"
+                  aria-label="Open search"
+                >
+                  <FiSearch className="w-5 h-5" />
+                  <span className="hidden sm:block">Search</span>
+                </button>
+
+                <Link
+                  href="/cart"
+                  className="relative text-gray-700 hover:text-amber-600"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    className="w-5 h-5 mr-1"
+                    className="w-6 h-6"
                   >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
                     />
+                    <circle cx="10" cy="20" r="1" />
+                    <circle cx="18" cy="20" r="1" />
                   </svg>
-                  <span>Search</span>
-                </button>
+                  <span className="sr-only">Cart</span>
+                  <span className="absolute -top-1 -right-2 bg-amber-500 text-white text-xs rounded-full px-1">
+                    3
+                  </span>
+                </Link>
+
+                {/* Mobile menu button */}
                 <button
                   type="button"
-                  className="md:hidden"
-                  aria-label="Open menu"
+                  className="md:hidden p-2 rounded hover:bg-gray-100"
+                  aria-label="Toggle menu"
+                  onClick={() => setMobileOpen((s) => !s)}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -240,7 +205,7 @@ export default function Header() {
             /* Search Form */
             <form
               onSubmit={handleSearchSubmit}
-              className="flex items-center w-full space-x-4"
+              className="flex items-center w-full gap-3"
             >
               <button
                 type="button"
@@ -269,34 +234,81 @@ export default function Header() {
                   placeholder="Search for products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
                   autoFocus
                   aria-label="Search products"
                 />
                 <button
                   type="submit"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                   aria-label="Submit search"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-5 h-5 text-gray-400"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <FiSearch className="w-5 h-5" />
                 </button>
               </div>
             </form>
           )}
         </div>
+
+        {/* Mobile menu panel */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="md:hidden border-t"
+            >
+              <div className="px-4 py-3 space-y-3">
+                <div className="flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-200 rounded-md"
+                    aria-label="Search products mobile"
+                  />
+                  <button
+                    onClick={() => setIsSearchActive(true)}
+                    className="ml-2 px-3 py-2 bg-amber-500 text-white rounded-md"
+                  >
+                    Search
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2">
+                  {NAV_ITEMS.map((item) => (
+                    <details key={item.key} className="rounded-md" aria-hidden>
+                      <summary className="px-2 py-2 cursor-pointer text-gray-700 font-medium">
+                        {item.label}
+                      </summary>
+                      <div className="pl-4 pb-2 space-y-1">
+                        {item.links.map((ln) => (
+                          <Link
+                            key={ln.href}
+                            href={ln.href}
+                            className="block text-sm text-gray-600"
+                          >
+                            {ln.label}
+                          </Link>
+                        ))}
+                      </div>
+                    </details>
+                  ))}
+
+                  <Link
+                    href="/collections/beauty-health"
+                    className="block px-2 py-2 text-sm text-gray-700"
+                  >
+                    Beauty &amp; Health
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
     </>
   );
