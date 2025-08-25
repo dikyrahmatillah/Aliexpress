@@ -172,9 +172,7 @@ export default function Header() {
                     <circle cx="18" cy="20" r="1" />
                   </svg>
                   <span className="sr-only">Cart</span>
-                  <span className="absolute -top-1 -right-2 bg-amber-500 text-white text-xs rounded-full px-1">
-                    3
-                  </span>
+                  <span className="absolute -top-1 -right-2 bg-amber-500 text-white text-xs rounded-full px-1"></span>
                 </Link>
 
                 {/* Mobile menu button */}
