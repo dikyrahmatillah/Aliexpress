@@ -6,6 +6,9 @@ interface CategoryCardProps {
   discount?: string;
   imageUrl: string;
   linkUrl: string;
+  price?: string;
+  originalPrice?: string;
+  rating?: number;
 }
 
 export default function CategoryCard({
@@ -13,6 +16,8 @@ export default function CategoryCard({
   discount,
   imageUrl,
   linkUrl,
+  price,
+  rating,
 }: CategoryCardProps) {
   return (
     <div className="w-full max-w-xs flex-shrink-0 mx-2">
@@ -33,6 +38,18 @@ export default function CategoryCard({
         </div>
         <div className="p-3">
           <h3 className="text-base font-medium">{title}</h3>
+          <div className="mt-2 flex items-center justify-between">
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-gray-900">
+                ${price}
+              </span>
+            </div>
+            {typeof rating === "number" && (
+              <div className="text-sm text-yellow-500">
+                ★ {rating.toFixed(1)}
+              </div>
+            )}
+          </div>
         </div>
       </Link>
     </div>
