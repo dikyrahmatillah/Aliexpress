@@ -17,8 +17,7 @@ export default async function Home() {
       pageSize: 50,
       pageNo: 1,
     });
-  } catch (err) {
-    console.error("getAliExpressProducts failed:", err);
+  } catch {
     products = undefined;
   }
 
