@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import CryptoJS from "crypto-js";
+import * as CryptoJS from "crypto-js";
 
 // Configuration constants
 const ALIEXPRESS_CONFIG = {
-  APP_KEY: Number(process.env.ALIEXPRESS_APP_KEY) || 28898013,
-  SECRET: process.env.ALIEXPRESS_SECRET || "d8c33695e899858c1ab0a84898b5ca7b",
-  APP_SIGNATURE: process.env.ALIEXPRESS_APP_SIGNATURE || "TeMpeb41GmLD",
-  TRACKING_ID: process.env.ALIEXPRESS_TRACKING_ID || "Daiki",
+  APP_KEY: Number(process.env.ALIEXPRESS_APP_KEY),
+  SECRET: process.env.ALIEXPRESS_SECRET,
+  APP_SIGNATURE: process.env.ALIEXPRESS_APP_SIGNATURE,
+  TRACKING_ID: process.env.ALIEXPRESS_TRACKING_ID,
   API_URL: "https://api-sg.aliexpress.com/sync",
 };
 
@@ -98,6 +98,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Ensure required environment secret is available
+    if (!ALIEXPRESS_CONFIG.SECRET) {
+      console.error("Missing ALIEXPRESS_SECRET environment variable");
+      return NextResponse.json(
+        { error: "Missing ALIEXPRESS_SECRET environment variable" },
+        { status: 500 }
+      );
+    }
+
     // Build API parameters
     // Request all available fields based on the API documentation and the fields seen in the example response
     const fields =
@@ -106,12 +115,12 @@ export async function GET(request: NextRequest) {
       "target_app_sale_price_currency,tax_rate,shop_url,target_original_price_currency,promotion_link," +
       "sku_id,shop_name,sale_price,product_title,hot_product_commission_rate,shop_id,commission_rate";
     const params: ApiParams = {
-      app_signature: ALIEXPRESS_CONFIG.APP_SIGNATURE,
+      app_signature: String(ALIEXPRESS_CONFIG.APP_SIGNATURE),
       fields,
       product_ids: productId,
       target_currency: targetCurrency,
       target_language: targetLanguage,
-      tracking_id: ALIEXPRESS_CONFIG.TRACKING_ID,
+      tracking_id: String(ALIEXPRESS_CONFIG.TRACKING_ID),
       country,
       app_key: ALIEXPRESS_CONFIG.APP_KEY,
       v: "2.0",

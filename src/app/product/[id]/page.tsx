@@ -8,10 +8,7 @@ import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
 import { ProcessedProduct } from "@/types/aliexpress";
 
 async function fetchProductDetailServer(productId: string) {
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL ||
-    process.env.NEXTAUTH_URL ||
-    "http://localhost:3000";
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const url = `${base}/api/aliexpress/productdetail?product_id=${encodeURIComponent(
     productId
@@ -79,8 +76,6 @@ async function fetchRelatedProductsServer(
   categoryId: string | number | undefined,
   currentProductId: string
 ) {
-  console.log(`Fetching related products for category ID: ${categoryId}`);
-
   try {
     // Use getAliExpressProducts similar to homepage
     const queryParams = {
@@ -92,17 +87,7 @@ async function fetchRelatedProductsServer(
       targetLanguage: "EN",
     };
 
-    console.log("Fetching with params:", JSON.stringify(queryParams));
-
     const productsResult = await getAliExpressProducts(queryParams);
-
-    console.log(
-      "Related products API response:",
-      JSON.stringify({
-        count: productsResult?.products?.product?.length || 0,
-        hasProducts: Boolean(productsResult?.products?.product),
-      })
-    );
 
     // Parse the product strings into objects
     const rawProductStrings = productsResult?.products?.product || [];
@@ -110,10 +95,6 @@ async function fetchRelatedProductsServer(
       .map((s) => parseProductString(s))
       // Filter out the current product
       .filter((p: ProcessedProduct) => p.product_id !== currentProductId);
-
-    console.log(
-      `Found ${processedProducts.length} related products after filtering`
-    );
 
     // If no products were returned from API, use fallback mock data
     if (processedProducts.length === 0) {
