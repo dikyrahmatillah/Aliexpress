@@ -231,5 +231,3 @@ export default function FeaturedSection({
     </section>
   );
 }
-
-// using shared CarouselButton component from src/components/CarouselButton.tsx
