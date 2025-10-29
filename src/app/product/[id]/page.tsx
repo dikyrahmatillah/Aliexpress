@@ -3,7 +3,6 @@ import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
 import StarRating from "@/components/StarRating";
 import RelatedSection from "@/sections/RelatedSection";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
-import PurchasePanelClient from "@/components/item/PurchasePanelClient";
 import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
 import { ProcessedProduct } from "@/types/aliexpress";
 
@@ -12,7 +11,6 @@ async function fetchRelatedProductsServer(
   currentProductId: string
 ) {
   try {
-    // Use getAliExpressProducts similar to homepage
     const queryParams = {
       query: categoryId ? "" : "*", // Use empty query when we have categoryId
       categoryIds: categoryId ? Number(categoryId) : undefined,
@@ -60,7 +58,6 @@ export default async function ItemDetailPage({
 
   // The API route returns { success: true, product: rawProduct }
   const productData = payload?.product || {};
-  console.log("Product Data:", productData);
 
   if (!productData) {
     return (
@@ -89,10 +86,7 @@ export default async function ItemDetailPage({
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-4">
-        {/* Breadcrumb - responsive: allow horizontal scroll on small screens and
-            ensure truncation works by setting min-w-0 on the truncating element */}
         <nav className="flex" aria-label="Breadcrumb">
-          {/* Allow breadcrumb items to wrap on small screens instead of scrolling */}
           <ol className="flex items-center space-x-2 flex-wrap">
             <li>
               <Link href="/" className="text-gray-500 hover:text-gray-700">
@@ -139,7 +133,7 @@ export default async function ItemDetailPage({
               discountPercent={discountPercent}
             />
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">
                   {productData.product_title}
@@ -154,9 +148,6 @@ export default async function ItemDetailPage({
                     </span>
                   )}
                 </div>
-                <p className="text-sm text-gray-600 mb-4">
-                  Store: {productData.shop_name}
-                </p>
                 <div className="flex items-center gap-4 mb-6">
                   <StarRating
                     rating={parseFloat(productData.evaluate_rate) || 0}
@@ -164,14 +155,68 @@ export default async function ItemDetailPage({
                   />
 
                   <span className="text-sm text-gray-500">
-                    {productData.lastest_volume
-                      ? `${productData.lastest_volume} sales`
-                      : `${productData.evaluate_rate} reviews`}
+                    {productData.evaluate_rate
+                      ? `${productData.evaluate_rate} people rated this product positively`
+                      : null}
                   </span>
                 </div>
               </div>
 
-              <PurchasePanelClient product={productData} />
+              <div className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl font-bold text-gray-900">
+                    ${productData.sale_price}
+                  </span>
+                  {productData.original_price > productData.sale_price && (
+                    <span className="text-lg text-gray-500 line-through">
+                      ${productData.original_price}
+                    </span>
+                  )}
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
+                    {productData.shop_name && (
+                      <div className="flex items-center gap-1">
+                        <span className="font-medium">Store:</span>
+                        <span className="text-gray-600">
+                          {productData.shop_name}
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Sold:</span>
+                      <span className="text-gray-600">
+                        {productData.lastest_volume || 0}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <span className="font-medium">Availability:</span>
+                      <span className="text-gray-600">
+                        {(productData.available_quantity ??
+                          productData.lastest_volume) > 0
+                          ? `${
+                              productData.available_quantity ??
+                              productData.lastest_volume
+                            } in stock`
+                          : "Out of stock"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Link
+                    href={productData.promotion_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-red-600 text-white text-center py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors"
+                  >
+                    View on AliExpress
+                  </Link>
+                </div>
+              </div>
 
               <div className="space-y-3 border-t border-gray-200 pt-4">
                 <div className="flex items-center gap-3">

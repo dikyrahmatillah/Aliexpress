@@ -8,11 +8,11 @@ type Props = {
 };
 
 export default function StarRating({ rating, reviewCount }: Props) {
+  const starCount = Math.max(1, Math.round((rating / 100) * 5));
+
   return (
     <div className="flex items-center">
       {(() => {
-        const starCount = Math.max(1, Math.round((rating / 100) * 5));
-
         return [...Array(5)].map((_, i) => (
           <FiStar
             key={i}
@@ -22,7 +22,7 @@ export default function StarRating({ rating, reviewCount }: Props) {
           />
         ));
       })()}
-      <span className="ml-1 text-sm text-gray-600">({reviewCount})</span>
+      <span className="ml-1 text-sm text-gray-600">({starCount})</span>
     </div>
   );
 }
