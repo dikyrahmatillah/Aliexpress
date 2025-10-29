@@ -91,74 +91,9 @@ async function fetchRelatedProductsServer(
 
     // Parse the product strings into objects
     const rawProductStrings = productsResult?.products?.product || [];
-    let processedProducts: ProcessedProduct[] = rawProductStrings
+    const processedProducts: ProcessedProduct[] = rawProductStrings
       .map((s) => parseProductString(s))
-      // Filter out the current product
       .filter((p: ProcessedProduct) => p.product_id !== currentProductId);
-
-    // If no products were returned from API, use fallback mock data
-    if (processedProducts.length === 0) {
-      console.log("No products from API, using fallback mock data");
-      processedProducts = [
-        {
-          product_id: "1005007895623411",
-          volume: 2847,
-          image_url: "https://picsum.photos/350/350?random=1",
-          title: "Smart Fitness Watch Heart Rate Monitor Sleep Tracker",
-          original_price: "89.99",
-          sale_price: "45.99",
-          discount: "49",
-          first_level_category_name: "Electronics",
-          first_level_category_id: "7",
-          second_level_category_name: "Wearable Devices",
-          second_level_category_id: "200000297",
-          product_small_image_urls: [],
-          product_video_url: "",
-          sku_id: "12000038792623411",
-          shop_name: "SmartTech Store",
-          evaluate_rate: 4.6,
-        },
-        {
-          product_id: "1005006542142845",
-          volume: 1250,
-          image_url: "https://picsum.photos/350/350?random=2",
-          title: "Wireless Bluetooth Earbuds with Noise Cancellation",
-          original_price: "79.99",
-          sale_price: "39.99",
-          discount: "50",
-          first_level_category_name: "Electronics",
-          first_level_category_id: "7",
-          second_level_category_name: "Headphones",
-          second_level_category_id: "200003109",
-          product_small_image_urls: [],
-          product_video_url: "",
-          sku_id: "12000035421542845",
-          shop_name: "AudioPlus Official Store",
-          evaluate_rate: 4.8,
-        },
-        {
-          product_id: "1005008724512453",
-          volume: 3680,
-          image_url: "https://picsum.photos/350/350?random=3",
-          title: "Mini Portable Bluetooth Speaker Waterproof",
-          original_price: "59.99",
-          sale_price: "29.99",
-          discount: "50",
-          first_level_category_name: "Electronics",
-          first_level_category_id: "7",
-          second_level_category_name: "Speakers",
-          second_level_category_id: "200003110",
-          product_small_image_urls: [],
-          product_video_url: "",
-          sku_id: "12000087245124530",
-          shop_name: "SoundWave Store",
-          evaluate_rate: 4.5,
-        },
-      ];
-      console.log(
-        `Added ${processedProducts.length} mock products as fallback`
-      );
-    }
 
     return {
       total_record_count:
@@ -166,56 +101,7 @@ async function fetchRelatedProductsServer(
       current_record_count: processedProducts.length,
       products: processedProducts,
     };
-  } catch (error) {
-    console.error("Error fetching related products:", error);
-
-    // Return fallback mock data instead of null
-    const processedProducts: ProcessedProduct[] = [
-      {
-        product_id: "1005007895623411",
-        volume: 2847,
-        image_url: "https://picsum.photos/350/350?random=1",
-        title: "Smart Fitness Watch Heart Rate Monitor Sleep Tracker",
-        original_price: "89.99",
-        sale_price: "45.99",
-        discount: "49",
-        first_level_category_name: "Electronics",
-        first_level_category_id: "7",
-        second_level_category_name: "Wearable Devices",
-        second_level_category_id: "200000297",
-        product_small_image_urls: [],
-        product_video_url: "",
-        sku_id: "12000038792623411",
-        shop_name: "SmartTech Store",
-        evaluate_rate: 4.6,
-      },
-      {
-        product_id: "1005006542142845",
-        volume: 1250,
-        image_url: "https://picsum.photos/350/350?random=2",
-        title: "Wireless Bluetooth Earbuds with Noise Cancellation",
-        original_price: "79.99",
-        sale_price: "39.99",
-        discount: "50",
-        first_level_category_name: "Electronics",
-        first_level_category_id: "7",
-        second_level_category_name: "Headphones",
-        second_level_category_id: "200003109",
-        product_small_image_urls: [],
-        product_video_url: "",
-        sku_id: "12000035421542845",
-        shop_name: "AudioPlus Official Store",
-        evaluate_rate: 4.8,
-      },
-    ];
-
-    console.log("Using error fallback mock data for related products");
-    return {
-      total_record_count: processedProducts.length,
-      current_record_count: processedProducts.length,
-      products: processedProducts,
-    };
-  }
+  } catch {}
 }
 
 export default async function ItemDetailPage({
@@ -225,8 +111,7 @@ export default async function ItemDetailPage({
 }) {
   const { id } = await params;
 
-  const productData = await fetchProductDetailServer(id).catch((e) => {
-    console.error(e);
+  const productData = await fetchProductDetailServer(id).catch(() => {
     return null;
   });
 
@@ -307,7 +192,7 @@ export default async function ItemDetailPage({
                   />
                 </svg>
                 <Link
-                  href={`/category/${productData.second_level_category_id}`}
+                  href={`/colllections/${productData.second_level_category_id}`}
                   className="ml-2 text-gray-500 hover:text-gray-700"
                 >
                   {productData.second_level_category_name}
@@ -369,6 +254,7 @@ export default async function ItemDetailPage({
                     rating={parseFloat(productData.review_rating) || 0}
                     reviewCount={productData.review_count}
                   />
+
                   <span className="text-sm text-gray-500">
                     {productData.lastest_volume
                       ? `${productData.lastest_volume} sales`

@@ -72,7 +72,6 @@ export default function PurchasePanelClient({ product }: { product: Product }) {
     ? parseFloat(currentSku.sku_price)
     : parseFloat(product.sale_price || "0");
   const originalPrice = parseFloat(product.original_price || "0");
-  // discount not used directly here — kept on server component
 
   return (
     <div className="space-y-2">
