@@ -148,10 +148,13 @@ export default async function ItemDetailPage({
                     </span>
                   )}
                 </div>
+                <p className="text-sm text-gray-600 mb-4">
+                  Store: {productData.shop_name}
+                </p>
                 <div className="flex items-center gap-4 mb-6">
                   <StarRating
                     rating={parseFloat(productData.evaluate_rate) || 0}
-                    reviewCount={productData.evaluate_rate}
+                    reviewCount={productData.lastest_volume}
                   />
 
                   <span className="text-sm text-gray-500">
@@ -172,38 +175,6 @@ export default async function ItemDetailPage({
                       ${productData.original_price}
                     </span>
                   )}
-                </div>
-                <div className="space-y-3">
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
-                    {productData.shop_name && (
-                      <div className="flex items-center gap-1">
-                        <span className="font-medium">Store:</span>
-                        <span className="text-gray-600">
-                          {productData.shop_name}
-                        </span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Sold:</span>
-                      <span className="text-gray-600">
-                        {productData.lastest_volume || 0}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-1">
-                      <span className="font-medium">Availability:</span>
-                      <span className="text-gray-600">
-                        {(productData.available_quantity ??
-                          productData.lastest_volume) > 0
-                          ? `${
-                              productData.available_quantity ??
-                              productData.lastest_volume
-                            } in stock`
-                          : "Out of stock"}
-                      </span>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

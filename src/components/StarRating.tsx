@@ -22,7 +22,7 @@ export default function StarRating({ rating, reviewCount }: Props) {
           />
         ));
       })()}
-      <span className="ml-1 text-sm text-gray-600">({starCount})</span>
+      <span className="ml-1 text-sm text-gray-600">({reviewCount})</span>
     </div>
   );
 }
