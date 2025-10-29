@@ -159,14 +159,14 @@ export default async function ItemDetailPage({
                 </p>
                 <div className="flex items-center gap-4 mb-6">
                   <StarRating
-                    rating={parseFloat(productData.review_rating) || 0}
-                    reviewCount={productData.review_count}
+                    rating={parseFloat(productData.evaluate_rate) || 0}
+                    reviewCount={productData.evaluate_rate}
                   />
 
                   <span className="text-sm text-gray-500">
                     {productData.lastest_volume
                       ? `${productData.lastest_volume} sales`
-                      : `${productData.review_count} reviews`}
+                      : `${productData.evaluate_rate} reviews`}
                   </span>
                 </div>
               </div>
