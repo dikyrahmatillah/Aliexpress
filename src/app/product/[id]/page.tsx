@@ -3,38 +3,37 @@ import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
 import StarRating from "@/components/StarRating";
 import RelatedSection from "@/sections/RelatedSection";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
-import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
-import { ProcessedProduct } from "@/types/aliexpress";
 
 async function fetchRelatedProductsServer(
-  categoryId: string | number | undefined,
-  currentProductId: string
+  categoryId: string | number | undefined
 ) {
   try {
-    const queryParams = {
-      query: categoryId ? "" : "*", // Use empty query when we have categoryId
-      categoryIds: categoryId ? Number(categoryId) : undefined,
-      pageSize: 20,
-      pageNo: 1,
+    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+    const searchParams = new URLSearchParams({
+      parsed: "true",
+      pageSize: "20",
+      pageNo: "1",
       targetCurrency: "USD",
       targetLanguage: "EN",
-    };
+      ...(categoryId ? { categoryIds: String(categoryId) } : {}),
+    });
 
-    const productsResult = await getAliExpressProducts(queryParams);
+    const res = await fetch(
+      `${base}/api/aliexpress/product?${searchParams.toString()}`
+    );
+    if (!res.ok) return null;
 
-    // Parse the product strings into objects
-    const rawProductStrings = productsResult?.products?.product || [];
-    const processedProducts: ProcessedProduct[] = rawProductStrings
-      .map((s) => parseProductString(s))
-      .filter((p: ProcessedProduct) => p.product_id !== currentProductId);
+    const data = await res.json();
 
     return {
-      total_record_count:
-        productsResult.total_record_count || processedProducts.length,
-      current_record_count: processedProducts.length,
-      products: processedProducts,
+      total_record_count: data.total_record_count || data.products.length,
+      current_record_count: data.products.length,
+      products: data.products,
     };
-  } catch {}
+  } catch {
+    return null;
+  }
 }
 
 export default async function ItemDetailPage({
@@ -75,8 +74,7 @@ export default async function ItemDetailPage({
   }
 
   const relatedProducts = await fetchRelatedProductsServer(
-    productData.first_level_category_id,
-    id
+    productData.first_level_category_id
   ).catch(() => null);
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
@@ -106,7 +104,7 @@ export default async function ItemDetailPage({
               <li className="flex items-center">
                 <FiChevronRight className="w-4 h-4 text-gray-400" />
                 <Link
-                  href={`/colllections/${productData.second_level_category_id}`}
+                  href={`/collections/${productData.second_level_category_id}`}
                   className="ml-2 text-gray-500 hover:text-gray-700"
                 >
                   {productData.second_level_category_name}
