@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiSearch } from "react-icons/fi";
+import { ShoppingCart, Menu, X } from "lucide-react";
 
 import { useAnnouncement } from "../../hooks/useAnnouncement";
 import { useDropdown } from "../../hooks/useDropdown";
@@ -155,22 +156,7 @@ export default function Header() {
                   href="/cart"
                   className="relative text-gray-700 hover:text-amber-600"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 3h2l.4 2M7 13h10l4-8H5.4"
-                    />
-                    <circle cx="10" cy="20" r="1" />
-                    <circle cx="18" cy="20" r="1" />
-                  </svg>
+                  <ShoppingCart className="w-6 h-6" />
                   <span className="sr-only">Cart</span>
                   <span className="absolute -top-1 -right-2 bg-amber-500 text-white text-xs rounded-full px-1"></span>
                 </Link>
@@ -182,20 +168,7 @@ export default function Header() {
                   aria-label="Toggle menu"
                   onClick={() => setMobileOpen((s) => !s)}
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  </svg>
+                  <Menu className="w-6 h-6" />
                 </button>
               </div>
             </>
@@ -211,20 +184,7 @@ export default function Header() {
                 className="text-gray-500 hover:text-gray-700"
                 aria-label="Close search"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  className="w-6 h-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X className="w-6 h-6" />
               </button>
               <div className="flex-1 relative">
                 <input

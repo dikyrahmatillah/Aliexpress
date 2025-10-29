@@ -1,3 +1,5 @@
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
 export default function CarouselButton({
   direction,
   onClick,
@@ -22,19 +24,11 @@ export default function CarouselButton({
       disabled={disabled}
       style={{ opacity: disabled ? 0.5 : 1 }}
     >
-      <svg
-        width="24"
-        height="24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-      >
-        {direction === "left" ? (
-          <path d="M15 19l-7-7 7-7" />
-        ) : (
-          <path d="M9 5l7 7-7 7" />
-        )}
-      </svg>
+      {direction === "left" ? (
+        <ChevronLeft className="w-6 h-6" />
+      ) : (
+        <ChevronRight className="w-6 h-6" />
+      )}
     </button>
   );
 }

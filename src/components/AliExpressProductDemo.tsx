@@ -7,6 +7,7 @@ import {
   useAliExpressProductsMutation,
   formatAliExpressProducts,
 } from "@/hooks/useAliexpress";
+import { Play } from "lucide-react";
 
 export default function AliExpressProductDemo() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -246,14 +247,7 @@ function ProductGrid({ products }: ProductGridProps) {
               />
               {product.product_video_url && (
                 <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                  <svg
-                    width="16"
-                    height="16"
-                    fill="currentColor"
-                    viewBox="0 0 16 16"
-                  >
-                    <path d="M6.79 5.093A.5.5 0 0 1 7.5 5.5v5a.5.5 0 0 1-.79.407l-4-2.5a.5.5 0 0 1 0-.814l4-2.5zM8 6.5v3a.5.5 0 0 0 .79.407l4-2.5a.5.5 0 0 0 0-.814l-4-2.5A.5.5 0 0 0 8 3.5v3z" />
-                  </svg>
+                  <Play className="w-4 h-4" />
                   Video
                 </span>
               )}

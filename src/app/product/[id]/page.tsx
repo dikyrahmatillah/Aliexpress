@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Truck, Clock, Shield } from "lucide-react";
+import { Truck, Clock, Shield, ChevronRight } from "lucide-react";
 import StarRating from "@/components/StarRating";
 import RelatedSection from "@/sections/RelatedSection";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
@@ -156,19 +156,7 @@ export default async function ItemDetailPage({
               </Link>
             </li>
             <li className="flex items-center">
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
               <Link
                 href={`/collections/${productData.first_level_category_id}`}
                 className="ml-2 text-gray-500 hover:text-gray-700"
@@ -178,19 +166,7 @@ export default async function ItemDetailPage({
             </li>
             {productData.second_level_category_name && (
               <li className="flex items-center">
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                <ChevronRight className="w-4 h-4 text-gray-400" />
                 <Link
                   href={`/colllections/${productData.second_level_category_id}`}
                   className="ml-2 text-gray-500 hover:text-gray-700"
@@ -200,19 +176,7 @@ export default async function ItemDetailPage({
               </li>
             )}
             <li className="flex items-center">
-              <svg
-                className="w-4 h-4 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
               <span className="ml-2 text-gray-900 font-medium truncate max-w-xs">
                 {productData.product_title.length > 40
                   ? productData.product_title.substring(0, 40) + "..."
