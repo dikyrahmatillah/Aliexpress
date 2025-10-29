@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
-import { Minus, Plus } from "lucide-react";
+import { FiMinus, FiPlus } from "react-icons/fi";
 
 interface SkuProperty {
   name: string;
@@ -126,14 +126,14 @@ export default function PurchasePanelClient({ product }: { product: Product }) {
             onClick={() => handleQuantityChange(-1)}
             className="p-2 hover:bg-gray-100"
           >
-            <Minus className="w-4 h-4" />
+            <FiMinus className="w-4 h-4" />
           </button>
           <span className="px-4 py-2 font-medium">{quantity}</span>
           <button
             onClick={() => handleQuantityChange(1)}
             className="p-2 hover:bg-gray-100"
           >
-            <Plus className="w-4 h-4" />
+            <FiPlus className="w-4 h-4" />
           </button>
         </div>
       </div>

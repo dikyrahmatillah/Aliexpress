@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Truck, Clock, Shield, ChevronRight } from "lucide-react";
+import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
 import StarRating from "@/components/StarRating";
 import RelatedSection from "@/sections/RelatedSection";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
@@ -156,7 +156,7 @@ export default async function ItemDetailPage({
               </Link>
             </li>
             <li className="flex items-center">
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <FiChevronRight className="w-4 h-4 text-gray-400" />
               <Link
                 href={`/collections/${productData.first_level_category_id}`}
                 className="ml-2 text-gray-500 hover:text-gray-700"
@@ -166,7 +166,7 @@ export default async function ItemDetailPage({
             </li>
             {productData.second_level_category_name && (
               <li className="flex items-center">
-                <ChevronRight className="w-4 h-4 text-gray-400" />
+                <FiChevronRight className="w-4 h-4 text-gray-400" />
                 <Link
                   href={`/colllections/${productData.second_level_category_id}`}
                   className="ml-2 text-gray-500 hover:text-gray-700"
@@ -176,7 +176,7 @@ export default async function ItemDetailPage({
               </li>
             )}
             <li className="flex items-center">
-              <ChevronRight className="w-4 h-4 text-gray-400" />
+              <FiChevronRight className="w-4 h-4 text-gray-400" />
               <span className="ml-2 text-gray-900 font-medium truncate max-w-xs">
                 {productData.product_title.length > 40
                   ? productData.product_title.substring(0, 40) + "..."
@@ -231,7 +231,7 @@ export default async function ItemDetailPage({
 
               <div className="space-y-3 border-t border-gray-200 pt-4">
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-gray-600" />
+                  <FiTruck className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-medium">Delivery Information</p>
                     <p className="text-sm text-gray-600">
@@ -245,14 +245,14 @@ export default async function ItemDetailPage({
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Clock className="w-5 h-5 text-gray-600" />
+                  <FiClock className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-medium">Delivery Time</p>
                     <p className="text-sm text-gray-600">Estimated 7-20 days</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Shield className="w-5 h-5 text-gray-600" />
+                  <FiShield className="w-5 h-5 text-gray-600" />
                   <div>
                     <p className="text-sm font-medium">Buyer Protection</p>
                     <p className="text-sm text-gray-600">

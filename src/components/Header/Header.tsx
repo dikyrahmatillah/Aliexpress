@@ -3,8 +3,7 @@
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiSearch } from "react-icons/fi";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { FiSearch, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 
 import { useAnnouncement } from "../../hooks/useAnnouncement";
 import { useDropdown } from "../../hooks/useDropdown";
@@ -156,7 +155,7 @@ export default function Header() {
                   href="/cart"
                   className="relative text-gray-700 hover:text-amber-600"
                 >
-                  <ShoppingCart className="w-6 h-6" />
+                  <FiShoppingCart className="w-6 h-6" />
                   <span className="sr-only">Cart</span>
                   <span className="absolute -top-1 -right-2 bg-amber-500 text-white text-xs rounded-full px-1"></span>
                 </Link>
@@ -168,7 +167,7 @@ export default function Header() {
                   aria-label="Toggle menu"
                   onClick={() => setMobileOpen((s) => !s)}
                 >
-                  <Menu className="w-6 h-6" />
+                  <FiMenu className="w-6 h-6" />
                 </button>
               </div>
             </>
@@ -184,7 +183,7 @@ export default function Header() {
                 className="text-gray-500 hover:text-gray-700"
                 aria-label="Close search"
               >
-                <X className="w-6 h-6" />
+                <FiX className="w-6 h-6" />
               </button>
               <div className="flex-1 relative">
                 <input

@@ -7,7 +7,7 @@ import {
   useAliExpressProductsMutation,
   formatAliExpressProducts,
 } from "@/hooks/useAliexpress";
-import { Play } from "lucide-react";
+import { FiPlay } from "react-icons/fi";
 
 export default function AliExpressProductDemo() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -247,7 +247,7 @@ function ProductGrid({ products }: ProductGridProps) {
               />
               {product.product_video_url && (
                 <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                  <Play className="w-4 h-4" />
+                  <FiPlay className="w-4 h-4" />
                   Video
                 </span>
               )}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import ProductCard from "./ProductCard";
-import { Grid, List } from "lucide-react";
+import { FiGrid, FiList } from "react-icons/fi";
 import { ProcessedProduct } from "@/types/aliexpress";
 
 type Props = {
@@ -75,13 +75,13 @@ export default function CategoryProductsClient({
               onClick={() => setViewMode("grid")}
               className={`p-2 ${viewMode === "grid" ? "bg-gray-100" : ""}`}
             >
-              <Grid className="w-4 h-4" />
+              <FiGrid className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
               className={`p-2 ${viewMode === "list" ? "bg-gray-100" : ""}`}
             >
-              <List className="w-4 h-4" />
+              <FiList className="w-4 h-4" />
             </button>
           </div>
         </div>

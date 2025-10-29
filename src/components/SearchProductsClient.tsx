@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { FiSearch } from "react-icons/fi";
 import ProductCard from "./ProductCard";
 import { ProcessedProduct } from "@/types/aliexpress";
 
@@ -65,7 +65,7 @@ export default function SearchProductsClient({
       >
         <div className="flex gap-4 max-w-2xl">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
               type="text"
               placeholder="Search for products..."
@@ -93,7 +93,7 @@ export default function SearchProductsClient({
 
       {!hasSearched ? (
         <div className="text-center py-12">
-          <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <FiSearch className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-medium text-gray-900 mb-2">
             Start your search
           </h2>
@@ -124,7 +124,7 @@ export default function SearchProductsClient({
             <>
               {filteredProducts.length === 0 ? (
                 <div className="text-center py-12">
-                  <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <FiSearch className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h2 className="text-xl font-medium text-gray-900 mb-2">
                     No results found
                   </h2>

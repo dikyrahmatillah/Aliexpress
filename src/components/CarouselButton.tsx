@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 export default function CarouselButton({
   direction,
@@ -25,9 +25,9 @@ export default function CarouselButton({
       style={{ opacity: disabled ? 0.5 : 1 }}
     >
       {direction === "left" ? (
-        <ChevronLeft className="w-6 h-6" />
+        <FiChevronLeft className="w-6 h-6" />
       ) : (
-        <ChevronRight className="w-6 h-6" />
+        <FiChevronRight className="w-6 h-6" />
       )}
     </button>
   );
