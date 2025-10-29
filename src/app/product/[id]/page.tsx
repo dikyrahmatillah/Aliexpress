@@ -7,71 +7,6 @@ import PurchasePanelClient from "@/components/item/PurchasePanelClient";
 import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
 import { ProcessedProduct } from "@/types/aliexpress";
 
-async function fetchProductDetailServer(productId: string) {
-  const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-  const url = `${base}/api/aliexpress/productdetail?product_id=${encodeURIComponent(
-    productId
-  )}&target_currency=USD&target_language=EN&country=US`;
-
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error(`Failed to fetch product detail: ${res.status}`);
-  }
-  const payload = await res.json();
-
-  // The API route returns { success: true, product: rawProduct }
-  const raw = payload?.product || {};
-
-  // Normalize to the shape the UI expects (similar to client-side processor)
-  const smallImages = raw.product_small_image_urls?.string || [];
-  const images = [raw.product_main_image_url, ...smallImages].filter(Boolean);
-
-  const skuInfo = raw.sku_info || [];
-  if (skuInfo.length === 0 && raw.sku_id) {
-    skuInfo.push({
-      sku_id: String(raw.sku_id),
-      sku_price: raw.sale_price || raw.app_sale_price,
-      sku_available_quantity:
-        raw.available_quantity || raw.lastest_volume || 999,
-      sku_properties: [],
-    });
-  }
-
-  return {
-    product_id: String(raw.product_id || productId),
-    product_title: raw.product_title || "",
-    product_detail_url: raw.product_detail_url || "",
-    product_main_image_url: raw.product_main_image_url || "",
-    product_images: images,
-    product_description: raw.product_description || "",
-    product_attributes: raw.product_attributes || [],
-    review_rating: raw.review_rating || "0",
-    review_count: raw.review_count || 0,
-    sale_price:
-      raw.target_sale_price || raw.sale_price || raw.app_sale_price || "0",
-    original_price: raw.target_original_price || raw.original_price || "0",
-    discount: raw.discount || "0",
-    shop_name: raw.shop_name || "",
-    shop_id: raw.shop_id || "",
-    shop_url: raw.shop_url || "",
-    commission_rate:
-      raw.commission_rate || raw.hot_product_commission_rate || "0",
-    available_quantity: raw.available_quantity || raw.lastest_volume || 999,
-    delivery_info: raw.delivery_info || {
-      delivery_time: "Standard shipping time",
-      delivery_fee: "Standard shipping rates apply",
-    },
-    sku_info: skuInfo,
-    first_level_category_id: raw.first_level_category_id || "",
-    first_level_category_name: raw.first_level_category_name || "",
-    second_level_category_id: raw.second_level_category_id || "",
-    second_level_category_name: raw.second_level_category_name || "",
-    promotion_link: raw.promotion_link || "",
-    lastest_volume: raw.lastest_volume,
-  };
-}
-
 async function fetchRelatedProductsServer(
   categoryId: string | number | undefined,
   currentProductId: string
@@ -111,9 +46,25 @@ export default async function ItemDetailPage({
 }) {
   const { id } = await params;
 
-  const productData = await fetchProductDetailServer(id).catch(() => {
-    return null;
-  });
+  const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+
+  const url = `${base}/api/aliexpress/productdetail?product_id=${encodeURIComponent(
+    id
+  )}&target_currency=USD&target_language=EN&country=US`;
+
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error(`Failed to fetch product detail: ${res.status}`);
+  }
+  const payload = await res.json();
+
+  // The API route returns { success: true, product: rawProduct }
+  const productData = payload?.product || {};
+  console.log("productData", productData);
+
+  // const productData = await fetchProductDetailServer(id).catch(() => {
+  //   return null;
+  // });
 
   if (!productData) {
     return (
@@ -137,12 +88,7 @@ export default async function ItemDetailPage({
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
 
-  const productImages = productData.product_images || [];
-  const mainImage = productData.product_main_image_url;
-  const allImages = [
-    mainImage,
-    ...productImages.filter((img) => img !== mainImage),
-  ];
+  const allImages = productData.product_small_image_urls.string || [];
 
   return (
     <div className="min-h-screen">
