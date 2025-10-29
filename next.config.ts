@@ -10,9 +10,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "sixsilver.pl" },
       { protocol: "https", hostname: "picsum.photos" },
       { protocol: "https", hostname: "placeholder.com" },
-      { protocol: "https", hostname: "ae-pic-a1.aliexpress-media.com" },
-      { protocol: "https", hostname: "ae01.alicdn.com" },
-      { protocol: "https", hostname: "ae04.alicdn.com" },
+      { protocol: "https", hostname: "**.aliexpress-media.com" },
+      { protocol: "https", hostname: "**.alicdn.com" },
+      { protocol: "http", hostname: "**.alicdn.com" },
     ],
   },
 };

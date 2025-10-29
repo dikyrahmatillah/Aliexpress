@@ -52,7 +52,7 @@ export default async function ItemDetailPage({
     id
   )}&target_currency=USD&target_language=EN&country=US`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await fetch(url);
   if (!res.ok) {
     throw new Error(`Failed to fetch product detail: ${res.status}`);
   }
@@ -60,11 +60,7 @@ export default async function ItemDetailPage({
 
   // The API route returns { success: true, product: rawProduct }
   const productData = payload?.product || {};
-  console.log("productData", productData);
-
-  // const productData = await fetchProductDetailServer(id).catch(() => {
-  //   return null;
-  // });
+  console.log("Product Data:", productData);
 
   if (!productData) {
     return (
