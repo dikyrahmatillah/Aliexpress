@@ -89,9 +89,11 @@ export default async function ItemDetailPage({
   return (
     <div className="min-h-screen">
       <div className="container mx-auto px-4 pt-4">
-        {/* Breadcrumb */}
+        {/* Breadcrumb - responsive: allow horizontal scroll on small screens and
+            ensure truncation works by setting min-w-0 on the truncating element */}
         <nav className="flex" aria-label="Breadcrumb">
-          <ol className="flex items-center space-x-2">
+          {/* Allow breadcrumb items to wrap on small screens instead of scrolling */}
+          <ol className="flex items-center space-x-2 flex-wrap">
             <li>
               <Link href="/" className="text-gray-500 hover:text-gray-700">
                 Home
@@ -117,9 +119,9 @@ export default async function ItemDetailPage({
                 </Link>
               </li>
             )}
-            <li className="flex items-center">
-              <FiChevronRight className="w-4 h-4 text-gray-400" />
-              <span className="ml-2 text-gray-900 font-medium truncate max-w-xs">
+            <li className="flex items-center flex-shrink-0 sm:flex-shrink">
+              <FiChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="ml-2 text-gray-900 font-medium truncate min-w-0 max-w-full">
                 {productData.product_title.length > 40
                   ? productData.product_title.substring(0, 40) + "..."
                   : productData.product_title}
