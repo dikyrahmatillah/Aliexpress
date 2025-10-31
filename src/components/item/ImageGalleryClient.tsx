@@ -47,7 +47,7 @@ export default function ImageGalleryClient({
             }`}
           >
             <Image
-              src={image}
+              src={`${image}_220x220.jpg`}
               alt={`${title} view ${index + 1}`}
               fill
               className="object-cover"
