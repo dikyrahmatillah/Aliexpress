@@ -27,7 +27,7 @@ export default function ProductCard({
             </div>
           )}
           <Image
-            src={product.image_url}
+            src={`${product.image_url}_300x300.jpg`}
             alt={product.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"

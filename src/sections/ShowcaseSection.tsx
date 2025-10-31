@@ -40,10 +40,10 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
         )}
         <div className="aspect-square overflow-hidden bg-white">
           <Image
-            src={product.image_url}
+            src={`${product.image_url}_350x350.jpg`}
             alt={product.title}
-            width={360}
-            height={360}
+            width={350}
+            height={350}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>

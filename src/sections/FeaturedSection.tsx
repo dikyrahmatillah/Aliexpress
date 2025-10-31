@@ -58,7 +58,7 @@ function FeaturedProductCard({
           )}
           <div className="aspect-square overflow-hidden rounded-lg bg-white border">
             <Image
-              src={product.image_url}
+              src={`${product.image_url}_300x300.jpg`}
               alt={product.title}
               width={300}
               height={300}
