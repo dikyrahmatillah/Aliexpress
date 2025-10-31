@@ -24,7 +24,7 @@ export default function CategoryCard({
       <Link href={linkUrl} className="block group">
         <div className="relative aspect-square overflow-hidden">
           <Image
-            src={imageUrl}
+            src={`${imageUrl}_350x350.webp`}
             alt={title}
             width={350}
             height={350}
