@@ -53,7 +53,7 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
           {product.title}
         </h3>
         <StarRating
-          rating={product.evaluate_rate}
+          rating={(product.evaluate_rate * 100) / 5}
           reviewCount={product.volume}
         />
         <p className="text-sm text-gray-600">
