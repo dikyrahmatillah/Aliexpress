@@ -110,7 +110,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <p className="text-gray-600 mb-8">
             Be the first to know about new collections and exclusive offers.
           </p>
-          <form className="max-w-md mx-auto flex gap-4">
+          <form className="gap-4">
             <input
               type="email"
               placeholder="Email"

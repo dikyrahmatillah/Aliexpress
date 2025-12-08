@@ -47,7 +47,6 @@ function FeaturedProductCard({
       <Link
         href={`/product/${product.product_id}`}
         className="group block"
-        target="_blank"
         rel="noopener noreferrer"
       >
         <div className="relative">
@@ -137,19 +136,7 @@ export default function FeaturedSection({
     <section className="py-16 bg-white">
       <div className="px-4">
         <h2 className="text-5xl font-extrabold text-center mb-10">
-          <Link
-            href={
-              shouldUseFallback
-                ? "https://sixsilver.pl/kategoria/marki/"
-                : "https://www.aliexpress.com"
-            }
-            className="hover:text-blue-600"
-            title="Featured Products"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Featured Products
-          </Link>
+          Featured Products
           {error && (
             <div className="text-sm text-red-500 font-normal mt-2">
               (Using fallback data due to API issues)
