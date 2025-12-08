@@ -1,7 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { AliExpressQueryParams, ProcessedProduct } from "@/types/aliexpress";
-import { mockHotProductsResponse } from "@/data/mockAliexpressData";
 
 interface AliExpressResponse {
   total_record_count: number;
@@ -89,7 +88,6 @@ interface UseAliExpressProductsOptions {
   enabled?: boolean;
   staleTime?: number;
   cacheTime?: number;
-  useMock?: boolean; // New option to force mock data
 }
 
 /**
@@ -103,18 +101,11 @@ export function useAliExpressProducts(
     enabled = true,
     staleTime = 5 * 60 * 1000,
     cacheTime = 10 * 60 * 1000,
-    useMock = false,
   } = options;
 
   return useQuery({
     queryKey: ["aliexpress-products", queryParams],
     queryFn: async (): Promise<AliExpressResponse> => {
-      if (useMock) {
-        // Return mock data immediately
-        await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate API delay
-        return mockHotProductsResponse;
-      }
-
       try {
         const searchParams = new URLSearchParams({
           query: queryParams.query,
@@ -147,9 +138,9 @@ export function useAliExpressProducts(
 
         return response.json();
       } catch (error) {
-        console.warn("AliExpress API failed, using mock data:", error);
-        // Always return mock data as fallback to satisfy return type
-        return mockHotProductsResponse;
+        console.error("AliExpress API failed:", error);
+        // Propagate error to callers (React Query will handle retries/state)
+        throw error;
       }
     },
     enabled: enabled && !!queryParams.query,
@@ -245,19 +236,8 @@ export function useAliExpressHotProducts(
 
         return fetchedData;
       } catch (error) {
-        console.warn(
-          "AliExpress Hot Products API failed, using mock data:",
-          error
-        );
-        // Fallback to mock data if API fails
-        return {
-          ...mockHotProductsResponse,
-          products: mockHotProductsResponse.products.filter(
-            (product) =>
-              !categoryId ||
-              product.first_level_category_id === categoryId.toString()
-          ),
-        };
+        console.error("AliExpress Hot Products API failed:", error);
+        throw error;
       }
     },
     enabled,
@@ -359,7 +339,6 @@ function processProductDetail(rawData: AliExpressProductDetail) {
     });
   }
 
-  // Return processed data in the format our app expects
   return {
     product_id: String(rawData.product_id),
     product_title: rawData.product_title,
@@ -372,7 +351,6 @@ function processProductDetail(rawData: AliExpressProductDetail) {
     product_attributes: rawData.product_attributes || [],
     review_rating: rawData.review_rating || "0",
     review_count: rawData.review_count || 0,
-    // Use target prices if available (usually in USD), otherwise use original prices
     sale_price:
       rawData.target_sale_price ||
       rawData.sale_price ||
@@ -393,7 +371,6 @@ function processProductDetail(rawData: AliExpressProductDetail) {
       delivery_fee: "Standard shipping rates apply",
     },
     sku_info: skuInfo,
-    // Add additional fields from the API
     first_level_category_id: rawData.first_level_category_id,
     first_level_category_name: rawData.first_level_category_name,
     second_level_category_id: rawData.second_level_category_id,
@@ -457,23 +434,8 @@ export function useAliExpressRelatedProducts(
           current_record_count: filteredProducts.length,
         };
       } catch (error) {
-        console.warn(
-          "AliExpress Related Products API failed, using mock data:",
-          error
-        );
-        // Fallback to mock data if API fails
-        const filteredMockProducts = mockHotProductsResponse.products.filter(
-          (product) =>
-            product.product_id !== currentProductId &&
-            (!categoryId ||
-              product.first_level_category_id === categoryId.toString())
-        );
-
-        return {
-          ...mockHotProductsResponse,
-          products: filteredMockProducts,
-          current_record_count: filteredMockProducts.length,
-        };
+        console.error("AliExpress Related Products API failed:", error);
+        throw error;
       }
     },
     enabled: enabled && !!categoryId,

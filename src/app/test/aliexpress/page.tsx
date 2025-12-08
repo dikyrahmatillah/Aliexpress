@@ -4,9 +4,7 @@ import { useAliExpressHotProducts } from "@/hooks/useAliexpress";
 import Image from "next/image";
 
 export default function TestPage() {
-  const { data, isLoading, error } = useAliExpressHotProducts(0, {
-    useMock: false,
-  });
+  const { data, isLoading, error } = useAliExpressHotProducts(0);
 
   return (
     <div className="p-8">

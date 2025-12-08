@@ -3,21 +3,17 @@ import {
   getAliExpressProductsParsed,
   getAliExpressCategories,
 } from "@/utils/aliexpress";
-// ProcessedProduct type not required in server file
 import CategoryProductsClient from "@/components/CategoryProductsClient";
 
 interface CategoryPageProps {
   params: Promise<{ id: string }>;
 }
 
-// (Server) initial data is fetched and UI interactions happen in the client component
-
 interface CategoryInfo {
   name: string;
   description: string;
 }
 
-// Default category info for fallback
 const defaultCategoryInfo: CategoryInfo = {
   name: "Category Products",
   description: "Discover amazing products from AliExpress in this category",
@@ -28,7 +24,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const id = resolved.id;
   const categoryId = parseInt(id, 10) || 0;
 
-  // Fetch initial products server-side for better SEO and performance
   const result = await getAliExpressProductsParsed({
     query: "",
     categoryIds: categoryId,
@@ -38,7 +33,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     targetLanguage: "EN",
   });
 
-  // Try to fetch category info server-side
   let categoryInfo: CategoryInfo = defaultCategoryInfo;
   try {
     const categoriesData = await getAliExpressCategories();
@@ -57,15 +51,12 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         };
       }
     }
-  } catch {
-    // keep default if categories fetch fails
-  }
+  } catch {}
 
   const initialProducts = result.products;
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Breadcrumb */}
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <nav className="flex items-center space-x-2 text-sm">
@@ -80,7 +71,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
 
-      {/* Page Header */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <div>
@@ -101,7 +91,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </div>
 
-      {/* Newsletter Section */}
       <div className="bg-gray-50 py-16 mt-16">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">

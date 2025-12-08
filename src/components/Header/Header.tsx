@@ -8,12 +8,10 @@ import { FiSearch, FiShoppingCart, FiMenu, FiX } from "react-icons/fi";
 import { useAnnouncement } from "../../hooks/useAnnouncement";
 import { useDropdown } from "../../hooks/useDropdown";
 import { useSearch } from "../../hooks/useSearch";
-import type { NavItem } from "./Header.types";
 import AnnouncementBar, { announcements } from "./AnnouncementBar";
 import { NAV_ITEMS } from "./nav.data";
 
 export default function Header() {
-  // active when user scrolls away from top or when search is active
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
