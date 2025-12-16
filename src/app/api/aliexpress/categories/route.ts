@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAliExpressCategories } from "@/utils/aliexpress";
+import { getAliExpressCategories } from "@/utils/aliexpress-old";
 
 export async function GET(request: NextRequest) {
   try {

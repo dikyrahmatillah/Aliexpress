@@ -5,26 +5,25 @@ import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
 import RelatedSection from "@/sections/RelatedSection";
 import Newsletter from "@/components/Newsletter";
-import { getAliExpressProducts, parseProductString } from "@/utils/aliexpress";
-import type { ProductQueryResult, ProcessedProduct } from "@/types/aliexpress";
+import {
+  getAliExpressProducts,
+  parseProductString,
+} from "@/utils/aliexpress-old";
+import type { ProcessedProduct } from "@/types/aliexpress";
 
 export default async function Home() {
-  let products: ProductQueryResult | undefined;
+  const products = await getAliExpressProducts({
+    query: "*",
+    pageSize: 50,
+    pageNo: 1,
+  });
 
-  try {
-    products = await getAliExpressProducts({
-      query: "*",
-      pageSize: 50,
-      pageNo: 1,
-    });
-  } catch {
-    products = undefined;
-  }
-
-  const rawProductStrings = products?.products?.product || [];
-  const processedProducts: ProcessedProduct[] = rawProductStrings.map((s) =>
+  // console.log("Fetched products:", products);
+  const processedProducts = products?.products?.product.map((s) =>
     parseProductString(s)
   );
+
+  console.log("Processed products:", products.products);
 
   const sliceProcessed = (
     start: number,

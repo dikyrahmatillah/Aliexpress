@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   getAliExpressHotProducts,
   getAliExpressHotProductsParsed,
-} from "@/utils/aliexpress";
+} from "@/utils/aliexpress-old";
 
 export async function GET(request: NextRequest) {
   try {
