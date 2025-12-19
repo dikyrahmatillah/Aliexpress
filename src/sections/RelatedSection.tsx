@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 import CategoryCard from "@/components/CategoryCard";
 import CarouselButton from "@/components/CarouselButton";
 
@@ -16,7 +16,7 @@ export interface SideImage {
 interface AliExpressResponse {
   total_record_count: number;
   current_record_count: number;
-  products: ProcessedProduct[];
+  products: AliExpressProduct[];
 }
 
 interface CategorySectionProps {
@@ -100,6 +100,24 @@ export default function RelatedSection({
     return () => window.removeEventListener("keydown", onKey);
   }, [onKey]);
 
+  // convert evaluate_rate values like "98.0%" into a numeric rating (0-5)
+  const parseEvaluateRate = (
+    rate?: string | number | null
+  ): number | undefined => {
+    if (rate == null) return undefined;
+    if (typeof rate === "number") return +rate;
+    const s = String(rate).trim();
+    const pctMatch = s.match(/([\d.]+)\s*%/);
+    if (pctMatch) {
+      const pct = parseFloat(pctMatch[1]);
+      if (isNaN(pct)) return undefined;
+      // map percent (0-100) to 0-5 scale and round to one decimal
+      return +((pct / 100) * 5).toFixed(1);
+    }
+    const num = parseFloat(s);
+    return isNaN(num) ? undefined : num;
+  };
+
   return (
     <section className="py-10">
       <div className="px-4">
@@ -153,7 +171,7 @@ export default function RelatedSection({
                 ) : (
                   carouselItems.slice(0, visibleCount).map((cat, idx) => (
                     <div
-                      key={cat.title + idx}
+                      key={cat.product_title + idx}
                       style={{
                         flex: `0 0 calc(${100 / visibleCount}% - 1rem)`,
                         maxWidth: `calc(${100 / visibleCount}% - 1rem)`,
@@ -161,14 +179,14 @@ export default function RelatedSection({
                       }}
                     >
                       <CategoryCard
-                        title={cat.title}
+                        title={cat.product_title}
                         discount={
                           cat.discount ? `${cat.discount} off` : undefined
                         }
-                        imageUrl={cat.image_url}
+                        imageUrl={cat.product_main_image_url}
                         linkUrl={`/product/${cat.product_id}`}
                         price={cat.sale_price}
-                        rating={cat.evaluate_rate}
+                        rating={parseEvaluateRate(cat.evaluate_rate)}
                       />
                     </div>
                   ))

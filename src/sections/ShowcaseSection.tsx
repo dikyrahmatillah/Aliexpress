@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 import StarRating from "../components/StarRating";
 
 interface AliExpressResponse {
   total_record_count: number;
   current_record_count: number;
-  products: ProcessedProduct[];
+  products: AliExpressProduct[];
 }
 
 interface ShowcaseSectionProps {
@@ -17,9 +17,12 @@ interface ShowcaseSectionProps {
   error?: Error | null;
 }
 
-function ProductCard({ product }: { product: ProcessedProduct }) {
+function ProductCard({ product }: { product: AliExpressProduct }) {
   const salePrice = parseFloat(product.sale_price);
   const originalPrice = parseFloat(product.original_price);
+  const ratingValue = Number(
+    String(product.evaluate_rate).replace("%", "") || 0
+  );
   const discount =
     originalPrice > salePrice
       ? Math.round((1 - salePrice / originalPrice) * 100)
@@ -39,8 +42,8 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
         )}
         <div className="aspect-square overflow-hidden bg-white">
           <Image
-            src={`${product.image_url}_350x350.jpg`}
-            alt={product.title}
+            src={`${product.product_main_image_url}_350x350.jpg`}
+            alt={product.product_title}
             width={350}
             height={350}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -49,12 +52,9 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
       </div>
       <div className="mt-4 space-y-2">
         <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-          {product.title}
+          {product.product_title}
         </h3>
-        <StarRating
-          rating={(product.evaluate_rate * 100) / 5}
-          reviewCount={product.volume}
-        />
+        <StarRating rating={ratingValue} reviewCount={product.lastest_volume} />
         <p className="text-sm text-gray-600">
           {product.first_level_category_name}
         </p>
@@ -74,7 +74,7 @@ function ProductCard({ product }: { product: ProcessedProduct }) {
           )}
         </div>
         <div className="text-xs text-gray-500">
-          {product.volume} sold | {product.shop_name}
+          {product.lastest_volume} sold | {product.shop_name}
         </div>
       </div>
     </Link>
@@ -90,7 +90,7 @@ export default function ShowcaseSection({
   const transformedProducts =
     productsData?.products?.map((product) => ({
       ...product,
-      displayTitle: product.title.toUpperCase(),
+      displayTitle: product.product_title.toUpperCase(),
       sale_price: (parseFloat(product.sale_price) * 1.1).toFixed(2),
     })) || [];
 
@@ -137,7 +137,7 @@ export default function ShowcaseSection({
                   key={product.product_id || idx}
                   product={{
                     ...product,
-                    title: product.displayTitle,
+                    product_title: product.displayTitle,
                     sale_price: product.sale_price,
                   }}
                 />

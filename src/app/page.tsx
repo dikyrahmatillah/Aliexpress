@@ -5,11 +5,7 @@ import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
 import RelatedSection from "@/sections/RelatedSection";
 import Newsletter from "@/components/Newsletter";
-import {
-  getAliExpressProducts,
-  parseProductString,
-} from "@/utils/aliexpress-old";
-import type { ProcessedProduct } from "@/types/aliexpress";
+import { getAliExpressProducts } from "@/utils/aliexpress";
 
 export default async function Home() {
   const products = await getAliExpressProducts({
@@ -18,12 +14,7 @@ export default async function Home() {
     pageNo: 1,
   });
 
-  // console.log("Fetched products:", products);
-  const processedProducts = products?.products?.product.map((s) =>
-    parseProductString(s)
-  );
-
-  console.log("Processed products:", products.products);
+  const productsData = products.products.product;
 
   const sliceProcessed = (
     start: number,
@@ -32,17 +23,17 @@ export default async function Home() {
     | {
         total_record_count: number;
         current_record_count: number;
-        products: ProcessedProduct[];
+        products: typeof productsData;
       }
     | undefined => {
-    if (!processedProducts || processedProducts.length === 0) {
+    if (!productsData || productsData.length === 0) {
       return undefined;
     } else {
-      const sliced = processedProducts.slice(start, end);
+      const sliced = productsData.slice(start, end);
 
       return {
-        total_record_count: processedProducts.length,
-        current_record_count: sliced.length,
+        total_record_count: productsData.length,
+        current_record_count: end,
         products: sliced,
       };
     }

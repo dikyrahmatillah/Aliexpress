@@ -4,14 +4,14 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import CarouselButton from "@/components/CarouselButton";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 import { brands } from "@/data/brandsData";
 import BrandCard from "@/components/BrandCard";
 
 interface AliExpressResponse {
   total_record_count: number;
   current_record_count: number;
-  products: ProcessedProduct[];
+  products: AliExpressProduct[];
 }
 
 interface FeaturedSectionProps {
@@ -21,7 +21,7 @@ interface FeaturedSectionProps {
 }
 
 interface FeaturedProductCardProps {
-  product: ProcessedProduct;
+  product: AliExpressProduct;
   visibleCount: number;
 }
 
@@ -57,8 +57,8 @@ function FeaturedProductCard({
           )}
           <div className="aspect-square overflow-hidden rounded-lg bg-white border">
             <Image
-              src={`${product.image_url}_300x300.jpg`}
-              alt={product.title}
+              src={`${product.product_main_image_url}_300x300.jpg`}
+              alt={product.product_title}
               width={300}
               height={300}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -67,7 +67,7 @@ function FeaturedProductCard({
         </div>
         <div className="mt-3 space-y-1">
           <h3 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
-            {product.title}
+            {product.product_title}
           </h3>
           <div className="flex items-center space-x-1">
             <span className="text-lg font-bold text-gray-900">
@@ -79,7 +79,9 @@ function FeaturedProductCard({
               </span>
             )}
           </div>
-          <div className="text-xs text-gray-500">{product.volume} sold</div>
+          <div className="text-xs text-gray-500">
+            {product.lastest_volume} sold
+          </div>
         </div>
       </Link>
     </div>
@@ -182,7 +184,7 @@ export default function FeaturedSection({
                     .slice(startIdx, startIdx + visibleCount)
                     .map((product, idx) => (
                       <FeaturedProductCard
-                        key={product.product_id + idx}
+                        key={Number(product.product_id) + idx}
                         product={product}
                         visibleCount={visibleCount}
                       />
