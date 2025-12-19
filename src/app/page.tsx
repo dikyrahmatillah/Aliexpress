@@ -1,10 +1,10 @@
 import HeroSection from "@/sections/HeroSection";
 import AboutSection from "@/sections/AboutSection";
 import ShowcaseSection from "@/sections/ShowcaseSection";
-import { heroContent } from "@/data/heroData";
 import FeaturedSection from "@/sections/FeaturedSection";
 import RelatedSection from "@/sections/RelatedSection";
 import Newsletter from "@/components/Newsletter";
+import { heroContent } from "@/data/heroData";
 import { getAliExpressProducts } from "@/utils/aliexpress";
 
 export default async function Home() {
@@ -16,61 +16,40 @@ export default async function Home() {
 
   const productsData = products.products.product;
 
-  const sliceProcessed = (
-    start: number,
-    end: number
-  ):
-    | {
-        total_record_count: number;
-        current_record_count: number;
-        products: typeof productsData;
-      }
-    | undefined => {
-    if (!productsData || productsData.length === 0) {
-      return undefined;
-    } else {
-      const sliced = productsData.slice(start, end);
+  const getProductsSlice = (start: number, end: number) => {
+    if (!productsData) return undefined;
 
-      return {
-        total_record_count: productsData.length,
-        current_record_count: end,
-        products: sliced,
-      };
-    }
+    const sliced = productsData.slice(start, end);
+
+    return {
+      total_record_count: productsData.length,
+      current_record_count: end,
+      products: sliced,
+    };
   };
-
-  const categoryProducts = sliceProcessed(0, 10);
-  const showcaseProducts1 = sliceProcessed(10, 20);
-  const featuredProducts = sliceProcessed(20, 30);
-  const showcaseProducts2 = sliceProcessed(30, 40);
-  const categoryProducts2 = sliceProcessed(40, 50);
-
-  const isLoading = false;
 
   return (
     <main>
       <HeroSection content={heroContent} />
       <RelatedSection
-        productsData={categoryProducts}
-        isLoading={isLoading}
+        productsData={getProductsSlice(0, 10)}
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
-          alt: "Nature left",
+          alt: "ads right",
         }}
       />
-      <ShowcaseSection productsData={showcaseProducts1} isLoading={isLoading} />
-      <FeaturedSection productsData={featuredProducts} isLoading={isLoading} />
-      <ShowcaseSection productsData={showcaseProducts2} isLoading={isLoading} />
+      <ShowcaseSection productsData={getProductsSlice(10, 20)} />
+      <FeaturedSection productsData={getProductsSlice(20, 30)} />
+      <ShowcaseSection productsData={getProductsSlice(30, 40)} />
       <RelatedSection
-        productsData={categoryProducts2}
+        productsData={getProductsSlice(40, 50)}
         buttonSide="left"
         sideImageRight={true}
-        isLoading={isLoading}
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
-          alt: "Nature left",
+          alt: "ads left",
         }}
       />
       <AboutSection title="About Us" />
