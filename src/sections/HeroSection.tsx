@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion, type Variants } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import type { HeroContent } from "@/types/hero";
@@ -15,7 +15,6 @@ export default function HeroSection({ content }: HeroSectionProps) {
   const {
     current,
     direction,
-    setIsPaused,
     slideCount,
     currentContent,
     nextSlide,
@@ -23,7 +22,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
     goToSlide,
   } = useHeroCarousel(content);
 
-  const slideVariants: Variants = {
+  const slideVariants = {
     enter: (dir: 1 | -1) => ({ x: dir > 0 ? "100%" : "-100%", opacity: 0 }),
     center: { x: 0, opacity: 1 },
     exit: (dir: 1 | -1) => ({ x: dir > 0 ? "-100%" : "100%", opacity: 0 }),
@@ -41,13 +40,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
   } = currentContent;
 
   return (
-    <section
-      className="relative min-h-[55vh] md:min-h-[70vh] flex items-center overflow-hidden"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocusCapture={() => setIsPaused(true)}
-      onBlurCapture={() => setIsPaused(false)}
-    >
+    <section className="relative min-h-[55vh] md:min-h-[70vh] flex items-center overflow-hidden">
       <AnimatePresence mode="wait" initial={false} custom={direction}>
         <motion.div
           key={current}
@@ -67,9 +60,7 @@ export default function HeroSection({ content }: HeroSectionProps) {
             className="object-cover"
             priority
           />
-          <div
-            className={`absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80 md:opacity-60`}
-          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-80 md:opacity-60" />
         </motion.div>
       </AnimatePresence>
 

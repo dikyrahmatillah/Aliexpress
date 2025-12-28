@@ -1,18 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { HeroContent } from "@/types/hero";
+import { useEffect, useState } from "react";
 
-export function useHeroCarousel<T>(content: T[]) {
-  const slideCount = content.length;
+export function useHeroCarousel(content: HeroContent[]) {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const [isPaused, setIsPaused] = useState(false);
 
-  const currentContent = useMemo(() => content[current], [content, current]);
+  const slideCount = content.length;
+  const currentContent = content[current];
 
   useEffect(() => {
     if (slideCount <= 1) return;
-    if (isPaused) return;
 
     const autoplayMs = 6500;
     const id = window.setInterval(() => {
@@ -21,35 +20,30 @@ export function useHeroCarousel<T>(content: T[]) {
     }, autoplayMs);
 
     return () => window.clearInterval(id);
-  }, [slideCount, isPaused]);
+  }, [slideCount]);
 
-  const nextSlide = useCallback(() => {
+  function nextSlide() {
     if (slideCount <= 1) return;
     setDirection(1);
     setCurrent((prev) => (prev + 1) % slideCount);
-  }, [slideCount]);
+  }
 
-  const prevSlide = useCallback(() => {
+  function prevSlide() {
     if (slideCount <= 1) return;
     setDirection(-1);
     setCurrent((prev) => (prev === 0 ? slideCount - 1 : prev - 1));
-  }, [slideCount]);
+  }
 
-  const goToSlide = useCallback(
-    (idx: number) => {
-      if (idx < 0 || idx >= slideCount) return;
-      if (idx === current) return;
-      setDirection(idx > current ? 1 : -1);
-      setCurrent(idx);
-    },
-    [current, slideCount]
-  );
+  function goToSlide(idx: number) {
+    if (idx < 0 || idx >= slideCount) return;
+    if (idx === current) return;
+    setDirection(idx > current ? 1 : -1);
+    setCurrent(idx);
+  }
 
   return {
     current,
     direction,
-    isPaused,
-    setIsPaused,
     slideCount,
     currentContent,
     nextSlide,

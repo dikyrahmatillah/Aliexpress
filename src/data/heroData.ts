@@ -12,11 +12,11 @@ export const heroContent: HeroContent[] = [
     textColor: "light",
   },
   {
-    title: "Best Deals",
-    subtitle: "Discover the latest trends in home & living.",
-    buttonText: "Best Deals",
-    secondaryButtonText: "Explore Bestsellers",
-    secondaryButtonLink: "/collections/bestsellers",
+    title: "New Arrivals, New Savings",
+    subtitle: "Check out the latest products in our collection.",
+    buttonText: "Shop New Arrivals",
+    secondaryButtonText: "See What's New",
+    secondaryButtonLink: "/collections/new-arrivals",
     backgroundImage:
       "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1500&q=80",
     textColor: "light",
