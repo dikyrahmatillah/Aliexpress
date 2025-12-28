@@ -145,7 +145,7 @@ export default function RelatedSection({
             <div className="relative w-full">
               {/* Left Button - Centered vertically */}
               {(buttonSide === "left" || buttonSide === "both") && (
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
                   <CarouselButton
                     direction="left"
                     onClick={() => scroll("left")}
@@ -217,7 +217,7 @@ export default function RelatedSection({
 
               {/* Right Button - Centered vertically */}
               {(buttonSide === "right" || buttonSide === "both") && (
-                <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
                   <CarouselButton
                     direction="right"
                     onClick={() => scroll("right")}

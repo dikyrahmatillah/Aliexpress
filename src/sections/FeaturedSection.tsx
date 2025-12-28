@@ -162,7 +162,7 @@ export default function FeaturedSection({
           </div>
         ) : (
           <div className="relative">
-            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
               <CarouselButton
                 direction="left"
                 onClick={() => scroll("left")}
@@ -190,7 +190,7 @@ export default function FeaturedSection({
                       />
                     ))}
             </div>
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
               <CarouselButton
                 direction="right"
                 onClick={() => scroll("right")}
