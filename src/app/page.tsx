@@ -36,7 +36,7 @@ export default async function Home() {
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
-          alt: "ads right",
+          alt: "AliExpress promotional banner",
         }}
       />
       <ShowcaseSection productsData={getProductsSlice(10, 20)} />
@@ -45,11 +45,11 @@ export default async function Home() {
       <RelatedSection
         productsData={getProductsSlice(40, 50)}
         buttonSide="left"
-        sideImageRight={true}
         sideImage={{
           url: "https://ae01.alicdn.com/kf/S3619e57974f148d087c950fe497cdf55q/300x250.jpg",
           link: "https://s.click.aliexpress.com/e/_oFRXA8n?bz=300*250",
-          alt: "ads left",
+          alt: "AliExpress promotional banner",
+          position: "right",
         }}
       />
       <AboutSection title="About Us" />

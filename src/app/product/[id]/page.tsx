@@ -230,7 +230,6 @@ export default async function ItemDetailPage({
                 <RelatedSection
                   productsData={relatedProducts}
                   buttonSide="both"
-                  sideImageRight={false}
                 />
               </div>
             )}

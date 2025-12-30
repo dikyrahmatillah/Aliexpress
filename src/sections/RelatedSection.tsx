@@ -3,39 +3,33 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AliExpressProduct } from "@/types/aliexpress";
+import { AliexpressResponse } from "@/types/aliexpress";
 import CategoryCard from "@/components/CategoryCard";
 import CarouselButton from "@/components/CarouselButton";
 
-export interface SideImage {
+interface SideImage {
   url: string;
   link: string;
   alt: string;
+  position?: "left" | "right";
 }
 
-interface AliExpressResponse {
-  total_record_count: number;
-  current_record_count: number;
-  products: AliExpressProduct[];
-}
-
-interface CategorySectionProps {
+interface RelatedSectionProps {
   sideImage?: SideImage;
-  sideImageRight?: boolean;
+  productsData?: AliexpressResponse;
   buttonSide?: "left" | "right" | "both";
-  productsData?: AliExpressResponse;
   isLoading?: boolean;
   error?: Error | null;
 }
 
 export default function RelatedSection({
   sideImage,
-  sideImageRight = false,
   buttonSide = "right",
   productsData,
   isLoading = false,
   error = null,
-}: CategorySectionProps) {
+}: RelatedSectionProps) {
+  const sideImageRight = sideImage?.position === "right";
   const [visibleCount, setVisibleCount] = useState(4);
   const [carouselItems, setCarouselItems] = useState(
     productsData?.products || []

@@ -85,3 +85,9 @@ export interface AliExpressQueryParams {
   targetCurrency?: string;
   targetLanguage?: string;
 }
+
+export interface AliexpressResponse {
+  total_record_count: number;
+  current_record_count: number;
+  products: AliExpressProduct[];
+}
