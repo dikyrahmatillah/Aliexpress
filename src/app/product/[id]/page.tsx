@@ -1,40 +1,8 @@
 import Link from "next/link";
 import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
 import StarRating from "@/components/StarRating";
-import RelatedSection from "@/sections/RelatedSection";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
-
-async function fetchRelatedProductsServer(
-  categoryId: string | number | undefined
-) {
-  try {
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-
-    const searchParams = new URLSearchParams({
-      parsed: "true",
-      pageSize: "20",
-      pageNo: "1",
-      targetCurrency: "USD",
-      targetLanguage: "EN",
-      ...(categoryId ? { categoryIds: String(categoryId) } : {}),
-    });
-
-    const res = await fetch(
-      `${base}/api/aliexpress/product?${searchParams.toString()}`
-    );
-    if (!res.ok) return null;
-
-    const data = await res.json();
-
-    return {
-      total_record_count: data.total_record_count || data.products.length,
-      current_record_count: data.products.length,
-      products: data.products,
-    };
-  } catch {
-    return null;
-  }
-}
+import RelatedProducts from "./RelatedProducts";
 
 export default async function ItemDetailPage({
   params,
@@ -72,10 +40,6 @@ export default async function ItemDetailPage({
       </div>
     );
   }
-
-  const relatedProducts = await fetchRelatedProductsServer(
-    productData.first_level_category_id
-  ).catch(() => null);
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
 
@@ -222,17 +186,7 @@ export default async function ItemDetailPage({
             </div>
           </div>
 
-          {relatedProducts &&
-            relatedProducts.products &&
-            relatedProducts.products.length > 0 && (
-              <div className="mt-12 border-t border-gray-200 pt-8">
-                <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-                <RelatedSection
-                  productsData={relatedProducts}
-                  buttonSide="both"
-                />
-              </div>
-            )}
+          <RelatedProducts categoryId={productData.first_level_category_id} />
 
           {productData.product_attributes &&
             productData.product_attributes.length > 0 && (

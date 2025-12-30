@@ -125,18 +125,27 @@ function shuffleArray<T>(array: T[]): T[] {
 export async function getAliExpressProducts(
   queryParams: AliExpressQueryParams
 ) {
-  const { query } = queryParams;
+  const {
+    query,
+    minSalePrice = aliexpressParams.minSalePrice,
+    categoryIds = aliexpressParams.categoryIds,
+    pageSize = aliexpressParams.pageSize,
+    pageNo = aliexpressParams.pageNo,
+    sort = aliexpressParams.sort,
+    targetCurrency = aliexpressParams.targetCurrency,
+    targetLanguage = aliexpressParams.targetLanguage,
+  } = queryParams;
 
   const params = buildCommonParams({
-    min_sale_price: aliexpressParams.minSalePrice,
-    category_ids: aliexpressParams.categoryIds,
-    locale_site: aliexpressParams.localeSite,
+    min_sale_price: minSalePrice,
+    category_ids: categoryIds,
     keywords: query,
-    page_size: aliexpressParams.pageSize,
-    page_no: aliexpressParams.pageNo,
-    sort: aliexpressParams.sort,
-    target_currency: aliexpressParams.targetCurrency,
-    target_language: aliexpressParams.targetLanguage,
+    page_size: pageSize,
+    page_no: pageNo,
+    sort,
+    target_currency: targetCurrency,
+    target_language: targetLanguage,
+    locale_site: aliexpressParams.localeSite,
     platform_product_type: aliexpressParams.platformProductType,
     tracking_id: aliexpressConfig.trackingId,
     app_signature: aliexpressConfig.appSignature,
