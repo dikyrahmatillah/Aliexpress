@@ -6,6 +6,7 @@ import Image from "next/image";
 import { AliexpressResponse } from "@/types/aliexpress";
 import CategoryCard from "@/components/CategoryCard";
 import CarouselButton from "@/components/CarouselButton";
+import { parseEvaluateRate } from "@/utils/parseEvaluateRate";
 
 interface SideImage {
   url: string;
@@ -19,7 +20,6 @@ interface RelatedSectionProps {
   productsData?: AliexpressResponse;
   buttonSide?: "left" | "right" | "both";
   isLoading?: boolean;
-  error?: Error | null;
 }
 
 export default function RelatedSection({
@@ -27,14 +27,12 @@ export default function RelatedSection({
   buttonSide = "right",
   productsData,
   isLoading = false,
-  error = null,
 }: RelatedSectionProps) {
   const sideImageRight = sideImage?.position === "right";
   const [visibleCount, setVisibleCount] = useState(4);
   const [carouselItems, setCarouselItems] = useState(
     productsData?.products || []
   );
-  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -56,61 +54,20 @@ export default function RelatedSection({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Update carouselItems when product changes
   useEffect(() => {
-    setCarouselItems(productsData?.products || []);
-  }, [productsData]);
-
-  useEffect(() => {
-    // keep activeIndex within bounds when items change
-    setActiveIndex((i) =>
-      Math.max(0, Math.min(i, (productsData?.products?.length || 1) - 1))
-    );
+    const nextItems = productsData?.products || [];
+    setCarouselItems(nextItems);
   }, [productsData]);
 
   const scroll = useCallback((dir: "left" | "right") => {
     setCarouselItems((prev) => {
       if (prev.length === 0) return prev;
       if (dir === "right") {
-        setActiveIndex((i) => (i + 1) % prev.length);
         return [...prev.slice(1), prev[0]];
       }
-      setActiveIndex((i) => (i - 1 + prev.length) % prev.length);
       return [prev[prev.length - 1], ...prev.slice(0, -1)];
     });
   }, []);
-
-  // keyboard navigation
-  const onKey = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "ArrowRight") scroll("right");
-      if (e.key === "ArrowLeft") scroll("left");
-    },
-    [scroll]
-  );
-
-  useEffect(() => {
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onKey]);
-
-  // convert evaluate_rate values like "98.0%" into a numeric rating (0-5)
-  const parseEvaluateRate = (
-    rate?: string | number | null
-  ): number | undefined => {
-    if (rate == null) return undefined;
-    if (typeof rate === "number") return +rate;
-    const s = String(rate).trim();
-    const pctMatch = s.match(/([\d.]+)\s*%/);
-    if (pctMatch) {
-      const pct = parseFloat(pctMatch[1]);
-      if (isNaN(pct)) return undefined;
-      // map percent (0-100) to 0-5 scale and round to one decimal
-      return +((pct / 100) * 5).toFixed(1);
-    }
-    const num = parseFloat(s);
-    return isNaN(num) ? undefined : num;
-  };
 
   return (
     <section className="py-10">
@@ -120,7 +77,6 @@ export default function RelatedSection({
             sideImageRight ? "flex-row-reverse" : ""
           }`}
         >
-          {/* Side Image */}
           {sideImage && (
             <div className="hidden md:block w-1/5 flex-shrink-0">
               <Link href={sideImage.link}>
@@ -134,10 +90,8 @@ export default function RelatedSection({
               </Link>
             </div>
           )}
-          {/* Carousel */}
           <div className={`relative ${sideImage ? "w-full" : "w-full"}`}>
             <div className="relative w-full">
-              {/* Left Button - Centered vertically */}
               {(buttonSide === "left" || buttonSide === "both") && (
                 <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
                   <CarouselButton
@@ -148,68 +102,38 @@ export default function RelatedSection({
               )}
 
               <div className="flex gap-4 pb-2 w-full justify-center items-stretch">
-                {isLoading ? (
-                  // simple skeletons
-                  Array.from({ length: Math.max(visibleCount, 3) }).map(
-                    (_, sidx) => (
-                      <div
-                        key={`s-${sidx}`}
-                        className="w-48 bg-gray-100 animate-pulse rounded-md h-64 mx-2"
-                      />
+                {isLoading
+                  ? Array.from({ length: Math.max(visibleCount, 4) }).map(
+                      (_, sidx) => (
+                        <div
+                          key={`s-${sidx}`}
+                          className="w-48 bg-gray-100 animate-pulse rounded-md h-64 mx-2"
+                        />
+                      )
                     )
-                  )
-                ) : error ? (
-                  <div className="text-red-600">
-                    Failed to load related products.
-                  </div>
-                ) : (
-                  carouselItems.slice(0, visibleCount).map((cat, idx) => (
-                    <div
-                      key={cat.product_title + idx}
-                      style={{
-                        flex: `0 0 calc(${100 / visibleCount}% - 1rem)`,
-                        maxWidth: `calc(${100 / visibleCount}% - 1rem)`,
-                        minWidth: 0,
-                      }}
-                    >
-                      <CategoryCard
-                        title={cat.product_title}
-                        discount={
-                          cat.discount ? `${cat.discount} off` : undefined
-                        }
-                        imageUrl={cat.product_main_image_url}
-                        linkUrl={`/product/${cat.product_id}`}
-                        price={cat.sale_price}
-                        rating={parseEvaluateRate(cat.evaluate_rate)}
-                      />
-                    </div>
-                  ))
-                )}
+                  : carouselItems.slice(0, visibleCount).map((cat, idx) => (
+                      <div
+                        key={cat.product_title + idx}
+                        style={{
+                          flex: `0 0 calc(${100 / visibleCount}% - 1rem)`,
+                          maxWidth: `calc(${100 / visibleCount}% - 1rem)`,
+                          minWidth: 0,
+                        }}
+                      >
+                        <CategoryCard
+                          title={cat.product_title}
+                          discount={
+                            cat.discount ? `${cat.discount} off` : undefined
+                          }
+                          imageUrl={cat.product_main_image_url}
+                          linkUrl={`/product/${cat.product_id}`}
+                          price={cat.sale_price}
+                          rating={parseEvaluateRate(cat.evaluate_rate)}
+                        />
+                      </div>
+                    ))}
               </div>
 
-              {/* indicators */}
-              {!isLoading && !error && carouselItems.length > visibleCount && (
-                <div className="flex items-center justify-center gap-2 mt-3">
-                  {carouselItems.slice(0, carouselItems.length).map((_, i) => (
-                    <button
-                      key={`dot-${i}`}
-                      aria-label={`Go to item ${i + 1}`}
-                      onClick={() => {
-                        const rotate =
-                          (i - activeIndex + carouselItems.length) %
-                          carouselItems.length;
-                        const newItems = [...carouselItems];
-                        for (let r = 0; r < rotate; r++)
-                          newItems.push(newItems.shift()!);
-                        setCarouselItems(newItems);
-                        setActiveIndex(i);
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {/* Right Button - Centered vertically */}
               {(buttonSide === "right" || buttonSide === "both") && (
                 <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
                   <CarouselButton
