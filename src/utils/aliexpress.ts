@@ -6,10 +6,10 @@ import {
 import CryptoJS from "crypto-js";
 
 const aliexpressConfig = {
-  appKey: Number(process.env.ALIEXPRESS_APP_KEY) || 28898013,
-  secret: process.env.ALIEXPRESS_SECRET || "d8c33695e899858c1ab0a84898b5ca7b",
-  appSignature: process.env.ALIEXPRESS_APP_SIGNATURE || "TeMpeb41GmLD",
-  trackingId: process.env.ALIEXPRESS_TRACKING_ID || "Daiki",
+  appKey: Number(process.env.ALIEXPRESS_APP_KEY),
+  secret: process.env.ALIEXPRESS_SECRET || "",
+  appSignature: process.env.ALIEXPRESS_APP_SIGNATURE || "",
+  trackingId: process.env.ALIEXPRESS_TRACKING_ID || "",
   apiUrl: "https://api-sg.aliexpress.com/sync",
   partnerId: "top-sdk-php-20180326",
   apiVersion: "2.0",

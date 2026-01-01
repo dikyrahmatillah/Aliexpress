@@ -9,10 +9,10 @@ import {
 
 /** AliExpress API configuration */
 const ALIEXPRESS_CONFIG = {
-  APP_KEY: Number(process.env.ALIEXPRESS_APP_KEY) || 28898013,
-  SECRET: process.env.ALIEXPRESS_SECRET || "d8c33695e899858c1ab0a84898b5ca7b",
-  APP_SIGNATURE: process.env.ALIEXPRESS_APP_SIGNATURE || "TeMpeb41GmLD",
-  TRACKING_ID: process.env.ALIEXPRESS_TRACKING_ID || "Daiki",
+  APP_KEY: Number(process.env.ALIEXPRESS_APP_KEY),
+  SECRET: process.env.ALIEXPRESS_SECRET,
+  APP_SIGNATURE: process.env.ALIEXPRESS_APP_SIGNATURE,
+  TRACKING_ID: process.env.ALIEXPRESS_TRACKING_ID,
   API_URL: "https://api-sg.aliexpress.com/sync",
   PARTNER_ID: "top-sdk-php-20180326",
   API_VERSION: "2.0",
