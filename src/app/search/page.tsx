@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAliExpressProductsParsed } from "@/utils/aliexpress-old";
+import { getAliExpressProductsParsed } from "@/utils/aliexpress";
 import { ProcessedProduct } from "@/types/aliexpress";
 import SearchProductsClient from "@/components/SearchProductsClient";
 

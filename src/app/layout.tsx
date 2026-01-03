@@ -3,7 +3,7 @@ import "@/lib/registerUnhandledRejection";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import QueryProvider from "@/components/providers/QueryProvider";
-import Header from "@/components/Header/Header";
+import Header from "@/components/header/Header";
 import Footer from "@/components/Footer";
 
 const geistSans = Geist({

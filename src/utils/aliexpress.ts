@@ -2,8 +2,23 @@ import {
   AliExpressProductResponse,
   AliExpressQueryParams,
   AliExpressProduct,
+  ProcessedProduct,
+  ProductQueryResult,
 } from "@/types/aliexpress";
 import CryptoJS from "crypto-js";
+
+const DEFAULTS = {
+  MIN_SALE_PRICE: 5,
+  CATEGORY_IDS: 0,
+  PAGE_SIZE: 50,
+  PAGE_NO: 1,
+  SORT: "LAST_VOLUME_DESC",
+  TARGET_CURRENCY: "USD",
+  TARGET_LANGUAGE: "EN",
+  COUNTRY: "US",
+  LOCALE_SITE: "global",
+  PLATFORM_PRODUCT_TYPE: "ALL",
+};
 
 const aliexpressConfig = {
   appKey: Number(process.env.ALIEXPRESS_APP_KEY),
@@ -170,4 +185,184 @@ export async function getAliExpressProducts(
     console.error("Error fetching AliExpress products:", error);
     throw error;
   }
+}
+
+// To Do: Improve code quality and error handling here
+
+export async function getAliExpressCategories({
+  appSignature = aliexpressConfig.appSignature,
+} = {}): Promise<{
+  aliexpress_affiliate_category_get_response?: {
+    resp_result?: {
+      result?: {
+        categories?: {
+          category?: Array<{
+            category_id: number;
+            category_name: string;
+            parent_category_id?: number;
+          }>;
+        };
+      };
+    };
+  };
+}> {
+  const params = buildCommonParams({
+    app_signature: appSignature,
+    method: "aliexpress.affiliate.category.get",
+  });
+
+  params.sign = generateSignature(params, aliexpressConfig.secret);
+
+  try {
+    return await fetchAliExpress(params);
+  } catch (error) {
+    console.error("Error fetching AliExpress categories:", error);
+    throw error;
+  }
+}
+
+/**
+ * Fetch hot products from AliExpress API
+ */
+export async function getAliExpressHotProducts({
+  categoryId = DEFAULTS.CATEGORY_IDS,
+  pageNo = DEFAULTS.PAGE_NO,
+  pageSize = DEFAULTS.PAGE_SIZE,
+  targetCurrency = DEFAULTS.TARGET_CURRENCY,
+  targetLanguage = DEFAULTS.TARGET_LANGUAGE,
+  country = DEFAULTS.COUNTRY,
+  appSignature = aliexpressConfig.appSignature,
+  trackingId = aliexpressConfig.trackingId,
+  localeSite = DEFAULTS.LOCALE_SITE,
+  fields = "app_sale_price,shop_id",
+} = {}): Promise<ProductQueryResult> {
+  const params = buildCommonParams({
+    app_signature: appSignature,
+    category_id: categoryId,
+    fields,
+    locale_site: localeSite,
+    page_no: pageNo,
+    page_size: pageSize,
+    target_currency: targetCurrency,
+    target_language: targetLanguage,
+    tracking_id: trackingId,
+    country,
+    method: "aliexpress.affiliate.hotproduct.download",
+  });
+
+  params.sign = generateSignature(params, aliexpressConfig.secret);
+
+  try {
+    const data = await fetchAliExpress<AliExpressProductResponse>(params);
+    const result =
+      data?.aliexpress_affiliate_product_query_response?.resp_result?.result;
+    const products = result?.products?.product || [];
+    return {
+      total_record_count: result?.total_record_count || products.length,
+      current_record_count: products.length,
+      products: { product: processProducts(products) },
+    };
+  } catch (error) {
+    console.error("Error fetching AliExpress hot products:", error);
+    return {
+      total_record_count: 0,
+      current_record_count: 0,
+      products: { product: [] },
+    };
+  }
+}
+
+/**
+ * Fetch hot products and return parsed objects
+ */
+export async function getAliExpressHotProductsParsed(opts = {}): Promise<{
+  total_record_count: number;
+  current_record_count: number;
+  products: ProcessedProduct[];
+}> {
+  try {
+    const result = await getAliExpressHotProducts(opts);
+    const raw = result.products.product;
+    const productStrings: string[] = Array.isArray(raw)
+      ? (raw as unknown as string[])
+      : [];
+    const products = productStrings.map(parseProductString);
+    return {
+      total_record_count: result.total_record_count,
+      current_record_count: result.current_record_count,
+      products,
+    };
+  } catch (error) {
+    console.error("Error in getAliExpressHotProductsParsed:", error);
+    return { total_record_count: 0, current_record_count: 0, products: [] };
+  }
+}
+
+export async function getAliExpressProductsParsed(
+  queryParams: AliExpressQueryParams
+): Promise<{
+  total_record_count: number;
+  current_record_count: number;
+  products: ProcessedProduct[];
+}> {
+  const result = await getAliExpressProducts(queryParams);
+  const raw = result.products.product;
+  const productStrings: string[] = Array.isArray(raw)
+    ? (raw as unknown as string[])
+    : [];
+  return {
+    total_record_count: result.total_record_count,
+    current_record_count: result.current_record_count,
+    products: productStrings.map(parseProductString),
+  };
+}
+
+export function parseProductString(productString: string): ProcessedProduct {
+  const [
+    product_id,
+    volume,
+    image_url,
+    title,
+    sale_price,
+    original_price,
+    discount,
+    first_level_category_name,
+    first_level_category_id,
+    second_level_category_name,
+    second_level_category_id,
+    product_small_image_urls,
+    product_video_url,
+    sku_id,
+    shop_name,
+    evaluate_rate,
+  ] = productString.split("~");
+
+  let rating = 0;
+  if (evaluate_rate && evaluate_rate.includes("%")) {
+    const percent = parseFloat(evaluate_rate.replace("%", ""));
+    rating = Math.round((percent / 20) * 10) / 10;
+  } else {
+    rating = parseFloat(evaluate_rate) || 0;
+  }
+
+  return {
+    product_id,
+    volume: parseInt(volume, 10),
+    image_url,
+    title,
+    original_price,
+    sale_price,
+    discount,
+    first_level_category_name,
+    first_level_category_id,
+    second_level_category_name,
+    second_level_category_id,
+    product_small_image_urls: product_small_image_urls
+      ? product_small_image_urls.split(",")
+      : [],
+    product_video_url,
+    sku_id,
+    shop_name,
+    evaluate_rate: rating,
+  };
 }

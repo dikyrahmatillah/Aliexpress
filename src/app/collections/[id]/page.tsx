@@ -2,7 +2,7 @@ import Link from "next/link";
 import {
   getAliExpressProductsParsed,
   getAliExpressCategories,
-} from "@/utils/aliexpress-old";
+} from "@/utils/aliexpress";
 import CategoryProductsClient from "@/components/CategoryProductsClient";
 
 interface CategoryPageProps {
