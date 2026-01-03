@@ -1,4 +1,9 @@
-import type { NavItem } from "./Header.types";
+type NavItem = {
+  key: string;
+  label: string;
+  width?: string;
+  links: { href: string; label: string }[];
+};
 
 export const NAV_ITEMS: NavItem[] = [
   {
@@ -43,5 +48,11 @@ export const NAV_ITEMS: NavItem[] = [
       { href: "/collections/36", label: "Jewelry & Accessories" },
       { href: "/collections/1511", label: "Watches" },
     ],
+  },
+  {
+    key: "beauty",
+    label: "Beauty & Health",
+    width: "w-48",
+    links: [{ href: "/collections/63", label: "Beauty & Health" }],
   },
 ];

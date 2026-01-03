@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { NAV_ITEMS } from "./nav.data";
+import { NAV_ITEMS } from "../nav.data";
 
 type Props = {
   mobileOpen: boolean;
