@@ -3,8 +3,8 @@ export interface AliExpressProduct {
   app_sale_price_currency: string;
   commission_rate: string;
   discount: string;
-  evaluate_rate: string;
-  first_level_category_id: number;
+  evaluate_rate: string | number; //ToDo: fix type inconsistency
+  first_level_category_id: number | string; //ToDo: fix type inconsistency
   first_level_category_name: string;
   hot_product_commission_rate: string;
   lastest_volume: number;
@@ -19,7 +19,7 @@ export interface AliExpressProduct {
   promotion_link: string;
   sale_price: string;
   sale_price_currency: string;
-  second_level_category_id: number;
+  second_level_category_id: number | string; //ToDo: fix type inconsistency
   second_level_category_name: string;
   shop_id: number;
   shop_name: string;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAliExpressProductsParsed } from "@/utils/aliexpress";
+import { getAliExpressProducts } from "@/utils/aliexpress";
 import { AliExpressQueryParams } from "@/types/aliexpress";
 
 export async function GET(request: NextRequest) {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Fetch products from AliExpress API (parsed preferred)
-    const data = await getAliExpressProductsParsed(queryParams);
+    const data = await getAliExpressProducts(queryParams);
 
     return NextResponse.json(data);
   } catch (error) {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Fetch products from AliExpress API
-    const data = await getAliExpressProductsParsed(queryParams);
+    const data = await getAliExpressProducts(queryParams);
 
     return NextResponse.json(data);
   } catch (error) {

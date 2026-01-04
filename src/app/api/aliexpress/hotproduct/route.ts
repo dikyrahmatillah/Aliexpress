@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  getAliExpressHotProducts,
-  getAliExpressHotProductsParsed,
-} from "@/utils/aliexpress";
+import { getAliExpressHotProducts } from "@/utils/aliexpress";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +12,6 @@ export async function GET(request: NextRequest) {
     const targetCurrency = searchParams.get("targetCurrency");
     const targetLanguage = searchParams.get("targetLanguage");
     const country = searchParams.get("country");
-    const parsed = searchParams.get("parsed"); // Return parsed products instead of raw format
 
     // Build query parameters with defaults
     const queryParams = {
@@ -28,12 +24,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Fetch hot products from AliExpress API
-    let data;
-    if (parsed === "true") {
-      data = await getAliExpressHotProductsParsed(queryParams);
-    } else {
-      data = await getAliExpressHotProducts(queryParams);
-    }
+    const data = await getAliExpressHotProducts(queryParams);
 
     return NextResponse.json(data);
   } catch (error) {
@@ -54,7 +45,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Fetch hot products from AliExpress API
-    const data = await getAliExpressHotProductsParsed(body);
+    const data = await getAliExpressHotProducts(body);
 
     return NextResponse.json(data);
   } catch (error) {

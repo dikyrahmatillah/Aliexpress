@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getAliExpressProductsParsed } from "@/utils/aliexpress";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { getAliExpressProducts } from "@/utils/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 import SearchProductsClient from "@/components/SearchProductsClient";
 
 interface SearchPageProps {
@@ -11,10 +11,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolved = await searchParams;
   const query = resolved?.q || "";
 
-  let initialProducts: ProcessedProduct[] = [];
+  let initialProducts: AliExpressProduct[] = [];
   if (query) {
     try {
-      const res = await getAliExpressProductsParsed({
+      const res = await getAliExpressProducts({
         query,
         categoryIds: 0,
         pageSize: 50,
@@ -22,10 +22,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         targetCurrency: "USD",
         targetLanguage: "EN",
       });
-      initialProducts = res.products;
-    } catch {
-      // ignore and show empty state
-    }
+      initialProducts = res.products.product;
+    } catch {}
   }
 
   return (

@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import ProductCard from "./ProductCard";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 
 type Props = {
-  initialProducts: ProcessedProduct[];
+  initialProducts: AliExpressProduct[];
   initialQuery?: string;
 };
 
@@ -14,7 +14,8 @@ export default function SearchProductsClient({
   initialProducts,
   initialQuery = "",
 }: Props) {
-  const [products, setProducts] = useState<ProcessedProduct[]>(initialProducts);
+  const [products, setProducts] =
+    useState<AliExpressProduct[]>(initialProducts);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
