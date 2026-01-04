@@ -1,6 +1,6 @@
 import Link from "next/link";
 import {
-  getAliExpressProductsParsed,
+  getAliExpressProducts,
   getAliExpressCategories,
 } from "@/utils/aliexpress";
 import CategoryProductsClient from "@/components/CategoryProductsClient";
@@ -24,7 +24,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const id = resolved.id;
   const categoryId = parseInt(id, 10) || 0;
 
-  const result = await getAliExpressProductsParsed({
+  const result = await getAliExpressProducts({
     query: "",
     categoryIds: categoryId,
     pageSize: 50,
@@ -52,8 +52,6 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       }
     }
   } catch {}
-
-  const initialProducts = result.products;
 
   return (
     <div className="min-h-screen bg-white">
@@ -84,7 +82,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         <div className="flex flex-col lg:flex-row gap-6">
           <div className="flex-1">
             <CategoryProductsClient
-              initialProducts={initialProducts}
+              initialProducts={result.products.product}
               categoryId={categoryId}
             />
           </div>

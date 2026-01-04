@@ -2,14 +2,13 @@
 
 import { FiStar } from "react-icons/fi";
 
-type Props = {
-  rating: number;
+export default function StarRating({
+  rating,
+  reviewCount,
+}: {
+  rating: number | undefined;
   reviewCount: number;
-};
-
-export default function StarRating({ rating, reviewCount }: Props) {
-  const starCount = Math.max(1, Math.round((rating / 100) * 5));
-
+}) {
   return (
     <div className="flex items-center">
       {(() => {
@@ -17,7 +16,7 @@ export default function StarRating({ rating, reviewCount }: Props) {
           <FiStar
             key={i}
             className={`w-4 h-4 ${
-              i < starCount ? "text-yellow-400" : "text-gray-300"
+              i < (rating ?? 0) ? "text-yellow-400" : "text-gray-300"
             }`}
           />
         ));

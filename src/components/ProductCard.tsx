@@ -3,12 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import StarRating from "./StarRating";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
+import { parseEvaluateRate } from "@/utils/parseEvaluateRate";
 
 export default function ProductCard({
   product,
 }: {
-  product: ProcessedProduct;
+  product: AliExpressProduct;
 }) {
   const salePrice = parseFloat(product.sale_price);
   const originalPrice = parseFloat(product.original_price);
@@ -27,8 +28,8 @@ export default function ProductCard({
             </div>
           )}
           <Image
-            src={`${product.image_url}_300x300.jpg`}
-            alt={product.title}
+            src={`${product.product_main_image_url}_300x300.jpg`}
+            alt={product.product_title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
@@ -37,13 +38,13 @@ export default function ProductCard({
 
         <div className="p-4 space-y-2">
           <h3 className="text-sm font-medium text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {product.title}
+            {product.product_title}
           </h3>
 
           <div className="flex items-center space-x-1">
             <StarRating
-              rating={product.evaluate_rate}
-              reviewCount={product.volume}
+              rating={parseEvaluateRate(product.evaluate_rate)}
+              reviewCount={product.lastest_volume}
             />
           </div>
 
@@ -58,7 +59,9 @@ export default function ProductCard({
             )}
           </div>
 
-          <div className="text-xs text-gray-500">{product.volume} sold</div>
+          <div className="text-xs text-gray-500">
+            {product.lastest_volume} sold
+          </div>
         </div>
       </div>
     </Link>

@@ -275,94 +275,94 @@ export async function getAliExpressHotProducts({
 /**
  * Fetch hot products and return parsed objects
  */
-export async function getAliExpressHotProductsParsed(opts = {}): Promise<{
-  total_record_count: number;
-  current_record_count: number;
-  products: ProcessedProduct[];
-}> {
-  try {
-    const result = await getAliExpressHotProducts(opts);
-    const raw = result.products.product;
-    const productStrings: string[] = Array.isArray(raw)
-      ? (raw as unknown as string[])
-      : [];
-    const products = productStrings.map(parseProductString);
-    return {
-      total_record_count: result.total_record_count,
-      current_record_count: result.current_record_count,
-      products,
-    };
-  } catch (error) {
-    console.error("Error in getAliExpressHotProductsParsed:", error);
-    return { total_record_count: 0, current_record_count: 0, products: [] };
-  }
-}
+// export async function getAliExpressHotProductsParsed(opts = {}): Promise<{
+//   total_record_count: number;
+//   current_record_count: number;
+//   products: ProcessedProduct[];
+// }> {
+//   try {
+//     const result = await getAliExpressHotProducts(opts);
+//     const raw = result.products.product;
+//     const productStrings: string[] = Array.isArray(raw)
+//       ? (raw as unknown as string[])
+//       : [];
+//     const products = productStrings.map(parseProductString);
+//     return {
+//       total_record_count: result.total_record_count,
+//       current_record_count: result.current_record_count,
+//       products,
+//     };
+//   } catch (error) {
+//     console.error("Error in getAliExpressHotProductsParsed:", error);
+//     return { total_record_count: 0, current_record_count: 0, products: [] };
+//   }
+// }
 
-export async function getAliExpressProductsParsed(
-  queryParams: AliExpressQueryParams
-): Promise<{
-  total_record_count: number;
-  current_record_count: number;
-  products: ProcessedProduct[];
-}> {
-  const result = await getAliExpressProducts(queryParams);
-  const raw = result.products.product;
-  const productStrings: string[] = Array.isArray(raw)
-    ? (raw as unknown as string[])
-    : [];
-  return {
-    total_record_count: result.total_record_count,
-    current_record_count: result.current_record_count,
-    products: productStrings.map(parseProductString),
-  };
-}
+// export async function getAliExpressProductsParsed(
+//   queryParams: AliExpressQueryParams
+// ): Promise<{
+//   total_record_count: number;
+//   current_record_count: number;
+//   products: ProcessedProduct[];
+// }> {
+//   const result = await getAliExpressProducts(queryParams);
+//   const raw = result.products.product;
+//   const productStrings: string[] = Array.isArray(raw)
+//     ? (raw as unknown as string[])
+//     : [];
+//   return {
+//     total_record_count: result.total_record_count,
+//     current_record_count: result.current_record_count,
+//     products: productStrings.map(parseProductString),
+//   };
+// }
 
-export function parseProductString(productString: string): ProcessedProduct {
-  const [
-    product_id,
-    volume,
-    image_url,
-    title,
-    sale_price,
-    original_price,
-    discount,
-    first_level_category_name,
-    first_level_category_id,
-    second_level_category_name,
-    second_level_category_id,
-    product_small_image_urls,
-    product_video_url,
-    sku_id,
-    shop_name,
-    evaluate_rate,
-  ] = productString.split("~");
+// export function parseProductString(productString: string): ProcessedProduct {
+//   const [
+//     product_id,
+//     volume,
+//     image_url,
+//     title,
+//     sale_price,
+//     original_price,
+//     discount,
+//     first_level_category_name,
+//     first_level_category_id,
+//     second_level_category_name,
+//     second_level_category_id,
+//     product_small_image_urls,
+//     product_video_url,
+//     sku_id,
+//     shop_name,
+//     evaluate_rate,
+//   ] = productString.split("~");
 
-  let rating = 0;
-  if (evaluate_rate && evaluate_rate.includes("%")) {
-    const percent = parseFloat(evaluate_rate.replace("%", ""));
-    rating = Math.round((percent / 20) * 10) / 10;
-  } else {
-    rating = parseFloat(evaluate_rate) || 0;
-  }
+//   let rating = 0;
+//   if (evaluate_rate && evaluate_rate.includes("%")) {
+//     const percent = parseFloat(evaluate_rate.replace("%", ""));
+//     rating = Math.round((percent / 20) * 10) / 10;
+//   } else {
+//     rating = parseFloat(evaluate_rate) || 0;
+//   }
 
-  return {
-    product_id,
-    volume: parseInt(volume, 10),
-    image_url,
-    title,
-    original_price,
-    sale_price,
-    discount,
-    first_level_category_name,
-    first_level_category_id,
-    second_level_category_name,
-    second_level_category_id,
-    product_small_image_urls: product_small_image_urls
-      ? product_small_image_urls.split(",")
-      : [],
-    product_video_url,
-    sku_id,
-    shop_name,
-    evaluate_rate: rating,
-  };
-}
+//   return {
+//     product_id,
+//     volume: parseInt(volume, 10),
+//     image_url,
+//     title,
+//     original_price,
+//     sale_price,
+//     discount,
+//     first_level_category_name,
+//     first_level_category_id,
+//     second_level_category_name,
+//     second_level_category_id,
+//     product_small_image_urls: product_small_image_urls
+//       ? product_small_image_urls.split(",")
+//       : [],
+//     product_video_url,
+//     sku_id,
+//     shop_name,
+//     evaluate_rate: rating,
+//   };
+// }

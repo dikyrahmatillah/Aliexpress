@@ -3,10 +3,10 @@
 import { useState } from "react";
 import ProductCard from "./ProductCard";
 import { FiGrid, FiList } from "react-icons/fi";
-import { ProcessedProduct } from "@/types/aliexpress";
+import { AliExpressProduct } from "@/types/aliexpress";
 
 type Props = {
-  initialProducts: ProcessedProduct[];
+  initialProducts: AliExpressProduct[];
   categoryId: number;
 };
 
@@ -14,7 +14,8 @@ export default function CategoryProductsClient({
   initialProducts,
   categoryId,
 }: Props) {
-  const [products, setProducts] = useState<ProcessedProduct[]>(initialProducts);
+  const [products, setProducts] =
+    useState<AliExpressProduct[]>(initialProducts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedSort, setSelectedSort] = useState("LAST_VOLUME_DESC");
@@ -46,7 +47,6 @@ export default function CategoryProductsClient({
         setError("Failed to fetch products");
       }
     } catch (e) {
-      // log error for diagnostics
       console.error("reloadProducts error", e);
       setError("Failed to fetch products");
     } finally {
