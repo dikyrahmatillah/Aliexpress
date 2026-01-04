@@ -5,13 +5,11 @@ import React, { useCallback, useState } from "react";
 import { useAnnouncement } from "../../hooks/useAnnouncement";
 import { useDropdown } from "../../hooks/useDropdown";
 import { useSearch } from "../../hooks/useSearch";
-import AnnouncementBar, {
-  announcements,
-} from "../header/announcement/AnnouncementBar";
-import DesktopActions from "../header/desktop/DesktopActions";
-import DesktopNav from "../header/desktop/DesktopNav";
-import MobileMenu from "../header/mobile/MobileMenu";
-import SearchForm from "../header/SearchForm";
+import AnnouncementBar, { announcements } from "./announcement/AnnouncementBar";
+import DesktopActions from "./desktop/DesktopActions";
+import DesktopNav from "./desktop/DesktopNav";
+import MobileMenu from "./mobile/MobileMenu";
+import SearchForm from "./SearchForm";
 
 export default function Header() {
   const { text, prev, next } = useAnnouncement(announcements, 5000);
