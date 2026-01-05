@@ -5,10 +5,6 @@ import {
 } from "@/utils/aliexpress";
 import CategoryProductsClient from "@/components/CategoryProductsClient";
 
-interface CategoryPageProps {
-  params: Promise<{ id: string }>;
-}
-
 interface CategoryInfo {
   name: string;
   description: string;
@@ -19,10 +15,12 @@ const defaultCategoryInfo: CategoryInfo = {
   description: "Discover amazing products from AliExpress in this category",
 };
 
-export default async function CategoryPage({ params }: CategoryPageProps) {
-  const resolved = await params;
-  const id = resolved.id;
-  const categoryId = parseInt(id, 10) || 0;
+export default async function CategoryPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const categoryId = Number((await params).id || 0);
 
   const result = await getAliExpressProducts({
     query: "",
@@ -40,10 +38,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       categoriesData?.aliexpress_affiliate_category_get_response?.resp_result
         ?.result?.categories?.category;
     if (categories) {
-      const found = categories.find(
-        (c: { category_id: number; category_name: string }) =>
-          c.category_id.toString() === id
-      );
+      const found = categories.find((item) => item.category_id === categoryId);
       if (found) {
         categoryInfo = {
           name: found.category_name,
@@ -51,7 +46,11 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
         };
       }
     }
-  } catch {}
+  } catch (err) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("Failed to load categories:", err);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-white">
