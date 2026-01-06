@@ -26,7 +26,7 @@ export default async function CategoryPage({
     query: "",
     categoryIds: categoryId,
     pageSize: 50,
-    sort: "LAST_VOLUME_DESC",
+    sort: "priceDesc",
     targetCurrency: "USD",
     targetLanguage: "EN",
   });

@@ -14,44 +14,94 @@ export default function CategoryProductsClient({
   initialProducts,
   categoryId,
 }: Props) {
-  const [products, setProducts] =
-    useState<AliExpressProduct[]>(initialProducts);
+  const [products, setProducts] = useState(initialProducts);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedSort, setSelectedSort] = useState("LAST_VOLUME_DESC");
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedSort, setSelectedSort] = useState("priceDesc");
   const [selectedPriceRange, setSelectedPriceRange] = useState({
     label: "All Prices",
     min: 0,
     max: 10000,
   });
-  const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [pageNo, setPageNo] = useState(1);
 
-  async function reloadProducts() {
+  const pageSize = 50;
+
+  function mapSortToAliExpress(sortValue: string) {
+    switch (sortValue) {
+      case "priceAsc":
+        return "SALE_PRICE_ASC";
+      case "priceDesc":
+        return "SALE_PRICE_DESC";
+      case "volumeAsc":
+        return "LAST_VOLUME_ASC";
+      case "volumeDesc":
+        return "LAST_VOLUME_DESC";
+      case "discountAsc":
+        return "DISCOUNT_ASC";
+      case "discountDesc":
+        return "DISCOUNT_DESC";
+      case "ratingAsc":
+        return "EVALUATE_RATE_ASC";
+      case "ratingDesc":
+        return "EVALUATE_RATE_DESC";
+      default:
+        return "LAST_VOLUME_DESC";
+    }
+  }
+
+  async function reloadProducts(
+    sortValue?: string,
+    { loadMore } = { loadMore: false }
+  ) {
     try {
       setLoading(true);
       setError(null);
 
-      const url = new URL("/api/aliexpress/product", window.location.origin);
-      url.searchParams.set("query", "");
-      url.searchParams.set("categoryIds", String(categoryId));
-      url.searchParams.set("pageSize", "50");
-      url.searchParams.set("sort", selectedSort);
-      url.searchParams.set("parsed", "true");
+      const sortKey = sortValue ?? selectedSort;
+      const apiSort = mapSortToAliExpress(sortKey);
+      const nextPageNo = loadMore ? pageNo + 1 : 1;
 
-      const res = await fetch(url.toString());
-      const data = await res.json();
-      if (res.ok && data && Array.isArray(data.products)) {
-        setProducts(data.products);
-      } else {
-        setError("Failed to fetch products");
+      const searchParams = new URLSearchParams({
+        query: "",
+        categoryIds: String(categoryId),
+        pageSize: String(pageSize),
+        pageNo: String(nextPageNo),
+        sort: apiSort,
+        targetCurrency: "USD",
+        targetLanguage: "EN",
+      });
+
+      const response = await fetch(`/api/aliexpress/product?${searchParams}`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || "Failed to fetch products");
       }
+
+      const data: {
+        products?: { product?: AliExpressProduct[] };
+        total_record_count?: number;
+        current_record_count?: number;
+      } = await response.json();
+
+      const newProducts = data.products?.product ?? [];
+      setPageNo(nextPageNo);
+      setProducts((prev) =>
+        loadMore ? [...prev, ...newProducts] : newProducts
+      );
+      return;
     } catch (e) {
       console.error("reloadProducts error", e);
       setError("Failed to fetch products");
     } finally {
       setLoading(false);
     }
+  }
+
+  async function loadMoreProducts() {
+    await reloadProducts(undefined, { loadMore: true });
   }
 
   // Filter products based on selected filters
@@ -106,15 +156,21 @@ export default function CategoryProductsClient({
               <select
                 value={selectedSort}
                 onChange={(e) => {
-                  setSelectedSort(e.target.value);
+                  const newSort = e.target.value;
+                  setSelectedSort(newSort);
+                  setPageNo(1);
+                  reloadProducts(newSort);
                 }}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
-                <option value="LAST_VOLUME_DESC">Best Selling</option>
-                <option value="PRICE_ASC">Price: Low to High</option>
-                <option value="PRICE_DESC">Price: High to Low</option>
-                <option value="DISCOUNT_DESC">Biggest Discount</option>
-                <option value="NEWEST">Newest Arrivals</option>
+                <option value="priceAsc">Price: Low to High</option>
+                <option value="priceDesc">Price: High to Low</option>
+                <option value="volumeAsc">Sale: Low to High</option>
+                <option value="volumeDesc">Sale: High to Low</option>
+                <option value="discountAsc">Discount: Low to High</option>
+                <option value="discountDesc">Discount: High to Low</option>
+                <option value="ratingAsc">Rating: Low to High</option>
+                <option value="ratingDesc">Rating: High to Low</option>
               </select>
             </div>
 
@@ -170,7 +226,7 @@ export default function CategoryProductsClient({
             <div className="text-center py-12">
               <p className="text-red-600 mb-4">{error}</p>
               <button
-                onClick={reloadProducts}
+                onClick={() => reloadProducts()}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg"
               >
                 Try Again
@@ -203,7 +259,7 @@ export default function CategoryProductsClient({
               {filteredProducts.length > 0 && (
                 <div className="text-center mt-12">
                   <button
-                    onClick={reloadProducts}
+                    onClick={loadMoreProducts}
                     className="px-8 py-3 bg-blue-600 text-white rounded-lg"
                   >
                     Load More Products
