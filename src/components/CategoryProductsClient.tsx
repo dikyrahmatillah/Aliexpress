@@ -15,10 +15,10 @@ export default function CategoryProductsClient({
   categoryId,
 }: Props) {
   function dedupeByProductId(items: AliExpressProduct[]) {
-    const seen = new Set<string>();
-    const unique: AliExpressProduct[] = [];
+    const seen = new Set();
+    const unique = [];
     for (const item of items) {
-      const key = String(item.product_id);
+      const key = item.product_id;
       if (seen.has(key)) continue;
       seen.add(key);
       unique.push(item);
@@ -41,7 +41,6 @@ export default function CategoryProductsClient({
   });
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [pageNo, setPageNo] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const pageSize = 50;
   const maxPageNo = 3;
@@ -53,7 +52,6 @@ export default function CategoryProductsClient({
     try {
       if (loadMore) {
         if (loadingMore || loading) return;
-        if (!hasMore) return;
         if (pageNo >= maxPageNo) return;
         setLoadingMore(true);
       } else {
@@ -65,7 +63,6 @@ export default function CategoryProductsClient({
       const nextPageNo = loadMore ? pageNo + 1 : 1;
 
       if (nextPageNo > maxPageNo) {
-        setHasMore(false);
         return;
       }
 
@@ -85,15 +82,10 @@ export default function CategoryProductsClient({
         throw new Error(errorData?.error || "Failed to fetch products");
       }
 
-      const data: {
-        products?: { product?: AliExpressProduct[] };
-        total_record_count?: number;
-        current_record_count?: number;
-      } = await response.json();
+      const data = await response.json();
 
-      const newProducts = data.products?.product ?? [];
+      const newProducts: AliExpressProduct[] = data.products?.product ?? [];
       setPageNo(nextPageNo);
-      setHasMore(newProducts.length === pageSize && nextPageNo < maxPageNo);
       setProducts((prev) => {
         if (!loadMore) return dedupeByProductId(newProducts);
         const existing = new Set(prev.map((p) => String(p.product_id)));
@@ -116,7 +108,6 @@ export default function CategoryProductsClient({
     await reloadProducts(undefined, { loadMore: true });
   }
 
-  // Filter products based on selected filters
   const filteredProducts = products.filter((product) => {
     const price = parseFloat(product.sale_price);
     const priceInRange =
@@ -127,7 +118,6 @@ export default function CategoryProductsClient({
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
-        <div />
         <div className="flex items-center space-x-4 mt-4 md:mt-0">
           <span className="text-sm text-gray-500">
             {filteredProducts.length} products
@@ -171,7 +161,6 @@ export default function CategoryProductsClient({
                   const newSort = e.target.value;
                   setSelectedSort(newSort);
                   setPageNo(1);
-                  setHasMore(true);
                   reloadProducts(newSort);
                 }}
                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -269,7 +258,7 @@ export default function CategoryProductsClient({
                 </div>
               )}
 
-              {filteredProducts.length > 0 && hasMore && pageNo < maxPageNo && (
+              {filteredProducts.length > 0 && pageNo < maxPageNo && (
                 <div className="text-center mt-12">
                   <button
                     onClick={loadMoreProducts}
