@@ -14,8 +14,23 @@ export default function CategoryProductsClient({
   initialProducts,
   categoryId,
 }: Props) {
-  const [products, setProducts] = useState(initialProducts);
+  function dedupeByProductId(items: AliExpressProduct[]) {
+    const seen = new Set<string>();
+    const unique: AliExpressProduct[] = [];
+    for (const item of items) {
+      const key = String(item.product_id);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      unique.push(item);
+    }
+    return unique;
+  }
+
+  const [products, setProducts] = useState(() =>
+    dedupeByProductId(initialProducts)
+  );
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedSort, setSelectedSort] = useState("priceDesc");
@@ -26,50 +41,40 @@ export default function CategoryProductsClient({
   });
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [pageNo, setPageNo] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const pageSize = 50;
-
-  function mapSortToAliExpress(sortValue: string) {
-    switch (sortValue) {
-      case "priceAsc":
-        return "SALE_PRICE_ASC";
-      case "priceDesc":
-        return "SALE_PRICE_DESC";
-      case "volumeAsc":
-        return "LAST_VOLUME_ASC";
-      case "volumeDesc":
-        return "LAST_VOLUME_DESC";
-      case "discountAsc":
-        return "DISCOUNT_ASC";
-      case "discountDesc":
-        return "DISCOUNT_DESC";
-      case "ratingAsc":
-        return "EVALUATE_RATE_ASC";
-      case "ratingDesc":
-        return "EVALUATE_RATE_DESC";
-      default:
-        return "LAST_VOLUME_DESC";
-    }
-  }
+  const maxPageNo = 3;
 
   async function reloadProducts(
     sortValue?: string,
     { loadMore } = { loadMore: false }
   ) {
     try {
-      setLoading(true);
-      setError(null);
+      if (loadMore) {
+        if (loadingMore || loading) return;
+        if (!hasMore) return;
+        if (pageNo >= maxPageNo) return;
+        setLoadingMore(true);
+      } else {
+        setLoading(true);
+        setError(null);
+      }
 
       const sortKey = sortValue ?? selectedSort;
-      const apiSort = mapSortToAliExpress(sortKey);
       const nextPageNo = loadMore ? pageNo + 1 : 1;
+
+      if (nextPageNo > maxPageNo) {
+        setHasMore(false);
+        return;
+      }
 
       const searchParams = new URLSearchParams({
         query: "",
         categoryIds: String(categoryId),
         pageSize: String(pageSize),
         pageNo: String(nextPageNo),
-        sort: apiSort,
+        sort: sortKey,
         targetCurrency: "USD",
         targetLanguage: "EN",
       });
@@ -88,15 +93,22 @@ export default function CategoryProductsClient({
 
       const newProducts = data.products?.product ?? [];
       setPageNo(nextPageNo);
-      setProducts((prev) =>
-        loadMore ? [...prev, ...newProducts] : newProducts
-      );
+      setHasMore(newProducts.length === pageSize && nextPageNo < maxPageNo);
+      setProducts((prev) => {
+        if (!loadMore) return dedupeByProductId(newProducts);
+        const existing = new Set(prev.map((p) => String(p.product_id)));
+        const appendedUnique = newProducts.filter(
+          (p) => !existing.has(String(p.product_id))
+        );
+        return [...prev, ...appendedUnique];
+      });
       return;
     } catch (e) {
       console.error("reloadProducts error", e);
       setError("Failed to fetch products");
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }
 
@@ -159,6 +171,7 @@ export default function CategoryProductsClient({
                   const newSort = e.target.value;
                   setSelectedSort(newSort);
                   setPageNo(1);
+                  setHasMore(true);
                   reloadProducts(newSort);
                 }}
                 className="w-full p-2 border border-gray-300 rounded-lg"
@@ -234,7 +247,7 @@ export default function CategoryProductsClient({
             </div>
           )}
 
-          {!loading && !error && (
+          {!error && (
             <>
               {filteredProducts.length === 0 ? (
                 <div className="text-center py-12">
@@ -256,13 +269,14 @@ export default function CategoryProductsClient({
                 </div>
               )}
 
-              {filteredProducts.length > 0 && (
+              {filteredProducts.length > 0 && hasMore && pageNo < maxPageNo && (
                 <div className="text-center mt-12">
                   <button
                     onClick={loadMoreProducts}
-                    className="px-8 py-3 bg-blue-600 text-white rounded-lg"
+                    disabled={loadingMore}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg cursor-pointer"
                   >
-                    Load More Products
+                    {loadingMore ? "Loading..." : "Load More Products"}
                   </button>
                 </div>
               )}
