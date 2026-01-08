@@ -80,9 +80,10 @@ export default function CategoryProductsClient({
       });
 
       currentPageRef.current = nextPageNo;
-    } catch (e) {
-      console.error("reloadProducts error", e);
-      setError("Failed to fetch products");
+    } catch (err) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Failed to load categories:", err);
+      }
     } finally {
       setIsLoading(false);
     }

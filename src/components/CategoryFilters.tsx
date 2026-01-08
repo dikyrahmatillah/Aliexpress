@@ -43,14 +43,10 @@ export default function CategoryFilters({
             className="w-full p-2 border border-gray-300 rounded-lg cursor-pointer"
           >
             <option value="">Relevance</option>
-            <option value="priceAsc">Price: Low to High</option>
-            <option value="priceDesc">Price: High to Low</option>
-            <option value="volumeAsc">Sale: Low to High</option>
-            <option value="volumeDesc">Sale: High to Low</option>
-            <option value="discountAsc">Discount: Low to High</option>
-            <option value="discountDesc">Discount: High to Low</option>
-            <option value="ratingAsc">Rating: Low to High</option>
-            <option value="ratingDesc">Rating: High to Low</option>
+            <option value="SALE_PRICE_ASC">Price: Low to High</option>
+            <option value="SALE_PRICE_DESC">Price: High to Low</option>
+            <option value="LAST_VOLUME_ASC">Sale: Low to High</option>
+            <option value="LAST_VOLUME_DESC">Sale: High to Low</option>
           </select>
         </div>
 
