@@ -14,7 +14,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   let initialProducts: AliExpressProduct[] = [];
   if (query) {
     try {
-      const res = await getAliExpressProducts({
+      const result = await getAliExpressProducts({
         query,
         categoryIds: 0,
         pageSize: 50,
@@ -22,13 +22,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         targetCurrency: "USD",
         targetLanguage: "EN",
       });
-      initialProducts = res.products.product;
-    } catch {}
+      initialProducts = result.products.product;
+    } catch (err) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Failed to load categories:", err);
+      }
+    }
   }
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Breadcrumb */}
       <div className="bg-gray-50 border-b">
         <div className="max-w-7xl mx-auto px-4 py-3">
           <nav className="flex items-center space-x-2 text-sm">
