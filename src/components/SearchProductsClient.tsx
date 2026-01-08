@@ -14,54 +14,32 @@ export default function SearchProductsClient({
   initialProducts,
   initialQuery = "",
 }: Props) {
-  const [products, setProducts] =
-    useState<AliExpressProduct[]>(initialProducts);
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const products = initialProducts;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(Boolean(initialQuery));
-  const [viewMode] = useState<"grid" | "list">("grid");
-
-  async function performSearch(query: string) {
-    if (!query.trim()) {
-      setError("Please enter a search term");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError(null);
-      setHasSearched(true);
-
-      const url = new URL("/api/aliexpress/product", window.location.origin);
-      url.searchParams.set("query", query);
-      url.searchParams.set("pageSize", "50");
-      url.searchParams.set("parsed", "true");
-
-      const res = await fetch(url.toString());
-      const data = await res.json();
-      if (res.ok && data && Array.isArray(data.products)) {
-        setProducts(data.products);
-      } else {
-        setError("Failed to search products");
-      }
-    } catch (err) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("Failed to load categories:", err);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const filteredProducts = products;
+  const currentQuery = initialQuery || "";
 
   return (
     <div>
       <form
+        action="/search"
+        method="GET"
         onSubmit={(e) => {
-          e.preventDefault();
-          performSearch(searchQuery);
+          const formData = new FormData(e.currentTarget);
+          const query = String(formData.get("query") ?? "").trim();
+
+          if (!query) {
+            e.preventDefault();
+            setHasSearched(true);
+            setLoading(false);
+            setError("Please enter a search term");
+            return;
+          }
+
+          setHasSearched(true);
+          setError(null);
+          setLoading(true);
         }}
         className="mb-6"
       >
@@ -69,10 +47,10 @@ export default function SearchProductsClient({
           <div className="flex-1 relative">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
+              name="query"
               type="text"
               placeholder="Search for products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              defaultValue={initialQuery}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg"
             />
           </div>
@@ -87,8 +65,12 @@ export default function SearchProductsClient({
 
       {hasSearched && (
         <div className="mb-4">
-          <p className="text-gray-600">
-            {loading ? "Searching..." : `Search results for “${searchQuery}”`}
+          <p className="text-gray-600" aria-live="polite">
+            {loading
+              ? `Searching…`
+              : `${products.length} result${
+                  products.length === 1 ? "" : "s"
+                } found for “${currentQuery}”`}
           </p>
         </div>
       )}
@@ -125,32 +107,11 @@ export default function SearchProductsClient({
           )}
 
           {!loading && !error && (
-            <>
-              {filteredProducts.length === 0 ? (
-                <div className="text-center py-12">
-                  <FiSearch className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h2 className="text-xl font-medium text-gray-900 mb-2">
-                    No results found
-                  </h2>
-                  <p className="text-gray-500 mb-4">
-                    No products found for “{searchQuery}”. Try adjusting your
-                    search terms.
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className={
-                    viewMode === "grid"
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-                      : "space-y-4"
-                  }
-                >
-                  {filteredProducts.map((p) => (
-                    <ProductCard key={p.product_id} product={p} />
-                  ))}
-                </div>
-              )}
-            </>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {products.map((p) => (
+                <ProductCard key={p.product_id} product={p} />
+              ))}
+            </div>
           )}
         </div>
       )}
