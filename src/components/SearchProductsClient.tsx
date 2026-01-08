@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiAlertCircle } from "react-icons/fi";
 import ProductCard from "./ProductCard";
 import { AliExpressProduct } from "@/types/aliexpress";
 
@@ -45,15 +45,16 @@ export default function SearchProductsClient({
       } else {
         setError("Failed to search products");
       }
-    } catch (e) {
-      console.error("search error", e);
-      setError("Failed to search products. Please try again.");
+    } catch (err) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Failed to load categories:", err);
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  const filteredProducts = products; // client-side filters can be added here
+  const filteredProducts = products;
 
   return (
     <div>
@@ -110,14 +111,16 @@ export default function SearchProductsClient({
           )}
 
           {error && (
-            <div className="text-center py-12">
-              <p className="text-red-600 mb-4">{error}</p>
-              <button
-                onClick={() => performSearch(searchQuery)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-              >
-                Try Again
-              </button>
+            <div className="max-w-md mx-auto py-6">
+              <div className="flex items-center gap-3 justify-center bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-md mx-auto">
+                <div className="flex items-center gap-3">
+                  <FiAlertCircle className="w-5 h-5" />
+                  <div className="flex-1 ">
+                    <p className="text-sm font-medium">Couldn’t load results</p>
+                    <p className="text-xs text-red-600/80">{error}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
