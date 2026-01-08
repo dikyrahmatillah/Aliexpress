@@ -34,7 +34,7 @@ export default function CategoryProductsClient({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedSort, setSelectedSort] = useState("priceDesc");
+  const [selectedSort, setSelectedSort] = useState("");
   const [selectedPriceRange, setSelectedPriceRange] = useState({
     label: "All Prices",
     min: 0,

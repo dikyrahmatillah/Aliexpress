@@ -42,6 +42,7 @@ export default function CategoryFilters({
             onChange={(e) => onSortChange(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-lg cursor-pointer"
           >
+            <option value="">Relevance</option>
             <option value="priceAsc">Price: Low to High</option>
             <option value="priceDesc">Price: High to Low</option>
             <option value="volumeAsc">Sale: Low to High</option>
