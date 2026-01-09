@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiSearch, FiAlertCircle } from "react-icons/fi";
 import ProductCard from "./ProductCard";
 import { AliExpressProduct } from "@/types/aliexpress";
+import { useAliExpressLoadMoreProducts } from "@/hooks/useAliExpressLoadMoreProducts";
 
 type Props = {
   initialProducts: AliExpressProduct[];
@@ -14,11 +15,43 @@ export default function SearchProductsClient({
   initialProducts,
   initialQuery = "",
 }: Props) {
-  const products = initialProducts;
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(Boolean(initialQuery));
   const currentQuery = initialQuery || "";
+
+  const pageSize = 50;
+  const maxPageNo = 3;
+
+  const getSearchParams = useCallback(
+    (pageNo: number) => {
+      const q = initialQuery.trim();
+      return new URLSearchParams({
+        query: q,
+        categoryIds: "0",
+        pageSize: String(pageSize),
+        pageNo: String(pageNo),
+        sort: "LAST_VOLUME_DESC",
+        targetCurrency: "USD",
+        targetLanguage: "EN",
+      });
+    },
+    [initialQuery, pageSize]
+  );
+
+  const pager = useAliExpressLoadMoreProducts({
+    initialProducts,
+    getSearchParams,
+    maxPageNo,
+  });
+
+  useEffect(() => {
+    setLoading(false);
+    setFormError(null);
+    setHasSearched(Boolean(initialQuery));
+  }, [initialQuery, initialProducts]);
+
+  const errorMessage = formError ?? pager.error;
 
   return (
     <div>
@@ -27,18 +60,18 @@ export default function SearchProductsClient({
         method="GET"
         onSubmit={(e) => {
           const formData = new FormData(e.currentTarget);
-          const query = String(formData.get("query") ?? "").trim();
+          const query = String(formData.get("q") ?? "").trim();
 
           if (!query) {
             e.preventDefault();
             setHasSearched(true);
             setLoading(false);
-            setError("Please enter a search term");
+            setFormError("Please enter a search term");
             return;
           }
 
           setHasSearched(true);
-          setError(null);
+          setFormError(null);
           setLoading(true);
         }}
         className="mb-6"
@@ -47,7 +80,7 @@ export default function SearchProductsClient({
           <div className="flex-1 relative">
             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <input
-              name="query"
+              name="q"
               type="text"
               placeholder="Search for products..."
               defaultValue={initialQuery}
@@ -68,8 +101,8 @@ export default function SearchProductsClient({
           <p className="text-gray-600" aria-live="polite">
             {loading
               ? `Searching…`
-              : `${products.length} result${
-                  products.length === 1 ? "" : "s"
+              : `${pager.products.length} result${
+                  pager.products.length === 1 ? "" : "s"
                 } found for “${currentQuery}”`}
           </p>
         </div>
@@ -92,26 +125,43 @@ export default function SearchProductsClient({
             </div>
           )}
 
-          {error && (
+          {errorMessage && (
             <div className="max-w-md mx-auto py-6">
               <div className="flex items-center gap-3 justify-center bg-red-50 border border-red-100 text-red-700 px-4 py-3 rounded-md mx-auto">
                 <div className="flex items-center gap-3">
                   <FiAlertCircle className="w-5 h-5" />
                   <div className="flex-1 ">
                     <p className="text-sm font-medium">Couldn’t load results</p>
-                    <p className="text-xs text-red-600/80">{error}</p>
+                    <p className="text-xs text-red-600/80">{errorMessage}</p>
                   </div>
                 </div>
               </div>
             </div>
           )}
 
-          {!loading && !error && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {products.map((p) => (
-                <ProductCard key={p.product_id} product={p} />
-              ))}
-            </div>
+          {!loading && !errorMessage && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {pager.products.map((p) => (
+                  <ProductCard key={p.product_id} product={p} />
+                ))}
+              </div>
+
+              {pager.products.length > 0 &&
+                initialQuery.trim() &&
+                pager.canLoadMore && (
+                <div className="text-center mt-12">
+                  <button
+                    type="button"
+                    onClick={() => pager.loadMore()}
+                    disabled={pager.isLoading}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg cursor-pointer"
+                  >
+                    {pager.isLoading ? "Loading..." : "Load More Products"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

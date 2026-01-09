@@ -1,38 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import ProductCard from "./ProductCard";
 import { FiGrid, FiList } from "react-icons/fi";
 import { AliExpressProduct } from "@/types/aliexpress";
 import CategoryFilters from "./CategoryFilters";
+import { useAliExpressLoadMoreProducts } from "@/hooks/useAliExpressLoadMoreProducts";
 
 type Props = {
   initialProducts: AliExpressProduct[];
   categoryId: number;
 };
 
-function dedupeByProductId(items: AliExpressProduct[]) {
-  const seen = new Set<string>();
-  const unique: AliExpressProduct[] = [];
-  for (const item of items) {
-    const key = String(item.product_id);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    unique.push(item);
-  }
-  return unique;
-}
-
 export default function CategoryProductsClient({
   initialProducts,
   categoryId,
 }: Props) {
-  const [products, setProducts] = useState(() =>
-    dedupeByProductId(initialProducts)
-  );
-  const currentPageRef = useRef(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedSort, setSelectedSort] = useState("");
   const [selectedPriceRange, setSelectedPriceRange] = useState({
@@ -45,49 +28,31 @@ export default function CategoryProductsClient({
   const pageSize = 50;
   const maxPageNo = 3;
 
-  async function reloadProducts(loadMore = false, sortValue?: string) {
-    const sortKey = sortValue ?? selectedSort;
-    const nextPageNo = loadMore ? currentPageRef.current + 1 : 1;
-
-    if (nextPageNo > maxPageNo) return;
-
-    if (isLoading) return;
-    setIsLoading(true);
-    if (!loadMore) setError(null);
-
-    try {
-      const searchParams = new URLSearchParams({
+  const getSearchParams = useCallback(
+    (pageNo: number, overrides?: Record<string, string>) => {
+      const sortKey = overrides?.sort ?? selectedSort;
+      return new URLSearchParams({
         query: "",
         categoryIds: String(categoryId),
         pageSize: String(pageSize),
-        pageNo: String(nextPageNo),
+        pageNo: String(pageNo),
         sort: sortKey,
         targetCurrency: "USD",
         targetLanguage: "EN",
       });
+    },
+    [categoryId, pageSize, selectedSort]
+  );
 
-      const response = await fetch(`/api/aliexpress/product?${searchParams}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
+  const pager = useAliExpressLoadMoreProducts({
+    initialProducts,
+    getSearchParams,
+    maxPageNo,
+  });
 
-      const data = await response.json();
-
-      const newProducts: AliExpressProduct[] = data.products?.product ?? [];
-      setProducts((prev) => {
-        const combined = loadMore ? [...prev, ...newProducts] : newProducts;
-        return dedupeByProductId(combined);
-      });
-
-      currentPageRef.current = nextPageNo;
-    } catch (err) {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("Failed to load categories:", err);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const products = pager.products;
+  const isLoading = pager.isLoading;
+  const error = pager.error;
 
   const filteredProducts = products.filter((product) => {
     const price = parseFloat(product.sale_price);
@@ -134,7 +99,7 @@ export default function CategoryProductsClient({
           selectedSort={selectedSort}
           onSortChange={(newSort) => {
             setSelectedSort(newSort);
-            reloadProducts(false, newSort);
+            pager.reload({ sort: newSort });
           }}
           selectedPriceRange={selectedPriceRange}
           onPriceRangeChange={setSelectedPriceRange}
@@ -145,7 +110,7 @@ export default function CategoryProductsClient({
             <div className="text-center py-12">
               <p className="text-red-600 mb-4">{error}</p>
               <button
-                onClick={() => reloadProducts()}
+                onClick={() => pager.reload()}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg"
               >
                 Try Again
@@ -175,18 +140,17 @@ export default function CategoryProductsClient({
                 </div>
               )}
 
-              {filteredProducts.length > 0 &&
-                currentPageRef.current < maxPageNo && (
-                  <div className="text-center mt-12">
-                    <button
-                      onClick={() => reloadProducts(true)}
-                      disabled={isLoading}
-                      className="px-8 py-3 bg-blue-600 text-white rounded-lg cursor-pointer"
-                    >
-                      {isLoading ? "Loading..." : "Load More Products"}
-                    </button>
-                  </div>
-                )}
+              {filteredProducts.length > 0 && pager.canLoadMore && (
+                <div className="text-center mt-12">
+                  <button
+                    onClick={() => pager.loadMore()}
+                    disabled={isLoading}
+                    className="px-8 py-3 bg-blue-600 text-white rounded-lg cursor-pointer"
+                  >
+                    {isLoading ? "Loading..." : "Load More Products"}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>
