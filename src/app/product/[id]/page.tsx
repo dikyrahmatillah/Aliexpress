@@ -3,6 +3,8 @@ import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
 import StarRating from "@/components/StarRating";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
 import RelatedProducts from "./RelatedProducts";
+import { AliExpressProduct } from "@/types/aliexpress";
+import { parseEvaluateRate } from "@/utils/parseEvaluateRate";
 
 export default async function ItemDetailPage({
   params,
@@ -24,7 +26,7 @@ export default async function ItemDetailPage({
   const payload = await res.json();
 
   // The API route returns { success: true, product: rawProduct }
-  const productData = payload?.product || {};
+  const productData: AliExpressProduct = payload?.product || {};
 
   if (!productData) {
     return (
@@ -42,7 +44,6 @@ export default async function ItemDetailPage({
   }
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
-
   const allImages = productData.product_small_image_urls.string || [];
 
   return (
@@ -115,7 +116,7 @@ export default async function ItemDetailPage({
                 </p>
                 <div className="flex items-center gap-4 mb-6">
                   <StarRating
-                    rating={parseFloat(productData.evaluate_rate) || 0}
+                    rating={parseEvaluateRate(productData.evaluate_rate) || 0}
                     reviewCount={productData.lastest_volume}
                   />
 
@@ -157,12 +158,10 @@ export default async function ItemDetailPage({
                   <div>
                     <p className="text-sm font-medium">Delivery Information</p>
                     <p className="text-sm text-gray-600">
-                      {productData.delivery_info?.delivery_time ||
-                        "Standard shipping time applies"}
+                      Standard shipping time applies
                     </p>
                     <p className="text-sm text-gray-600">
-                      {productData.delivery_info?.delivery_fee ||
-                        "Standard shipping fees apply"}
+                      Standard shipping fees apply
                     </p>
                   </div>
                 </div>
@@ -186,28 +185,9 @@ export default async function ItemDetailPage({
             </div>
           </div>
 
-          <RelatedProducts categoryId={productData.first_level_category_id} />
-
-          {productData.product_attributes &&
-            productData.product_attributes.length > 0 && (
-              <div className="mt-12 border-t border-gray-200 pt-8">
-                <h2 className="text-2xl font-bold mb-4">
-                  Product Specifications
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {productData.product_attributes.map(
-                    (attr: { name: string; value: string }, index: number) => (
-                      <div key={index} className="flex">
-                        <div className="w-40 font-medium text-gray-700">
-                          {attr.name}
-                        </div>
-                        <div className="flex-1 text-gray-900">{attr.value}</div>
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-            )}
+          <RelatedProducts
+            categoryId={Number(productData.first_level_category_id)}
+          />
         </div>
       </div>
     </div>

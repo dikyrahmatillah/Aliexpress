@@ -13,7 +13,9 @@ export interface AliExpressProduct {
   product_detail_url: string;
   product_id: string | number;
   product_main_image_url: string;
-  product_small_image_urls: string[];
+  product_small_image_urls: {
+    string: string[];
+  };
   product_title: string;
   product_video_url: string;
   promotion_link: string;
