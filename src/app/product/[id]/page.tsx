@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FiTruck, FiClock, FiShield, FiChevronRight } from "react-icons/fi";
+import { notFound } from "next/navigation";
 import StarRating from "@/components/StarRating";
 import ImageGalleryClient from "@/components/item/ImageGalleryClient";
 import RelatedProducts from "./RelatedProducts";
@@ -13,38 +14,37 @@ export default async function ItemDetailPage({
 }) {
   const { id } = await params;
 
+  const productId = (id || "").trim();
+  if (!productId) {
+    notFound();
+  }
+
   const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
   const url = `${base}/api/aliexpress/productdetail?product_id=${encodeURIComponent(
-    id
+    productId
   )}&target_currency=USD&target_language=EN&country=US`;
 
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Failed to fetch product detail: ${res.status}`);
+  const res = await fetch(url, { cache: "no-store" });
+
+  if (res.status === 400 || res.status === 404) {
+    notFound();
   }
+
+  if (!res.ok) {
+    throw new Error("We couldn't load this product right now.");
+  }
+
   const payload = await res.json();
 
-  // The API route returns { success: true, product: rawProduct }
-  const productData: AliExpressProduct = payload?.product || {};
+  const productData: AliExpressProduct = payload?.product ?? null;
 
-  if (!productData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center max-w-md p-6 bg-red-50 rounded-lg">
-          <h2 className="text-xl font-bold text-red-600 mb-2">
-            Error Loading Product
-          </h2>
-          <p className="text-gray-700 mb-4">
-            Sorry, we could not load this product. Please try again later.
-          </p>
-        </div>
-      </div>
-    );
+  if (!productData || !productData.product_title) {
+    notFound();
   }
 
   const discountPercent = parseInt(productData.discount || "0") || 0;
-  const allImages = productData.product_small_image_urls.string || [];
+  const allImages = productData.product_small_image_urls?.string || [];
 
   return (
     <div className="min-h-screen">

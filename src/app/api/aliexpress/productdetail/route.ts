@@ -159,8 +159,14 @@ export async function GET(request: NextRequest) {
         ?.products?.product?.[0];
 
     if (!productDetails) {
-      console.error("API Response structure:", JSON.stringify(data, null, 2));
-      throw new Error("No product details found in API response");
+      // Most common case: invalid/unavailable product id.
+      // Return a 404 so the app can render a friendly not-found UI.
+      return NextResponse.json(
+        {
+          error: "Product not found",
+        },
+        { status: 404 }
+      );
     }
 
     // Process and return the product details as-is to be processed on the client side
