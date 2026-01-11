@@ -15,7 +15,6 @@ export default function ImageGalleryClient({
   discountPercent = 0,
 }: Props) {
   const [selectedImage, setSelectedImage] = useState(0);
-
   const mainImage =
     images[0] || "https://via.placeholder.com/800x800?text=No+Image";
   const allImages = [mainImage, ...images.filter((img) => img !== mainImage)];
