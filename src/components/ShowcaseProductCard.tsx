@@ -12,9 +12,7 @@ export default function ShowcaseProductCard({
 }) {
   const salePrice = parseFloat(product.sale_price);
   const originalPrice = parseFloat(product.original_price);
-  const ratingValue = Number(
-    String(product.evaluate_rate).replace("%", "") || 0
-  );
+  const ratingValue = Number(product.evaluate_rate.replace("%", "") || 0);
   const discount =
     originalPrice > salePrice
       ? Math.round((1 - salePrice / originalPrice) * 100)

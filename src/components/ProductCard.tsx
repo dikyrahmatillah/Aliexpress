@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import StarRating from "./StarRating";
@@ -13,10 +11,7 @@ export default function ProductCard({
 }) {
   const salePrice = parseFloat(product.sale_price);
   const originalPrice = parseFloat(product.original_price);
-  const discount =
-    originalPrice > salePrice
-      ? Math.round((1 - salePrice / originalPrice) * 100)
-      : 0;
+  const discount = parseFloat(product.discount);
 
   return (
     <Link href={`/product/${product.product_id}`} className="group block">

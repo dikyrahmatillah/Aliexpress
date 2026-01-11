@@ -27,6 +27,7 @@ export default async function ItemDetailPage({
 
   const payload = await response.json();
   const productData: AliExpressProduct = payload?.product;
+  console.log("Product Data:", productData);
   if (!productData || !productData.product_title) notFound();
 
   return (
@@ -45,9 +46,7 @@ export default async function ItemDetailPage({
             <ProductInfo productData={productData} />
           </div>
 
-          <RelatedProducts
-            categoryId={Number(productData.first_level_category_id)}
-          />
+          <RelatedProducts categoryId={productData.first_level_category_id} />
         </div>
       </div>
     </div>

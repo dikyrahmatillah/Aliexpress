@@ -89,7 +89,7 @@ export default function FeaturedSection({
                 .slice(startIdx, startIdx + visibleCount)
                 .map((product, idx) => (
                   <FeaturedProductCard
-                    key={Number(product.product_id) + idx}
+                    key={product.product_id + idx}
                     product={product}
                     visibleCount={visibleCount}
                   />
