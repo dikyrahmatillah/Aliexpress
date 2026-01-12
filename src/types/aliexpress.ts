@@ -86,6 +86,8 @@ export interface AliExpressQueryParams {
   sort?: string;
   targetCurrency?: string;
   targetLanguage?: string;
+  localeSite?: string;
+  platformProductType?: string;
 }
 
 export interface AliexpressResponse {

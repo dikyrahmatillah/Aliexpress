@@ -19,7 +19,7 @@ const DEFAULTS = {
   PLATFORM_PRODUCT_TYPE: "ALL",
 };
 
-const aliexpressConfig = {
+export const aliexpressConfig = {
   appKey: Number(process.env.ALIEXPRESS_APP_KEY),
   secret: process.env.ALIEXPRESS_SECRET || "",
   appSignature: process.env.ALIEXPRESS_APP_SIGNATURE || "",
@@ -45,7 +45,7 @@ const aliexpressParams = {
 };
 
 /** Utility: Generate MD5 signature for AliExpress API */
-function generateSignature(
+export function generateSignature(
   params: Record<string, string | number>,
   secret: string
 ): string {

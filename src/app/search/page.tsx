@@ -4,12 +4,12 @@ import { AliExpressProduct } from "@/types/aliexpress";
 import SearchProductsClient from "@/components/SearchProductsClient";
 
 interface SearchPageProps {
-  searchParams: Promise<{ query?: string }>;
+  searchParams: Promise<{ q?: string }>;
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolved = await searchParams;
-  const query = resolved?.query || "";
+  const query = resolved.q;
 
   let initialProducts: AliExpressProduct[] = [];
   if (query) {

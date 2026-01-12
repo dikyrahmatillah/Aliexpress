@@ -1,73 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import * as CryptoJS from "crypto-js";
-
-// Configuration constants
-const ALIEXPRESS_CONFIG = {
-  APP_KEY: Number(process.env.ALIEXPRESS_APP_KEY),
-  SECRET: process.env.ALIEXPRESS_SECRET,
-  APP_SIGNATURE: process.env.ALIEXPRESS_APP_SIGNATURE,
-  TRACKING_ID: process.env.ALIEXPRESS_TRACKING_ID,
-  API_URL: "https://api-sg.aliexpress.com/sync",
-};
-
-interface ApiParams {
-  [key: string]: string | number | undefined;
-  app_signature: string;
-  fields: string;
-  product_ids: string;
-  target_currency: string;
-  target_language: string;
-  tracking_id: string;
-  country: string;
-  app_key: number;
-  v: string;
-  format: string;
-  sign_method: string;
-  method: string;
-  timestamp: string;
-  partner_id: string;
-  sign?: string;
-}
-
-/**
- * Generates the MD5 signature for AliExpress API request
- */
-function generateSignature(params: ApiParams, secret: string): string {
-  // Sort parameters and filter out undefined values
-  const filteredParams: Record<string, string | number> = {};
-  Object.keys(params).forEach((key) => {
-    const value = params[key];
-    if (value !== undefined) {
-      filteredParams[key] = value;
-    }
-  });
-
-  const sortedParams = Object.keys(filteredParams)
-    .sort()
-    .reduce((result, key) => {
-      result[key] = filteredParams[key];
-      return result;
-    }, {} as Record<string, string | number>);
-
-  // Build string to be signed
-  let stringToBeSigned = secret;
-
-  for (const [key, value] of Object.entries(sortedParams)) {
-    if (
-      !Array.isArray(value) &&
-      typeof value === "string" &&
-      !value.startsWith("@")
-    ) {
-      stringToBeSigned += `${key}${value}`;
-    } else if (typeof value !== "object") {
-      stringToBeSigned += `${key}${value}`;
-    }
-  }
-
-  stringToBeSigned += secret;
-
-  return CryptoJS.MD5(stringToBeSigned).toString().toUpperCase();
-}
+import { generateSignature, aliexpressConfig } from "@/utils/aliexpress";
 
 /**
  * Builds the complete request URL with all parameters
@@ -77,7 +9,7 @@ function buildRequestUrl(params: Record<string, string | number>): string {
     .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
     .join("&");
 
-  return `${ALIEXPRESS_CONFIG.API_URL}?${queryString}`;
+  return `${aliexpressConfig.apiUrl}?${queryString}`;
 }
 
 export async function GET(request: NextRequest) {
@@ -99,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Ensure required environment secret is available
-    if (!ALIEXPRESS_CONFIG.SECRET) {
+    if (!aliexpressConfig.secret) {
       console.error("Missing ALIEXPRESS_SECRET environment variable");
       return NextResponse.json(
         { error: "Missing ALIEXPRESS_SECRET environment variable" },
@@ -114,15 +46,15 @@ export async function GET(request: NextRequest) {
       "category_id,target_sale_price,discount,product_main_image_url,first_level_category_id," +
       "target_app_sale_price_currency,tax_rate,shop_url,target_original_price_currency,promotion_link," +
       "sku_id,shop_name,sale_price,product_title,hot_product_commission_rate,shop_id,commission_rate";
-    const params: ApiParams = {
-      app_signature: String(ALIEXPRESS_CONFIG.APP_SIGNATURE),
+    const params: Record<string, string | number> = {
+      app_signature: String(aliexpressConfig.appSignature),
       fields,
       product_ids: productId,
       target_currency: targetCurrency,
       target_language: targetLanguage,
-      tracking_id: String(ALIEXPRESS_CONFIG.TRACKING_ID),
+      tracking_id: String(aliexpressConfig.trackingId),
       country,
-      app_key: ALIEXPRESS_CONFIG.APP_KEY,
+      app_key: aliexpressConfig.appKey,
       v: "2.0",
       format: "json",
       sign_method: "md5",
@@ -132,12 +64,12 @@ export async function GET(request: NextRequest) {
     };
 
     // Generate signature
-    params.sign = generateSignature(params, ALIEXPRESS_CONFIG.SECRET);
+    params.sign = generateSignature(params, aliexpressConfig.secret);
 
     // Build request URL - filter out undefined values
     const requestParams: Record<string, string | number> = {};
     Object.keys(params).forEach((key) => {
-      const value = params[key as keyof ApiParams];
+      const value = params[key];
       if (value !== undefined) {
         requestParams[key] = value;
       }
