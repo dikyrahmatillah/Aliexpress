@@ -69,14 +69,6 @@ export interface ProcessedProduct {
   evaluate_rate: number;
 }
 
-export interface ProductQueryResult {
-  total_record_count: number;
-  current_record_count: number;
-  products: {
-    product: string[];
-  };
-}
-
 export interface AliExpressQueryParams {
   query: string;
   minSalePrice?: number;
