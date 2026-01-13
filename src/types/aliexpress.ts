@@ -71,6 +71,7 @@ export interface ProcessedProduct {
 
 export interface AliExpressQueryParams {
   query: string;
+  fields?: string;
   minSalePrice?: number;
   categoryIds?: number;
   pageSize?: number;
@@ -86,4 +87,18 @@ export interface AliexpressResponse {
   total_record_count: number;
   current_record_count: number;
   products: AliExpressProduct[];
+}
+
+export interface AliexpressHotProductResponse {
+  aliexpress_affiliate_hotproduct_download_response: {
+    resp_result: {
+      result: {
+        current_page_no: number;
+        current_record_count: number;
+        products: {
+          product: AliExpressProduct[];
+        };
+      };
+    };
+  };
 }

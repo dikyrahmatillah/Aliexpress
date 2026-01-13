@@ -1,4 +1,5 @@
 import {
+  AliexpressHotProductResponse,
   AliExpressProductResponse,
   AliExpressQueryParams,
 } from "@/types/aliexpress";
@@ -17,6 +18,7 @@ export const aliexpressConfig = {
 };
 
 const aliexpressParams = {
+  fields: "",
   minSalePrice: 5,
   categoryIds: 0,
   pageSize: 50,
@@ -115,9 +117,9 @@ export async function getAliExpressProducts(
   params.sign = generateSignature(params, aliexpressConfig.secret);
 
   try {
-    const data: AliExpressProductResponse = await fetchAliExpress(params);
+    const result: AliExpressProductResponse = await fetchAliExpress(params);
     const productData =
-      data?.aliexpress_affiliate_product_query_response?.resp_result?.result;
+      result?.aliexpress_affiliate_product_query_response?.resp_result?.result;
     if (!productData || !productData.products?.product) {
       throw new Error("No products found in API response");
     }
@@ -160,6 +162,53 @@ export async function getAliExpressCategories({
     return await fetchAliExpress(params);
   } catch (error) {
     console.error("Error fetching AliExpress categories:", error);
+    throw error;
+  }
+}
+
+export async function getAliExpressHotProducts(
+  queryParams: AliExpressQueryParams
+) {
+  const {
+    fields = aliexpressParams.fields,
+    categoryIds = aliexpressParams.categoryIds,
+    pageSize = aliexpressParams.pageSize,
+    pageNo = aliexpressParams.pageNo,
+    targetCurrency = aliexpressParams.targetCurrency,
+    targetLanguage = aliexpressParams.targetLanguage,
+  } = queryParams;
+
+  const params = buildCommonParams({
+    fields,
+    category_id: categoryIds,
+    page_size: pageSize,
+    page_no: pageNo,
+    target_currency: targetCurrency,
+    target_language: targetLanguage,
+    country: aliexpressParams.country,
+    locale_site: aliexpressParams.localeSite,
+    tracking_id: aliexpressConfig.trackingId,
+    app_signature: aliexpressConfig.appSignature,
+    method: "aliexpress.affiliate.hotproduct.download",
+  });
+
+  params.sign = generateSignature(params, aliexpressConfig.secret);
+
+  try {
+    const result = await fetchAliExpress<AliexpressHotProductResponse>(params);
+    const productData =
+      result?.aliexpress_affiliate_hotproduct_download_response?.resp_result
+        ?.result;
+    if (!productData) {
+      throw new Error("No products found in API response");
+    }
+
+    return {
+      current_record_count: productData.current_record_count,
+      products: productData.products,
+    };
+  } catch (error) {
+    console.error("Error fetching AliExpress hot products:", error);
     throw error;
   }
 }
