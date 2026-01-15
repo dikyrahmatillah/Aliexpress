@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import {
   useAliExpressProducts,
   useAliExpressProductsMutation,
 } from "@/hooks/useAliexpress";
-import { FiPlay } from "react-icons/fi";
-import { AliExpressProduct } from "@/types/aliexpress";
+import ProductGrid from "./ProductGrid";
 
 export default function AliExpressProductDemo() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,7 +32,7 @@ export default function AliExpressProductDemo() {
     mutation.mutate({
       query: searchQuery,
       pageSize: 20,
-      sort: "LAST_VOLUME_DESC",
+      sort: "",
     });
   };
 
@@ -203,97 +201,4 @@ const data = await response.json();`}
   );
 }
 
-function ProductGrid({ products }: { products: AliExpressProduct[] }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => {
-        const hasDiscount =
-          typeof product.discount === "number"
-            ? product.discount > 0
-            : !!product.discount;
-        const showOriginal =
-          typeof product.original_price === "number" &&
-          typeof product.sale_price === "number"
-            ? product.original_price > product.sale_price
-            : false;
-        return (
-          <div
-            key={product.product_id}
-            className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
-          >
-            <div className="aspect-square mb-3 relative overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
-              <Image
-                src={product.product_main_image_url}
-                alt={product.product_title}
-                fill
-                className="object-cover"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/placeholder-image.svg";
-                }}
-              />
-              {product.product_video_url && (
-                <span className="absolute bottom-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded flex items-center gap-1">
-                  <FiPlay className="w-4 h-4" />
-                  Video
-                </span>
-              )}
-            </div>
-
-            <h3 className="font-medium text-sm mb-2 line-clamp-2 h-10">
-              {product.product_title}
-            </h3>
-
-            <div className="flex flex-col gap-1 mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold text-green-600">
-                  ${Number(product.sale_price).toFixed(2)}
-                </span>
-                {showOriginal && (
-                  <span className="text-xs line-through text-gray-500">
-                    ${Number(product.original_price).toFixed(2)}
-                  </span>
-                )}
-                {hasDiscount && (
-                  <span className="text-xs text-red-600 font-semibold">
-                    -{product.discount}%
-                  </span>
-                )}
-              </div>
-              <span className="text-xs text-gray-500">
-                {product.lastest_volume} sold
-              </span>
-              {product.shop_name && (
-                <span className="text-xs text-gray-700">
-                  Shop: {product.shop_name}
-                </span>
-              )}
-              {(product.first_level_category_name ||
-                product.second_level_category_name) && (
-                <span className="text-xs text-gray-400">
-                  {product.first_level_category_name}
-                  {product.second_level_category_name &&
-                    ` / ${product.second_level_category_name}`}
-                </span>
-              )}
-              {product.sku_id && (
-                <span className="text-xs text-gray-300">
-                  SKU: {product.sku_id}
-                </span>
-              )}
-            </div>
-
-            <a
-              href={`https://www.aliexpress.com/item/${product.product_id}.html`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
-            >
-              View on AliExpress
-            </a>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
+// `ProductGrid` extracted to src/components/demo/ProductGrid.tsx
