@@ -1,4 +1,4 @@
-import AliExpressProductDemo from "@/components/AliExpressProductDemo";
+import AliExpressProductDemo from "@/components/demo/AliExpressProductDemo";
 
 export default function TestPage() {
   return (

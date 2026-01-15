@@ -5,7 +5,7 @@ import { AliExpressProduct, AliExpressQueryParams } from "@/types/aliexpress";
 interface AliExpressResponse {
   total_record_count: number;
   current_record_count: number;
-  products: AliExpressProduct[];
+  products: { product: AliExpressProduct[] };
 }
 
 interface UseAliExpressProductsOptions {
@@ -175,8 +175,8 @@ export function useAliExpressHotProducts(
 // Helper function to extract useful data from AliExpress response
 export function formatAliExpressProducts(products: AliExpressProduct[]) {
   return products.map((product) => ({
-    id: product.product_id,
-    title: product.product_title,
+    product_id: product.product_id,
+    product_title: product.product_title,
     salePrice: parseFloat(product.sale_price),
     originalPrice: parseFloat(product.original_price),
     discount: parseFloat(product.discount),
@@ -189,6 +189,5 @@ export function formatAliExpressProducts(products: AliExpressProduct[]) {
     product_video_url: product.product_video_url,
     sku_id: product.sku_id,
     shop_name: product.shop_name,
-    affiliateUrl: `https://www.aliexpress.com/item/${product.product_id}.html`,
   }));
 }

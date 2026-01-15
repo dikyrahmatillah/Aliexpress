@@ -5,9 +5,9 @@ import Image from "next/image";
 import {
   useAliExpressProducts,
   useAliExpressProductsMutation,
-  formatAliExpressProducts,
 } from "@/hooks/useAliexpress";
 import { FiPlay } from "react-icons/fi";
+import { AliExpressProduct } from "@/types/aliexpress";
 
 export default function AliExpressProductDemo() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +24,6 @@ export default function AliExpressProductDemo() {
     error,
   } = useAliExpressProducts({ query: activeQuery }, { enabled: !!activeQuery });
 
-  // Using the mutation hook (manual triggering)
   const mutation = useAliExpressProductsMutation();
 
   const handleSearch = () => {
@@ -38,13 +37,6 @@ export default function AliExpressProductDemo() {
       sort: "LAST_VOLUME_DESC",
     });
   };
-
-  const formattedProducts = products
-    ? formatAliExpressProducts(products.products)
-    : [];
-  const mutationProducts = mutation.data
-    ? formatAliExpressProducts(mutation.data.products)
-    : [];
 
   return (
     <div className="max-w-6xl mx-auto p-6">
@@ -136,24 +128,40 @@ export default function AliExpressProductDemo() {
       </div>
 
       {/* Query Results */}
-      {formattedProducts.length > 0 && (
+      {products && (
         <div className="mb-8">
           <h2 className="text-2xl font-semibold mb-4">
-            Query Results ({formattedProducts.length} products)
+            Query Results ({products.current_record_count} products)
           </h2>
-          <ProductGrid products={formattedProducts} />
+          <ProductGrid
+            products={products.products?.product ?? products.products ?? []}
+          />
         </div>
       )}
 
       {/* Mutation Results */}
-      {mutationProducts.length > 0 && (
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold mb-4">
-            Mutation Results ({mutationProducts.length} products)
-          </h2>
-          <ProductGrid products={mutationProducts} />
-        </div>
-      )}
+      {mutation.data &&
+        (mutation.data.products?.product ?? mutation.data.products ?? [])
+          .length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold mb-4">
+              Mutation Results (
+              {
+                (
+                  mutation.data.products?.product ??
+                  mutation.data.products ??
+                  []
+                ).length
+              }{" "}
+              products)
+            </h2>
+            <ProductGrid
+              products={
+                mutation.data.products?.product ?? mutation.data.products ?? []
+              }
+            />
+          </div>
+        )}
 
       {/* Usage Example */}
       <div className="mt-12 p-6 bg-gray-100 rounded-lg">
@@ -195,49 +203,28 @@ const data = await response.json();`}
   );
 }
 
-interface ProductGridProps {
-  products: Array<{
-    id: string;
-    title: string;
-    salePrice: number;
-    originalPrice: number;
-    discount: number;
-    imageUrl: string;
-    salesVolume: number;
-    affiliateUrl: string;
-    first_level_category_name: string;
-    first_level_category_id: string;
-    second_level_category_name: string;
-    second_level_category_id: string;
-    product_video_url: string;
-    sku_id: string;
-    shop_name: string;
-  }>;
-}
-
-function ProductGrid({ products }: ProductGridProps) {
+function ProductGrid({ products }: { products: AliExpressProduct[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product) => {
-        // Add more info fields
         const hasDiscount =
           typeof product.discount === "number"
             ? product.discount > 0
             : !!product.discount;
         const showOriginal =
-          typeof product.originalPrice === "number" &&
-          typeof product.salePrice === "number"
-            ? product.originalPrice > product.salePrice
+          typeof product.original_price === "number" &&
+          typeof product.sale_price === "number"
+            ? product.original_price > product.sale_price
             : false;
         return (
           <div
-            key={product.id}
+            key={product.product_id}
             className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow"
           >
             <div className="aspect-square mb-3 relative overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
               <Image
-                src={product.imageUrl}
-                alt={product.title}
+                src={product.product_main_image_url}
+                alt={product.product_title}
                 fill
                 className="object-cover"
                 onError={(e) => {
@@ -254,17 +241,17 @@ function ProductGrid({ products }: ProductGridProps) {
             </div>
 
             <h3 className="font-medium text-sm mb-2 line-clamp-2 h-10">
-              {product.title}
+              {product.product_title}
             </h3>
 
             <div className="flex flex-col gap-1 mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-green-600">
-                  ${product.salePrice.toFixed(2)}
+                  ${Number(product.sale_price).toFixed(2)}
                 </span>
                 {showOriginal && (
                   <span className="text-xs line-through text-gray-500">
-                    ${product.originalPrice.toFixed(2)}
+                    ${Number(product.original_price).toFixed(2)}
                   </span>
                 )}
                 {hasDiscount && (
@@ -274,7 +261,7 @@ function ProductGrid({ products }: ProductGridProps) {
                 )}
               </div>
               <span className="text-xs text-gray-500">
-                {product.salesVolume} sold
+                {product.lastest_volume} sold
               </span>
               {product.shop_name && (
                 <span className="text-xs text-gray-700">
@@ -297,7 +284,7 @@ function ProductGrid({ products }: ProductGridProps) {
             </div>
 
             <a
-              href={product.affiliateUrl}
+              href={`https://www.aliexpress.com/item/${product.product_id}.html`}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full text-center py-2 bg-orange-500 text-white text-sm rounded hover:bg-orange-600 transition-colors"
