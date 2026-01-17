@@ -27,7 +27,6 @@ export default async function ItemDetailPage({
 
   const payload = await response.json();
   const productData: AliExpressProduct = payload?.product;
-  console.log("Product Data:", productData);
   if (!productData || !productData.product_title) notFound();
 
   return (

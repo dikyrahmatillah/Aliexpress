@@ -5,19 +5,9 @@ import {
 } from "@/types/aliexpress";
 import CryptoJS from "crypto-js";
 
-export const aliexpressConfig = {
-  appKey: Number(process.env.ALIEXPRESS_APP_KEY),
-  secret: String(process.env.ALIEXPRESS_SECRET),
-  appSignature: String(process.env.ALIEXPRESS_APP_SIGNATURE),
-  trackingId: String(process.env.ALIEXPRESS_TRACKING_ID),
-  apiUrl: "https://api-sg.aliexpress.com/sync",
-  partnerId: "top-sdk-php-20180326",
-  apiVersion: "2.0",
-  format: "json",
-  signMethod: "md5",
-};
+type AliExpressParams = Record<string, string | number>;
 
-const aliexpressParams = {
+const aliExpressParams = {
   fields: "",
   minSalePrice: 5,
   categoryIds: 0,
@@ -31,8 +21,27 @@ const aliexpressParams = {
   platformProductType: "ALL",
 };
 
+function getRequiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required env: ${name}`);
+
+  return value;
+}
+
+export const aliexpressConfig = {
+  appKey: Number(getRequiredEnv("ALIEXPRESS_APP_KEY")),
+  secret: getRequiredEnv("ALIEXPRESS_SECRET"),
+  appSignature: getRequiredEnv("ALIEXPRESS_APP_SIGNATURE"),
+  trackingId: getRequiredEnv("ALIEXPRESS_TRACKING_ID"),
+  apiUrl: "https://api-sg.aliexpress.com/sync",
+  partnerId: "top-sdk-php-20180326",
+  apiVersion: "2.0",
+  format: "json",
+  signMethod: "md5",
+};
+
 export function generateSignature(
-  params: Record<string, string | number>,
+  params: AliExpressParams,
   secret: string
 ): string {
   const sortedKeys = Object.keys(params).sort();
@@ -53,27 +62,28 @@ export function generateSignature(
   return CryptoJS.MD5(stringToBeSigned).toString().toUpperCase();
 }
 
-async function fetchAliExpress<T>(
-  params: Record<string, string | number>
-): Promise<T> {
+async function fetchAliExpress<T>(params: AliExpressParams): Promise<T> {
   const url = buildRequestUrl(params);
   const response = await fetch(url);
   if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
   return response.json();
 }
 
-function buildRequestUrl(params: Record<string, string | number>): string {
-  const queryString = Object.entries(params)
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join("&");
-  return `${aliexpressConfig.apiUrl}?${queryString}`;
+function buildRequestUrl(params: AliExpressParams): string {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    searchParams.append(key, String(value));
+  }
+  return `${aliexpressConfig.apiUrl}?${searchParams.toString()}`;
 }
 
-function buildCommonParams(
-  extra: Record<string, string | number>
-): Record<string, string | number> {
+function buildCommonParams(extra: AliExpressParams): AliExpressParams {
   return {
     ...extra,
+    locale_site: aliExpressParams.localeSite,
+    platform_product_type: aliExpressParams.platformProductType,
+    tracking_id: aliexpressConfig.trackingId,
+    app_signature: aliexpressConfig.appSignature,
     app_key: aliexpressConfig.appKey,
     v: aliexpressConfig.apiVersion,
     format: aliexpressConfig.format,
@@ -88,13 +98,13 @@ export async function getAliExpressProducts(
 ) {
   const {
     query,
-    minSalePrice = aliexpressParams.minSalePrice,
-    categoryIds = aliexpressParams.categoryIds,
-    pageSize = aliexpressParams.pageSize,
-    pageNo = aliexpressParams.pageNo,
-    sort = aliexpressParams.sort,
-    targetCurrency = aliexpressParams.targetCurrency,
-    targetLanguage = aliexpressParams.targetLanguage,
+    minSalePrice = aliExpressParams.minSalePrice,
+    categoryIds = aliExpressParams.categoryIds,
+    pageSize = aliExpressParams.pageSize,
+    pageNo = aliExpressParams.pageNo,
+    sort = aliExpressParams.sort,
+    targetCurrency = aliExpressParams.targetCurrency,
+    targetLanguage = aliExpressParams.targetLanguage,
   } = queryParams;
 
   const params = buildCommonParams({
@@ -106,10 +116,7 @@ export async function getAliExpressProducts(
     sort,
     target_currency: targetCurrency,
     target_language: targetLanguage,
-    locale_site: aliexpressParams.localeSite,
-    platform_product_type: aliexpressParams.platformProductType,
-    tracking_id: aliexpressConfig.trackingId,
-    app_signature: aliexpressConfig.appSignature,
+    country: aliExpressParams.country,
     method: "aliexpress.affiliate.product.query",
   });
 
@@ -128,7 +135,49 @@ export async function getAliExpressProducts(
       products: productData.products,
     };
   } catch (error) {
-    console.error("Error fetching AliExpress products:", error);
+    throw error;
+  }
+}
+
+export async function getAliExpressHotProducts(
+  queryParams: AliExpressQueryParams
+) {
+  const {
+    fields = aliExpressParams.fields,
+    categoryIds = aliExpressParams.categoryIds,
+    pageSize = aliExpressParams.pageSize,
+    pageNo = aliExpressParams.pageNo,
+    targetCurrency = aliExpressParams.targetCurrency,
+    targetLanguage = aliExpressParams.targetLanguage,
+  } = queryParams;
+
+  const params = buildCommonParams({
+    fields,
+    category_id: categoryIds,
+    page_size: pageSize,
+    page_no: pageNo,
+    target_currency: targetCurrency,
+    target_language: targetLanguage,
+    country: aliExpressParams.country,
+    method: "aliexpress.affiliate.hotproduct.download",
+  });
+
+  params.sign = generateSignature(params, aliexpressConfig.secret);
+
+  try {
+    const result = await fetchAliExpress<AliexpressHotProductResponse>(params);
+    const productData =
+      result?.aliexpress_affiliate_hotproduct_download_response?.resp_result
+        ?.result;
+    if (!productData) {
+      throw new Error("No products found in API response");
+    }
+
+    return {
+      current_record_count: productData.current_record_count,
+      products: productData.products,
+    };
+  } catch (error) {
     throw error;
   }
 }
@@ -160,54 +209,6 @@ export async function getAliExpressCategories({
   try {
     return await fetchAliExpress(params);
   } catch (error) {
-    console.error("Error fetching AliExpress categories:", error);
-    throw error;
-  }
-}
-
-export async function getAliExpressHotProducts(
-  queryParams: AliExpressQueryParams
-) {
-  const {
-    fields = aliexpressParams.fields,
-    categoryIds = aliexpressParams.categoryIds,
-    pageSize = aliexpressParams.pageSize,
-    pageNo = aliexpressParams.pageNo,
-    targetCurrency = aliexpressParams.targetCurrency,
-    targetLanguage = aliexpressParams.targetLanguage,
-  } = queryParams;
-
-  const params = buildCommonParams({
-    fields,
-    category_id: categoryIds,
-    page_size: pageSize,
-    page_no: pageNo,
-    target_currency: targetCurrency,
-    target_language: targetLanguage,
-    country: aliexpressParams.country,
-    locale_site: aliexpressParams.localeSite,
-    tracking_id: aliexpressConfig.trackingId,
-    app_signature: aliexpressConfig.appSignature,
-    method: "aliexpress.affiliate.hotproduct.download",
-  });
-
-  params.sign = generateSignature(params, aliexpressConfig.secret);
-
-  try {
-    const result = await fetchAliExpress<AliexpressHotProductResponse>(params);
-    const productData =
-      result?.aliexpress_affiliate_hotproduct_download_response?.resp_result
-        ?.result;
-    if (!productData) {
-      throw new Error("No products found in API response");
-    }
-
-    return {
-      current_record_count: productData.current_record_count,
-      products: productData.products,
-    };
-  } catch (error) {
-    console.error("Error fetching AliExpress hot products:", error);
     throw error;
   }
 }
