@@ -7,9 +7,9 @@ import CryptoJS from "crypto-js";
 
 export const aliexpressConfig = {
   appKey: Number(process.env.ALIEXPRESS_APP_KEY),
-  secret: process.env.ALIEXPRESS_SECRET || "",
-  appSignature: process.env.ALIEXPRESS_APP_SIGNATURE || "",
-  trackingId: process.env.ALIEXPRESS_TRACKING_ID || "",
+  secret: String(process.env.ALIEXPRESS_SECRET),
+  appSignature: String(process.env.ALIEXPRESS_APP_SIGNATURE),
+  trackingId: String(process.env.ALIEXPRESS_TRACKING_ID),
   apiUrl: "https://api-sg.aliexpress.com/sync",
   partnerId: "top-sdk-php-20180326",
   apiVersion: "2.0",
@@ -31,7 +31,6 @@ const aliexpressParams = {
   platformProductType: "ALL",
 };
 
-/** Utility: Generate MD5 signature for AliExpress API */
 export function generateSignature(
   params: Record<string, string | number>,
   secret: string
